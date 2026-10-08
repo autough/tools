@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- The page may not make a single network request. This policy makes the browser enforce that. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-d1Aonu4y6hiT86ACagkRabYTeHz64LWa49kzglhtxi8='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QOzjcJzUcmIpJlGsh1Zu1zEpRcZ7Hf8Hb7xWbePJoIs='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <!-- An inline icon. Some browsers still ask the serving host for /favicon.ico; that request comes from the browser and carries no data. From file:// there is no host to ask. -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6e6a'/%3E%3Cpath d='M8 25V11l8-4 8 4v14M12 25v-6h8v6M12 14h2M18 14h2' stroke='white' stroke-width='2.2' fill='none'/%3E%3C/svg%3E">
@@ -563,7 +563,7 @@ dialog.manual .row { justify-content: flex-end; margin-top: 10px; }
             <div class="full form-hint" id="a-owner-h">Individual if the vendor or the purchaser is a person or an owner-run small business. Individual and unknown sales stay out of share packs unless ticked registry-verified below.</div>
             <div class="field full"><label class="check" for="a-mls"><input type="checkbox" id="a-mls" name="fromMls"> Any figure came from an MLS listing <span class="private-tag">never shared: board rules</span></label></div>
             <h3>Where it came from</h3>
-            <div class="field"><label for="a-source">Contributor</label><select class="select" id="a-source" name="source"><option value="This office">This office</option><option value="Network">A network firm</option></select></div>
+            <div class="field"><label for="a-source">Contributor</label><select class="select" id="a-source" name="source"><option value="This office">This office</option><option value="Network">A network firm</option><option value="Open data" disabled>Open data (only from an open-data file)</option></select></div>
             <div class="field" id="a-firm-f" hidden><label for="a-firm">Network firm</label><input class="input" id="a-firm" name="firm" maxlength="120"></div>
             <div class="field"><label for="a-used">Used in file # <span class="muted">(optional)</span></label><input class="input" id="a-used" name="usedFile" maxlength="60" placeholder="e.g. 26-112"></div>
             <div class="field full"><label for="a-notes">Private notes <span class="private-tag">never shared</span></label><textarea class="textarea" id="a-notes" name="notes" maxlength="4000" rows="2" placeholder="Who confirmed it, what the owner gave you, anything client-confidential"></textarea></div>
@@ -607,7 +607,7 @@ dialog.manual .row { justify-content: flex-end; margin-top: 10px; }
         <div class="field"><span class="lbl">Building area (sq ft)</span><div class="pair"><input class="input num" data-q="areaMin" inputmode="numeric" placeholder="min" aria-label="Building area minimum, square feet"><span>to</span><input class="input num" data-q="areaMax" inputmode="numeric" placeholder="max" aria-label="Building area maximum, square feet"></div></div>
         <div class="field"><span class="lbl">Site (acres)</span><div class="pair"><input class="input num" data-q="siteMin" inputmode="decimal" placeholder="min" aria-label="Site minimum, acres"><span>to</span><input class="input num" data-q="siteMax" inputmode="decimal" placeholder="max" aria-label="Site maximum, acres"></div></div>
         <div class="field"><span class="lbl">Cap rate (%)</span><div class="pair"><input class="input num" data-q="capMin" inputmode="decimal" placeholder="min" aria-label="Cap rate minimum, percent"><span>to</span><input class="input num" data-q="capMax" inputmode="decimal" placeholder="max" aria-label="Cap rate maximum, percent"></div></div>
-        <div class="field"><label for="q-source">From</label><select class="select" id="q-source" data-q="source"><option value="">Anyone</option><option value="office">This office</option><option value="network">Network firms</option><option value="differs">Sales where firms' figures differ</option></select></div>
+        <div class="field"><label for="q-source">From</label><select class="select" id="q-source" data-q="source"><option value="">Anyone</option><option value="office">This office</option><option value="network">Network firms</option><option value="opendata">Open data</option><option value="differs">Sales where firms' figures differ</option></select></div>
         <div class="field wide"><label for="q-kw">Keyword in remarks, conditions or private notes</label><input class="input" id="q-kw" data-q="kw" type="search" autocomplete="off" placeholder="e.g. seasonal, FF&amp;E, waterfront, pool"></div>
       </div>
       <div class="quick">
@@ -829,7 +829,9 @@ const CONFIRMS = { registry: 'Registry', party: 'A party to the sale', broker: '
 /* Who owned or bought it. Blank is "unknown", the default, and is never guessed from a name. */
 const OWNERS = { company: 'Company', individual: 'Individual' };
 const ARMS = { yes: "Arm's length", no: "Not arm's length", unknown: "Arm's length: unknown" };
-const SOURCES = ['This office', 'Network'];
+/* Open data: sales from a public registry's open-data file (pipeline/atlantic), each carrying the licence's
+   attribution line. Shown with it, never put in a share pack, never turned into this office's own sale. */
+const SOURCES = ['This office', 'Network', 'Open data'];
 const F = [
   { k: 'propertyType', t: 'enum', vals: ['', ...TYPES], h: 'Property type', share: 'always' },
   { k: 'address', t: 'line', max: 200, h: 'Address', share: 'always' },
@@ -869,6 +871,8 @@ const F = [
   { k: 'receivedOn', t: 'date', h: 'Received on', share: 'never' },
   { k: 'packMadeOn', t: 'date', h: 'Pack made on', share: 'never' },
   { k: 'addedOn', t: 'date', h: 'Added on', share: 'never' },
+  // The licence's required attribution for an open-data sale; kept on any record its figures are beside.
+  { k: 'attribution', t: 'text', max: 600, h: 'Attribution', share: 'never' },
 ];
 const FBY = Object.fromEntries(F.map((d) => [d.k, d]));
 const PACKF = F.filter((d) => d.share !== 'never');
@@ -942,10 +946,11 @@ function validateEntry(o, at, labels) {
   const c = checkCore(o, at, F, labels); if (c.err) return c;
   const e = c.entry;
   const src = own(o, 'source');
-  if (!SOURCES.includes(src)) return { err: at + ': source must be "This office" or "Network"' };
+  if (!SOURCES.includes(src)) return { err: at + ': source must be "This office", "Network" or "Open data"' };
   e.source = src;
   if (src === 'Network' && !e.firm) return { err: at + ': a network sale needs the firm it came from' };
-  if (src === 'This office') { e.firm = ''; e.receivedOn = ''; e.packMadeOn = ''; }
+  if (src === 'Open data' && !e.attribution) return { err: at + ': an open-data sale needs its licence attribution' };
+  if (src !== 'Network') { e.firm = ''; e.receivedOn = ''; e.packMadeOn = ''; }
   const seenFile = new Set();
   const u = checkList(own(o, 'usedIn'), at, 'usedIn', MAX_LIST, (x) => {
     const f = req(x, 'file', LINE(60)); if (f.err) return f;
@@ -989,6 +994,11 @@ function validatePackEntry(o, at, ignored) {
   for (const key of Object.keys(o)) if (key !== 'fromMls' && (!FBY[key] || FBY[key].share === 'never')) ignored.add(key.length > 40 ? key.slice(0, 40) + '…' : key);
   return { entry: e, mls: fromMls || e.confirmation === 'mls' };
 }
+/* A file's size as it is written to disk: UTF-8 bytes, which is what the open check measures (file.size). A JS
+   string's length counts UTF-16 units, so text with an en dash or an accent would pass a save check by length and
+   then be refused on reopening. */
+const utf8Bytes = (text) => new TextEncoder().encode(text).length;
+const MB = (n) => (n / 1048576).toFixed(1) + ' MB';
 function parseJsonStrict(text, max, what) {
   if (text.length > max) return { err: 'It is larger than ' + max / 1048576 + ' MB, the most this page opens for ' + what + '.' };
   let doc, bad = null;
@@ -1197,29 +1207,39 @@ function joinOffice(t, s, own) {
    Returns { changed, diffs: ["sale price $1,640,000 kept; Network: X says $1,600,000"], took: firm or '' }. */
 function mergeInto(t, s, how) {
   const diffs = [];
-  if (t.source === 'Network' && s.source === 'This office') {
+  if (t.source !== 'This office' && s.source === 'This office') {
     const net = Object.assign({}, t, { usedIn: t.usedIn.slice(), alsoFrom: t.alsoFrom.slice(), conflicts: t.conflicts.slice() });
     for (const d of F) t[d.k] = s[d.k];
     t.source = 'This office';
     t.usedIn = s.usedIn.map((u) => ({ file: u.file, date: u.date }));
     t.alsoFrom = s.alsoFrom.map((a) => ({ firm: a.firm, on: a.on }));
     t.conflicts = s.conflicts.map((c) => Object.assign({}, c));
+    joinAttribution(t, net);
     const on = net.receivedOn || how.on;
-    addFirm(t, net.firm, on);
-    compareInto(t, net, 'Network: ' + net.firm, on, false, diffs);
+    if (net.source === 'Network') addFirm(t, net.firm, on);
+    compareInto(t, net, srcLabel(net), on, false, diffs);
     joinOffice(t, net, false);
-    return { changed: true, diffs, took: net.firm };
+    return { changed: true, diffs, took: net.source === 'Network' ? net.firm : '' };
   }
-  if (s.source === 'Network') {
+  // A firm's copy, or open data beside a record from anywhere else, fills nothing: it is set beside the record.
+  if (s.source === 'Network' || (s.source === 'Open data' && t.source !== 'Open data')) {
     const on = s.receivedOn || how.on;
-    let changed = addFirm(t, s.firm, on);
-    if (compareInto(t, s, 'Network: ' + s.firm, on, false, diffs)) changed = true;
+    let changed = s.source === 'Network' ? addFirm(t, s.firm, on) : false;
+    if (joinAttribution(t, s)) changed = true;
+    if (compareInto(t, s, srcLabel(s), on, false, diffs)) changed = true;
     if (joinOffice(t, s, false)) changed = true;
     return { changed, diffs, took: '' };
   }
   let changed = compareInto(t, s, how.from, how.on, true, diffs);
   if (joinOffice(t, s, true)) changed = true;
+  if (joinAttribution(t, s)) changed = true;
   return { changed, diffs, took: '' };
+}
+/* An open-data copy's licence line stays with the record its figures are kept beside, whoever's record that is. */
+function joinAttribution(t, s) {
+  if (!s.attribution || normText(t.attribution).includes(normText(s.attribution))) return false;
+  t.attribution = (t.attribution ? t.attribution + ' ' + s.attribution : s.attribution).slice(0, FBY.attribution.max);
+  return true;
 }
 /* { r: 'added' | 'merged' | 'same' | 'full', entry, diffs, near, took } */
 function libAdd(e, how) {
@@ -1290,7 +1310,7 @@ function capOf(e) {
 }
 function sqftOf(e) { return e.buildingArea == null ? null : e.buildingAreaUnit === 'sq m' ? e.buildingArea * SQFT_PER_SQM : e.buildingAreaUnit === 'sq ft' ? e.buildingArea : null; }
 function acresOf(e) { return e.siteArea == null || !TO_ACRES[e.siteUnit] ? null : e.siteArea * TO_ACRES[e.siteUnit]; }
-const srcLabel = (e) => (e.source === 'Network' ? 'Network: ' + e.firm : 'This office');
+const srcLabel = (e) => (e.source === 'Network' ? 'Network: ' + e.firm : e.source === 'Open data' ? 'Open data' : 'This office');
 const differs = (e) => e.conflicts.filter((c) => c.kind === 'differs');
 function condWords(e) {
   return [e.armsLength ? ARMS[e.armsLength] : '', e.portfolio ? 'portfolio sale' : '', e.distress ? 'distress sale' : '', e.conditions].filter(Boolean).join('; ');
@@ -1324,9 +1344,12 @@ function libLoadText(text, name, mode, force) {
     if (R.added || R.merged) LIB.dirty = true;
     // A file started in this tab (from a pack or the form) now holds the office's file: saved, it replaces that file.
     if (!LIB.fromFile && !LIB.sample) { LIB.fromFile = true; LIB.base = 'merged'; LIB.name = name; LIB.savedOn = p.savedOn; }
-    libMsg(R.full || R.diffs.length || R.apart.length || R.took.length ? 'warn' : '', 'Merged <strong>' + esc(name) + '</strong>: ' + plural(R.added, 'new sale') + ' added, ' + (R.merged + R.same) + ' already in the file' +
+    // Saving writes every sale again (with its history), so a merge can make a file this page cannot save: say so now.
+    const big = R.added || R.merged ? utf8Bytes(libDocText()) : 0, over = big > LIB_MAX_BYTES;
+    libMsg(over || R.full || R.diffs.length || R.apart.length || R.took.length ? 'warn' : '', 'Merged <strong>' + esc(name) + '</strong>: ' + plural(R.added, 'new sale') + ' added, ' + (R.merged + R.same) + ' already in the file' +
       (R.merged ? ' (' + R.merged + ' of them gained a blank field, a file number, a note or the other copy\'s differing figures; nothing was written over)' : '') + '. ' + esc(R.text()) +
-      (R.full ? ' ' + R.full + ' not added: the file holds at most ' + LIB_MAX_ENTRIES + ' sales.' : '') + (R.added || R.merged ? ' Save the file to keep the result.' : ''));
+      (R.full ? ' ' + R.full + ' not added: the file holds at most ' + LIB_MAX_ENTRIES + ' sales.' : '') +
+      (over ? ' <strong>This file would now be ' + MB(big) + ', over the 10 MB this page can save and open: it cannot be saved.</strong> Open the files one at a time instead.' : R.added || R.merged ? ' Save the file to keep the result.' : ''));
   } else {
     if (LIB.dirty && !force) { LIB.pending = { text, name }; renderLibStatus(); return false; }
     libReset();
@@ -1389,7 +1412,8 @@ function download(name, text) {
 function libSave() {
   if (!LIB.entries.length) { toast('The file is empty: nothing to save.', true); return; }
   const text = libDocText();
-  if (text.length > LIB_MAX_BYTES) { libMsg('err', 'Not saved: the file would be larger than the 10 MB this page can open again.'); return; }
+  const bytes = utf8Bytes(text);
+  if (bytes > LIB_MAX_BYTES) { libMsg('err', 'Not saved: the file would be ' + MB(bytes) + ', larger than the 10 MB this page can open again. Open the files one at a time instead of merging them.'); return; }
   const name = libFileName(), advice = libSaveAdvice();
   download(name, text);
   LIB.dirty = false; LIB.name = name; LIB.savedOn = todayIso();
@@ -1510,7 +1534,8 @@ function shareCandidates() {
   const scoped = inSearch ? office.filter((e) => inSearch.has(e)) : office;
   const go = [], held = Object.fromEntries(HOLD_ORDER.map((k) => [k, []]));
   for (const e of scoped) { const r = holdReason(e); if (r) held[r].push(e); else go.push(e); }
-  return { go, held, nHeld: scoped.length - go.length, network: LIB.entries.length - office.length };
+  return { go, held, nHeld: scoped.length - go.length, network: LIB.entries.filter((e) => e.source === 'Network').length,
+    open: LIB.entries.filter((e) => e.source === 'Open data').length };
 }
 /* "1 came from MLS: …; 4 marked never share" */
 const heldWords = (held) => HOLD_ORDER.filter((k) => held[k].length).map((k) => held[k].length + ' ' + HOLD_WHY[k](held[k].length)).join('; ');
@@ -1547,7 +1572,7 @@ function makePack() {
   const c = shareCandidates();
   if (!c.go.length) { shareMsg('err', 'There are no sales from this office that can go in a share pack' + (S.share.scope === 'search' ? ' in the current search' : '') + '.' + (c.nHeld ? ' Held back: ' + esc(heldWords(c.held)) + '.' : '')); return; }
   const text = packDocText(c.go, firm, S.share.names);
-  if (text.length > PACK_MAX_BYTES) { shareMsg('err', 'Not made: the pack would be larger than 5 MB, the most a share pack can be. Make it from a narrower search.'); return; }
+  if (utf8Bytes(text) > PACK_MAX_BYTES) { shareMsg('err', 'Not made: the pack would be larger than 5 MB, the most a share pack can be. Make it from a narrower search.'); return; }
   const name = 'share-pack-' + (LIB.sample ? 'SAMPLE-' : '') + slug(firm) + '-' + todayIso() + '.json';
   download(name, text);
   const finOut = c.go.filter((e) => hasFin(e) && !e.financialsPublic).length;
@@ -1560,6 +1585,7 @@ function makePack() {
     (finOut ? 'Left out for ' + plural(finOut, 'sale') + ' not ticked: NOI, cap rate and occupancy. ' : '') +
     (named ? (S.share.names ? 'Vendor and purchaser names went in, as you ticked. ' : 'Vendor and purchaser names were left out. ') : '') +
     (c.network ? plural(c.network, 'sale') + ' other firms sent you stayed out. ' : '') +
+    (c.open ? plural(c.open, 'open-data sale') + ' stayed out. ' : '') +
     'Remarks and conditions go as written: read them for names or anything a client gave you before you send the file.');
   toast('Downloaded ' + name);
 }
@@ -1576,7 +1602,8 @@ function renderShare() {
     '<li>Never in a pack: private notes, file numbers, your sharing ticks, and what other firms said about a sale.</li>' +
     '<li>NOI, cap rate and occupancy: ' + (finOut ? 'left out for ' + plural(finOut, 'sale') + ' until you tick them below.' : 'in for every sale that has them, as ticked below.') + '</li>' +
     '<li>Vendor and purchaser: ' + (S.share.names ? 'in, as ticked above.' : 'left out.') + '</li>' +
-    (c.network ? '<li>' + plural(c.network, 'sale') + ' from network firms: never re-shared.</li>' : '') + '</ul></div>';
+    (c.network ? '<li>' + plural(c.network, 'sale') + ' from network firms: never re-shared.</li>' : '') +
+    (c.open ? '<li>' + plural(c.open, 'sale') + ' from open data: never in a share pack.</li>' : '') + '</ul></div>';
   if (c.nHeld) {
     h += '<div class="prev-sum prev-held"><strong>Held back: ' + plural(c.nHeld, 'sale') + '</strong><ul>' +
       HOLD_ORDER.filter((k) => c.held[k].length).map((k) => { const l = c.held[k];
@@ -1623,6 +1650,7 @@ function libSearch() {
     if (place && !(normText(e.town).includes(place) || normText(e.region).includes(place))) continue;
     if (q.source === 'office' && e.source !== 'This office') continue;
     if (q.source === 'network' && e.source !== 'Network') continue;
+    if (q.source === 'opendata' && e.source !== 'Open data') continue;
     if (q.source === 'differs' && !differs(e).length) continue;
     if (from || to) { if (!e.saleDate) { left.date++; continue; } if ((from && e.saleDate < from) || (to && e.saleDate > to)) continue; }
     for (const k of Object.keys(lim)) {
@@ -1705,11 +1733,11 @@ function renderResults(focusSel) {
     const area = e.buildingArea != null ? fmtNum(e.buildingArea) + ' ' + e.buildingAreaUnit : '';
     const site = e.siteArea != null ? fmtNum(e.siteArea) + ' ' + e.siteUnit : '';
     const capT = cap ? fmt2(round2(cap.v)) + '%' : '';
-    const chips = (e.source === 'Network' ? '<span class="chip chip-acc" title="' + esc(srcLabel(e)) + '">' + esc(srcLabel(e)) + '</span>' : '') +
+    const chips = (e.source !== 'This office' ? '<span class="chip chip-acc" title="' + esc(e.source === 'Open data' ? e.attribution : srcLabel(e)) + '">' + esc(srcLabel(e)) + '</span>' : '') +
       (e.alsoFrom.length ? '<span class="chip chip-ok">also sent by ' + plural(e.alsoFrom.length, 'firm') + '</span>' : '') +
       (dif ? '<span class="chip chip-soon">' + plural(dif, 'figure') + ' differ' + (dif === 1 ? 's' : '') + '</span>' : '') +
       (e.armsLength === 'no' ? '<span class="chip chip-late">not arm\'s length</span>' : '') + (e.portfolio ? '<span class="chip chip-late">portfolio</span>' : '') + (e.distress ? '<span class="chip chip-late">distress</span>' : '');
-    const mini = [e.propertyType, e.town, date ? 'sold ' + date : 'sale date blank', e.salePrice != null ? fmtMoney(e.salePrice) : 'price blank', units, pu ? fmtMoney(pu.r) + ' per ' + pu.one : '', area, pa ? fmtMoney(pa.r) + ' per ' + pa.one : '', site ? 'site ' + site : '', ps ? fmtMoney(ps.r) + ' per ' + ps.one + ' of site' : '', cap ? 'cap ' + capT + (cap.how === 'implied' ? ' (NOI ÷ price)' : '') : '', e.source === 'Network' ? '' : 'This office'].filter(Boolean).map(esc).join(' · ');
+    const mini = [e.propertyType, e.town, date ? 'sold ' + date : 'sale date blank', e.salePrice != null ? fmtMoney(e.salePrice) : 'price blank', units, pu ? fmtMoney(pu.r) + ' per ' + pu.one : '', area, pa ? fmtMoney(pa.r) + ' per ' + pa.one : '', site ? 'site ' + site : '', ps ? fmtMoney(ps.r) + ' per ' + ps.one + ' of site' : '', cap ? 'cap ' + capT + (cap.how === 'implied' ? ' (NOI ÷ price)' : '') : '', e.source === 'This office' ? 'This office' : ''].filter(Boolean).map(esc).join(' · ');
     const rem = [e.remarks, e.conditions ? 'Conditions: ' + e.conditions : '', LIB.q.kw && e.notes && normText(e.notes).includes(normText(LIB.q.kw)) ? 'Private notes: ' + e.notes : ''].filter(Boolean).join(' · ');
     const open = S.detail === e._ref;
     h += '<tr class="sale" data-ref="' + esc(e._ref) + '"><td class="c"><input type="checkbox" data-ref="' + esc(e._ref) + '" aria-label="Pick ' + esc(e.address) + '"><span class="order" hidden></span></td>' +
@@ -1750,7 +1778,7 @@ function detailHtml(e) {
     kv('Price per ' + (pa ? pa.one : 'sq ft'), pa ? esc(fmtMoney(pa.r)) + '<div class="arith">' + esc(pa.how) + '</div>' : '<span class="blank-mark">needs a sale price and a building area</span>') +
     kv('Price per ' + (ps ? ps.one : 'acre') + ' of site', ps ? esc(fmtMoney(ps.r)) + '<div class="arith">' + esc(ps.how) + '</div>' : '<span class="blank-mark">needs a sale price and a site area</span>') +
     kv('NOI ÷ price', im ? esc(fmt2(im.r)) + '%<div class="arith">' + esc(im.how) + (e.capRate != null && Math.abs(im.v - e.capRate) >= 0.005 ? '. The entered cap rate is ' + esc(fmtPct(e.capRate)) + '.' : '') + '</div>' : '<span class="blank-mark">needs NOI and a sale price</span>');
-  h += '<h4>Where it came from</h4>' + kv('Contributor', esc(srcLabel(e))) +
+  h += '<h4>Where it came from</h4>' + kv('Contributor', esc(srcLabel(e))) + (e.attribution ? kv('Attribution', esc(e.attribution), 'full') : '') +
     (e.source === 'Network' ? kv('Received', esc(e.receivedOn || 'not recorded') + (e.packMadeOn ? ', from a pack made ' + esc(e.packMadeOn) : '')) : '') +
     kv('Added to the file', orBlank(e.addedOn)) +
     kv('Also sent by', e.alsoFrom.length ? e.alsoFrom.map((a) => esc('Network: ' + a.firm) + ' <span class="muted">(' + esc(a.on) + ')</span>').join(', ') : '<span class="blank-mark">no other firm</span>');
@@ -1768,7 +1796,7 @@ function detailHtml(e) {
     kv('Used in files', e.usedIn.length ? e.usedIn.map((u) => esc(u.file) + (u.date ? ' <span class="muted">(' + esc(u.date) + ')</span>' : '')).join(', ') : '<span class="blank-mark">none recorded</span>') +
     kv('From an MLS listing', isMls(e) ? (e.confirmation === 'mls' ? 'Yes: confirmed from an MLS listing' : 'Yes: a figure came from an MLS listing') : 'No') +
     kv('Registry-verified, OK to share', e.registryOk ? 'Ticked' : 'Not ticked') +
-    kv('Sharing', esc(e.source === 'Network' ? 'From another firm: never re-shared' : holdReason(e) ? 'Held back from share packs: ' + HOLD_ONE[holdReason(e)] : 'Goes in a share pack; income figures ' + (e.financialsPublic ? 'too (ticked public or confirmed)' : 'left out (not ticked public or confirmed)')));
+    kv('Sharing', esc(e.source === 'Network' ? 'From another firm: never re-shared' : e.source === 'Open data' ? 'Open data: never put in a share pack' : holdReason(e) ? 'Held back from share packs: ' + HOLD_ONE[holdReason(e)] : 'Goes in a share pack; income figures ' + (e.financialsPublic ? 'too (ticked public or confirmed)' : 'left out (not ticked public or confirmed)')));
   h += '</div><div class="detail-actions"><button type="button" class="btn btn-sm" data-edit="' + esc(e._ref) + '">' + icon('edit', 'ico-sm') + 'Edit</button>' +
     '<button type="button" class="btn btn-sm btn-danger' + (S.armed === e._ref ? ' armed' : '') + '" data-del="' + esc(e._ref) + '">' + icon('trash', 'ico-sm') + (S.armed === e._ref ? 'Press again to delete' : 'Delete') + '</button>' +
     '<button type="button" class="btn btn-sm btn-ghost" data-detail="' + esc(e._ref) + '">Close</button></div>';
@@ -1991,7 +2019,8 @@ function renderCmp(focusSel) {
     CMP.rows.forEach((g, ri) => { h += '<div class="gc-row' + (g.on ? '' : ' off') + '"><dt>' + esc(rowLabel(g)) + (g.on ? '' : '<span class="rh-off">not copied</span>') + '</dt><dd>' + cellHtml(CMP.cells[ri][ci], ri, ci, g) + '</dd></div>'; });
     h += '</dl></article>';
   });
-  h += '</div><div class="foot-note">' + icon('info') + '<div><strong>Figures worked out here show their arithmetic</strong> under the value (price per unit, per sq ft, NOI ÷ price), rounded figures say so, and nothing is converted between sq ft and sq m. Where another firm\'s figure differs, it is shown under yours and is not copied. Blank cells copy as nothing; they are never filled in.' +
+  const credits = [...new Set(CMP.ents.filter((e) => e.attribution).map((e) => e.attribution))];
+  h += '</div><div class="foot-note">' + icon('info') + '<div>' + (credits.length ? '<strong>' + plural(CMP.ents.filter((e) => e.attribution).length, 'picked sale') + ' from open data:</strong> credit the source where you use them (Copy for Excel, Copy for Word and Copy column end with this line; Copy next does not). ' + esc(credits.join(' ')) + '<br>' : '') + '<strong>Figures worked out here show their arithmetic</strong> under the value (price per unit, per sq ft, NOI ÷ price), rounded figures say so, and nothing is converted between sq ft and sq m. Where another firm\'s figure differs, it is shown under yours and is not copied. Blank cells copy as nothing; they are never filled in.' +
     '<br><span class="muted">Copied values go to your system clipboard. If clipboard sync is on (Windows cloud clipboard, Apple Universal Clipboard), your operating system copies them to your other devices.</span></div></div>';
   $('#cmp-body').innerHTML = h;
   if (focusSel) { const el = $$(focusSel).find((x) => x.offsetParent !== null && !x.disabled); if (el) el.focus(); }
@@ -2007,16 +2036,27 @@ function tableMatrix() {
   }
   return out;
 }
-function tsvText() { return tableMatrix().map((r) => r.cells.map(guardText).join('\t')).join('\n'); }
+/* The open-data licences ask whoever copies or publishes the data to credit the source, and a copy pasted into a
+   report is exactly that: so every copy that carries an open-data sale's figures ends with its credit line, once. */
+const creditLine = (ents) => [...new Set(ents.filter((e) => e.attribution).map((e) => e.attribution))].join(' ');
+function tsvText() {
+  const credit = creditLine(CMP.ents);
+  return tableMatrix().map((r) => r.cells.map(guardText).join('\t')).concat(credit ? [guardText(credit)] : []).join('\n');
+}
 function htmlTable() {
   const td = 'border:1px solid #999;padding:3px 6px;vertical-align:top;text-align:left';
-  const rows = tableMatrix().map((r) => '<tr>' + r.cells.map((c, i) => {
+  const m = tableMatrix(), credit = creditLine(CMP.ents), span = Math.max(1, ...m.map((r) => r.cells.length));
+  const rows = m.map((r) => '<tr>' + r.cells.map((c, i) => {
     const th = r.head || (r.lead && i === 0);
     return '<' + (th ? 'th' : 'td') + ' style="' + td + (th ? ';font-weight:bold' : '') + '">' + esc(guardText(c)) + '</' + (th ? 'th' : 'td') + '>';
   }).join('') + '</tr>');
+  if (credit) rows.push('<tr><td colspan="' + span + '" style="' + td + ';font-size:8pt">' + esc(guardText(credit)) + '</td></tr>');
   return '<table style="border-collapse:collapse;font-family:Calibri,Arial,sans-serif;font-size:10pt">' + rows.join('') + '</table>';
 }
-function columnText(ci) { return onRows().map((ri) => CMP.cells[ri][ci].copy).join('\n'); }
+function columnText(ci) {
+  const credit = CMP.ents[ci].attribution;
+  return onRows().map((ri) => CMP.cells[ri][ci].copy).concat(credit ? [guardText(credit)] : []).join('\n');
+}
 const shown = (v) => { const t = String(v); return t.length > 60 ? '"' + t.slice(0, 57) + '…"' : t; };
 function copyNext(ci) {
   const ref = S.picked[ci], idx = onRows(); if (!idx.length) return;
@@ -2111,7 +2151,8 @@ function readForm(f) {
   }
   const missing = [['propertyType', 'property type'], ['address', 'address'], ['town', 'town'], ['saleDate', 'sale date'], ['salePrice', 'sale price']].filter(([k]) => blankV(o[k])).map(([, l]) => l);
   if (missing.length) errs.unshift('Fill in the ' + andList(missing) + '.');
-  o.source = f.elements.source.value === 'Network' ? 'Network' : 'This office';
+  const sv = f.elements.source.value;
+  o.source = sv === 'Network' ? 'Network' : sv === 'Open data' ? 'Open data' : 'This office';
   if (o.source === 'Network' && !o.firm) errs.push('Type the network firm the sale came from.');
   return { o, errs, file: String(f.elements.usedFile.value || '').trim() };
 }
@@ -2119,6 +2160,7 @@ function endEdit() {
   S.confirmOwn = null;
   if (S.editing === null) return;
   S.editing = null;
+  $('#a-source').disabled = false;
   $('#add-title').textContent = 'Add a sale'; $('#add-chip').hidden = false; $('#add-go-l').textContent = 'Add to the file'; $('#add-cancel').hidden = true;
 }
 function resetForm() { $('#add-form').reset(); kindTouched = false; syncFormFirm(); syncImplied(); }
@@ -2130,6 +2172,8 @@ function startEdit(ref) {
   if (!e.buildingAreaUnit) f.elements.buildingAreaUnit.value = 'sq ft';
   if (!e.siteUnit) f.elements.siteUnit.value = 'acres';
   f.elements.source.value = e.source; kindTouched = true;
+  // An open-data sale stays open data: its contributor cannot be changed, so it never becomes shareable.
+  $('#a-source').disabled = e.source === 'Open data';
   S.editing = ref; S.confirmOwn = null;
   $('#add-title').textContent = 'Edit: ' + e.address; $('#add-chip').hidden = true; $('#add-go-l').textContent = 'Save changes'; $('#add-cancel').hidden = false;
   syncFormFirm(); syncImplied(); formMsg('', '');
@@ -2139,7 +2183,10 @@ function submitForm(f) {
   // A real sale typed into the fictional sample would be stuck there: Merge refuses to move it out.
   if (!S.editing && LIB.sample && LIB.entries.length) { formMsg('err', 'The open file is the fictional sample. Open your own sales file first.'); return; }
   const { o, errs, file } = readForm(f), today = todayIso();
-  const v = errs.length ? null : validateEntry(Object.assign({}, o, { usedIn: file ? [{ file, date: today }] : [], addedOn: today }), 'This sale', true);
+  const before = S.editing ? entryOf(S.editing) : null;
+  if (o.source === 'Open data' && !(before && before.source === 'Open data')) errs.push('Open-data sales come only from an open-data file: choose This office or A network firm.');
+  // The form has no attribution field: an edited record keeps the one it has.
+  const v = errs.length ? null : validateEntry(Object.assign({}, o, { usedIn: file ? [{ file, date: today }] : [], addedOn: today }, before && before.attribution ? { attribution: before.attribution } : {}), 'This sale', true);
   if (errs.length || v.err) { formMsg('err', errs.length ? errs.join(' ') : v.err.replace(/^This sale: /, '') + '.'); return; }
   const e = v.entry;
   if (S.editing) {
@@ -2481,11 +2528,12 @@ function renderLibStatus() {
   let kind = LIB.msg ? LIB.msg.kind : '', html = '';
   if (n || LIB.name) {
     const office = LIB.entries.filter((e) => e.source === 'This office').length;
+    const open = LIB.entries.filter((e) => e.source === 'Open data').length;
     const firms = new Map();
     for (const e of LIB.entries) if (e.source === 'Network') firms.set(e.firm, (firms.get(e.firm) || 0) + 1);
     const nDif = LIB.entries.filter((e) => differs(e).length).length;
     html += (LIB.sample ? '<span class="chip chip-soon">SAMPLE DATA</span> ' : '') + '<strong>' + esc(LIB.name || 'New file') + '</strong>: ' + plural(n, 'sale') + ' (' + office + ' from this office' +
-      [...firms].map(([f, c]) => ', ' + c + ' from Network: ' + esc(f)).join('') + ').' + (nDif ? ' ' + plural(nDif, 'sale') + ' with figures another firm gives differently.' : '') +
+      [...firms].map(([f, c]) => ', ' + c + ' from Network: ' + esc(f)).join('') + (open ? ', ' + open + ' from open data' : '') + ').' + (nDif ? ' ' + plural(nDif, 'sale') + ' with figures another firm gives differently.' : '') +
       (LIB.sample ? '' : LIB.fromFile ? (LIB.savedOn ? ' Saved ' + esc(LIB.savedOn) + '.' : '') : ' Started in this tab; it does not include your office\'s file.') +
       (LIB.dirty ? ' <strong>Unsaved changes.</strong> They live in this tab only until you press Save the file.' : '');
   }
@@ -2625,7 +2673,7 @@ $('#cmp-body').addEventListener('click', (e) => {
   const cell = e.target.closest('.cell');
   if (cell) { const ri = +cell.dataset.ri, ci = +cell.dataset.ci, v = CMP.cells[ri][ci].copy; copyText(v, 'Copied ' + shown(v) + ' (sale ' + (ci + 1) + ' ' + CMP.rows[ri].label.toLowerCase() + ')', cell); return; }
   const col = e.target.closest('[data-copycol]');
-  if (col) { const ci = +col.dataset.copycol, n = onRows().length; copyText(columnText(ci), 'Copied sale ' + (ci + 1) + ' column: ' + plural(n, 'value') + ', one per line', col); return; }
+  if (col) { const ci = +col.dataset.copycol, n = onRows().length; copyText(columnText(ci), 'Copied sale ' + (ci + 1) + ' column: ' + plural(n, 'value') + ', one per line' + (CMP.ents[ci].attribution ? ', then the open-data credit line' : ''), col); return; }
   const nx = e.target.closest('[data-next]');
   if (nx) { copyNext(+nx.dataset.next); return; }
   const rs = e.target.closest('[data-restart]');
@@ -2813,13 +2861,82 @@ function shareChecks() {
   libReset(); shareMsg('', ''); renderAll();
   return { checks, failures };
 }
+/* Open-data checks, for the console of a fresh tab: CommercialComps.openDataChecks(). Made-up open-data sales are
+   opened, merged, edited and offered to the pack writer the way the buttons do; the checks read that the licence's
+   attribution is required, kept and shown, that an open-data sale never goes in a share pack or becomes this office's
+   own, and that its figures sit beside an office record without filling it. Returns { checks, failures }. */
+function openDataChecks() {
+  if (libIsOpen() || LIB.dirty) return { checks: 0, failures: ['Run this in a fresh tab: a file is open here.'] };
+  let checks = 0; const failures = [];
+  const ok = (c, what) => { checks++; if (!c) failures.push(what); };
+  const doc = (entries) => JSON.stringify({ format: LIB_FORMAT, version: VERSION, savedOn: '2026-01-02', entries });
+  const credit = 'Contains information licensed under a test licence. Source: a made-up registry.';
+  const od = { propertyType: 'Industrial', address: '9 Test Road', town: 'Testville', saleDate: '2026-01-10', salePrice: 400000, remarks: 'Open data remark', source: 'Open data', attribution: credit, addedOn: '2026-01-11' };
+  const office = { propertyType: 'Industrial', address: '9 Test Rd', town: 'Testville', saleDate: '2026-01-10', salePrice: 410000, confirmation: 'party', confirmedOn: '2026-01-20', ownerType: 'company', source: 'This office', usedIn: [] };
+  const other = { propertyType: 'Retail', address: '1 Other Street', town: 'Testville', saleDate: '2026-02-10', salePrice: 300000, confirmation: 'registry', confirmedOn: '2026-02-20', ownerType: 'company', source: 'This office', usedIn: [] };
+  const one = () => LIB.entries[0] || {};
+  try {
+    const bare = parseLibrary(doc([Object.assign({}, od, { attribution: '' })]));
+    ok(!!bare.err && bare.err.includes('licence attribution'), 'an open-data sale without its attribution refuses the file');
+    libLoadText(doc([od, other]), 'od.json', 'open', true);
+    const e = LIB.entries.find((x) => x.source === 'Open data') || {};
+    ok(LIB.entries.length === 2 && e.attribution === credit && srcLabel(e) === 'Open data', 'an open-data sale opens with its attribution');
+    const c = shareCandidates();
+    ok(c.go.length === 1 && c.open === 1 && c.network === 0, 'the pack builder counts the open-data sale apart and offers only the office sale');
+    const pk = JSON.parse(packDocText(LIB.entries, 'Firm X', true));
+    ok(pk.entries.length === 1 && pk.entries[0].address === other.address && !/attribution|Open data remark/.test(JSON.stringify(pk)), 'the pack writer drops the open-data sale even when handed it');
+    const rt = parseLibrary(libDocText());
+    ok(!rt.err && rt.entries.some((x) => x.source === 'Open data' && x.attribution === credit), 'a saved file keeps the source and the attribution');
+    LIB.q.source = 'opendata'; const found = libSearch().out; LIB.q.source = '';
+    ok(found.length === 1 && found[0] === e, 'the From filter finds open data');
+    renderAll(); S.detail = e._ref; renderAll();
+    ok($('#results').textContent.includes(credit), 'the details show the attribution');
+    S.detail = null;
+    // Every copy of the comparison table carries the credit line once, after the figures; an office sale's column does not.
+    S.picked = []; togglePick(e._ref); togglePick(LIB.entries.find((x) => x.source === 'This office')._ref);
+    const tsvLines = tsvText().split('\n');
+    ok(tsvLines[tsvLines.length - 1] === credit && tsvLines.filter((l) => l.includes(credit)).length === 1, 'Copy for Excel ends with the credit line, once');
+    ok(htmlTable().includes('>' + esc(credit) + '</td></tr></table>'), 'Copy for Word ends with the credit line');
+    ok(columnText(0).split('\n').pop() === credit && !columnText(1).includes(credit), 'Copy column ends with the credit for an open-data sale only');
+    S.picked = []; renderCmp();
+    ok(utf8Bytes('a–é') === 6 && 'a–é'.length === 3, 'file sizes are measured in UTF-8 bytes, as the open check reads them');
+    // The office's own copy of the same sale: the office record goes on file; the open data stays beside it, credited.
+    libLoadText(doc([od]), 'a.json', 'open', true); libLoadText(doc([office]), 'b.json', 'merge');
+    let r = one();
+    ok(LIB.entries.length === 1 && r.source === 'This office' && r.salePrice === 410000 && r.attribution === credit, 'office copy second: the office record is on file and keeps the attribution');
+    ok(r.conflicts.some((k) => k.field === 'salePrice' && k.from === 'Open data' && k.kind === 'differs') && !r.alsoFrom.length, 'office copy second: the open-data price is kept beside it, named, and no firm is added');
+    ok(!/attribution|Open data remark/.test(JSON.stringify(packEntry(r, true))), 'office copy second: a pack entry carries no open-data field');
+    libLoadText(doc([office]), 'a.json', 'open', true); libLoadText(doc([od]), 'b.json', 'merge');
+    r = one();
+    ok(LIB.entries.length === 1 && r.source === 'This office' && r.salePrice === 410000 && !r.remarks && r.attribution === credit, 'open data second: nothing is filled, the attribution is added');
+    ok(r.conflicts.some((k) => k.field === 'remarks' && k.from === 'Open data'), 'open data second: its remarks are kept beside the record');
+    libLoadText(doc([od, Object.assign({}, od, { source: 'Network', firm: 'Firm N', salePrice: 405000, attribution: '' })]), 'a.json', 'open', true);
+    r = one();
+    ok(LIB.entries.length === 1 && r.source === 'Open data' && r.alsoFrom.some((a) => a.firm === 'Firm N'), 'a firm\'s copy of an open-data sale is set beside it');
+    // Editing keeps it open data; the form cannot make one.
+    libLoadText(doc([od]), 'a.json', 'open', true);
+    startEdit(one()._ref);
+    ok($('#a-source').disabled && $('#a-source').value === 'Open data', 'editing an open-data sale locks its contributor');
+    const f = $('#add-form'); f.elements.salePrice.value = '425000'; submitForm(f);
+    r = one();
+    ok(r.source === 'Open data' && r.attribution === credit && r.salePrice === 425000 && !$('#a-source').disabled, 'an edited open-data sale stays open data, with its attribution');
+    resetForm(); $('#a-source').value = 'Open data';
+    for (const [k, v] of [['propertyType', 'Retail'], ['address', '5 Form Road'], ['town', 'Testville'], ['saleDate', '2026-03-01'], ['salePrice', '100000']]) f.elements[k].value = v;
+    submitForm(f);
+    ok(LIB.entries.length === 1 && $('#add-msg').textContent.includes('only from an open-data file'), 'the form cannot add an open-data sale');
+  } catch (err) {
+    failures.push('stopped: ' + (err && err.message));
+  }
+  endEdit(); resetForm(); formMsg('', ''); libReset(); renderAll();
+  return { checks, failures };
+}
 /* For testing from the console or a harness. No network, no side effects. */
 window.CommercialComps = {
   parseLibrary, parsePack, guardText, parseNum, state: S, lib: LIB,
   loadLibrary: (t, n, m) => libLoadText(t, n || 'test.json', m || 'open'), loadPack: (t, n) => packLoadText(t, n || 'pack.json'),
   search: () => libSearch().out.map((e) => e._ref), tsv: () => tsvText(), html: () => htmlTable(), column: (i) => columnText(i),
   docText: libDocText, packText: (names) => packDocText(shareCandidates().go, S.share.firm || 'Test firm', !!names), capsTsv: () => capsTsv().text,
-  sameSale: (a, b) => sameSale(idOf(a), idOf(b)), pick: togglePick, mergeChecks, shareChecks,
+  sameSale: (a, b) => sameSale(idOf(a), idOf(b)), pick: togglePick, mergeChecks, shareChecks, openDataChecks,
 };
 })();
 </script>
