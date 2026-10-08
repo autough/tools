@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6KVi0NF+uijD7l45oM0S/tp3CTeNOhpATbQo19aM6TI=' 'sha256-zITFsoJw335g6818CQfriYxACQSzPl6LkPzymt2Rxm4='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6e6a'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h8' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>Quote Page Setup</title>
+<style>
+/* Field Office tokens, copied from fieldoffice/web/static/app.css (via tools/compgrid). Keep in step with that file. */
+:root {
+  color-scheme: light;
+  --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg: #f5f4f0; --surface: #ffffff; --surface-2: #fbfaf8; --sunken: #efede8; --hover: #f3f1ec;
+  --border: #e5e2db; --border-strong: #d3cfc5;
+  --text: #1b1f1e; --text-2: #4b5350; --text-3: #626a66;
+  --accent: #0f6e6a; --accent-hover: #0b5c58; --accent-text: #0b5f5b; --accent-soft: #e2f0ee; --accent-soft-2: #cfe6e3; --on-accent: #ffffff;
+  --ok: #1f7a4a; --ok-soft: #e4f3ea;
+  --soon: #96560a; --soon-soft: #fcefd9;
+  --late: #b8322a; --late-soft: #fbe6e3;
+  --shadow-1: 0 1px 2px rgba(28, 25, 20, 0.05), 0 1px 1px rgba(28, 25, 20, 0.03);
+  --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(15, 110, 106, 0.55);
+  --r-sm: 8px; --r: 10px; --r-lg: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;
+    --border: #2a302e; --border-strong: #3a4240;
+    --text: #e9ecea; --text-2: #b6bebb; --text-3: #8f9894;
+    --accent: #2fa59d; --accent-hover: #3bb8b0; --accent-text: #6fd1c9; --accent-soft: rgba(63, 181, 173, 0.13); --accent-soft-2: rgba(63, 181, 173, 0.22); --on-accent: #062321;
+    --ok: #5fcb8e; --ok-soft: rgba(80, 200, 130, 0.12);
+    --soon: #f0b65a; --soon-soft: rgba(240, 175, 70, 0.13);
+    --late: #f4847a; --late-soft: rgba(240, 110, 100, 0.13);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(69, 189, 180, 0.7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;
+  --border: #2a302e; --border-strong: #3a4240;
+  --text: #e9ecea; --text-2: #b6bebb; --text-3: #8f9894;
+  --accent: #2fa59d; --accent-hover: #3bb8b0; --accent-text: #6fd1c9; --accent-soft: rgba(63, 181, 173, 0.13); --accent-soft-2: rgba(63, 181, 173, 0.22); --on-accent: #062321;
+  --ok: #5fcb8e; --ok-soft: rgba(80, 200, 130, 0.12);
+  --soon: #f0b65a; --soon-soft: rgba(240, 175, 70, 0.13);
+  --late: #f4847a; --late-soft: rgba(240, 110, 100, 0.13);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(69, 189, 180, 0.7);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; font-family: var(--font); font-size: 14px; line-height: 1.45; color: var(--text); background: var(--bg); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3 { margin: 0; font-weight: 650; letter-spacing: -0.01em; }
+p { margin: 0; }
+[hidden] { display: none !important; }
+:focus { outline: none; }
+:focus-visible { box-shadow: var(--ring); border-radius: var(--r-sm); }
+.muted { color: var(--text-3); }
+.num { font-variant-numeric: tabular-nums; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 16px; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; min-width: 0; }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none; }
+.brand small { font-weight: 500; color: var(--text-3); font-size: 12.5px; }
+.top .grow { flex: 1; }
+.dirty { font-size: 12.5px; font-weight: 650; color: var(--soon); background: var(--soon-soft); padding: 3px 8px; border-radius: 999px; }
+.privacy { padding: 10px 16px; background: var(--accent-soft); color: var(--accent-text); border-bottom: 1px solid var(--accent-soft-2); font-weight: 600; }
+.privacy span { font-weight: 500; color: var(--text-2); }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; max-width: 1480px; margin: 0 auto; padding: 20px 16px 64px; }
+@media (min-width: 1180px) { .layout { grid-template-columns: minmax(0, 1fr) 430px; } .pv { position: sticky; top: 72px; align-self: start; } }
+.intro h1 { font-size: 22px; }
+.intro p { color: var(--text-2); margin-top: 6px; max-width: 760px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); margin-top: 16px; }
+.panel > h2 { font-size: 16px; padding: 16px 18px 0; display: flex; gap: 10px; align-items: center; }
+.step { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: inline-grid; place-items: center; font-size: 12.5px; font-weight: 700; flex: none; }
+.panel-sub { padding: 4px 18px 0; color: var(--text-3); }
+.panel-body { padding: 12px 18px 18px; }
+.row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; margin-top: 10px; }
+.field > label, .lbl { font-size: 12.5px; font-weight: 650; color: var(--text-2); }
+.hint { color: var(--text-3); font-size: 12.5px; }
+.input, .select, .textarea { width: 100%; height: 38px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface); font-size: 14px; min-width: 0; }
+.textarea { height: auto; min-height: 96px; padding: 8px 10px; resize: vertical; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft-2); }
+[aria-invalid="true"] { border-color: var(--late) !important; background: var(--late-soft); }
+.ferr { color: var(--late); font-size: 12.5px; font-weight: 600; }
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; min-height: 32px; }
+.check input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); flex: none; }
+.offer { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 10px; align-items: center; margin-top: 8px; }
+.cols { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.sub-h { font-size: 13.5px; font-weight: 650; margin-top: 16px; }
+.sub-h:first-child { margin-top: 0; }
+.colour { display: flex; gap: 8px; align-items: center; }
+.colour input[type="color"] { width: 44px; height: 38px; padding: 2px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface); flex: none; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: var(--r-sm); border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); font-weight: 600; font-size: 13.5px; white-space: nowrap; }
+.btn:hover { background: var(--hover); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-sm { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.btn-ghost { border-color: transparent; background: transparent; color: var(--text-2); }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.file-btn { position: relative; overflow: hidden; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-btn:focus-within { box-shadow: var(--ring); }
+.note { margin-top: 12px; padding: 10px 12px; border-radius: var(--r); background: var(--sunken); color: var(--text-2); }
+.note.warn { background: var(--soon-soft); color: var(--soon); font-weight: 600; }
+.note.bad { background: var(--late-soft); color: var(--late); font-weight: 600; }
+.note.good { background: var(--ok-soft); color: var(--ok); font-weight: 600; }
+.note ul { margin: 6px 0 0; padding-left: 18px; }
+.note button.linkish { border: 0; background: none; padding: 0; color: inherit; text-decoration: underline; font-weight: 600; text-align: left; }
+
+.grid-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); margin-top: 10px; }
+table.fees { border-collapse: separate; border-spacing: 0; min-width: 100%; }
+table.fees th, table.fees td { padding: 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+table.fees thead th { font-size: 12px; font-weight: 650; color: var(--text-2); background: var(--surface-2); min-width: 92px; }
+table.fees tbody th { position: sticky; left: 0; background: var(--surface); font-weight: 600; min-width: 150px; max-width: 200px; z-index: 1; }
+table.fees td .input { width: 92px; text-align: right; }
+table.fees tr:last-child th, table.fees tr:last-child td { border-bottom: 0; }
+table.fees tbody th span { display: block; }
+.copydown { height: 24px; padding: 0 6px; margin: 2px 0 0 -6px; font-size: 11.5px; font-weight: 600; color: var(--accent-text); }
+.money { position: relative; display: inline-block; }
+.zone, .band, .taxbox { border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; margin-top: 10px; background: var(--surface-2); }
+.zone-top, .band-row, .tax-row { display: grid; gap: 10px; align-items: end; }
+.zone-top { grid-template-columns: minmax(0, 1fr) 120px auto; }
+.band-row { grid-template-columns: 120px 120px auto; }
+.tax-row { grid-template-columns: minmax(0, 1fr) 110px auto; }
+.provs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 12px; margin-top: 6px; }
+
+.pv { min-width: 0; }
+.pv-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pv-head h2 { font-size: 15px; }
+.pv-frame { margin-top: 10px; border: 1px solid var(--border-strong); border-radius: var(--r-lg); overflow: hidden; background: var(--surface); height: min(860px, 80vh); }
+.pv-frame.phone { width: 390px; max-width: 100%; }
+.pv-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+.pv-paused { margin-top: 8px; }
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--sunken); border: 1px solid var(--border); gap: 2px; }
+.seg button { height: 28px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: var(--text-2); font-weight: 600; font-size: 12.5px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+.toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 14px; border-radius: 10px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: calc(100% - 32px); z-index: 50; }
+.toast.show { opacity: 1; }
+.toast.err { background: var(--late); color: #fff; }
+@media (max-width: 640px) {
+  .zone-top { grid-template-columns: minmax(0, 1fr) 100px; }
+  .zone-top > :last-child { grid-column: 1 / -1; justify-self: start; }
+  .tax-row { grid-template-columns: minmax(0, 1fr) 90px; }
+  .tax-row > :last-child { grid-column: 1 / -1; justify-self: start; }
+  .band-row { grid-template-columns: 1fr 1fr; }
+  .band-row > :last-child { grid-column: 1 / -1; justify-self: start; }
+  .pv-frame { height: 640px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">$</span><span>Quote page setup <small>Field Office</small></span></div>
+  <span class="grow"></span>
+  <span class="dirty" id="dirty" hidden>Unsaved changes</span>
+</header>
+<div class="privacy">Offline. Nothing you type leaves this computer. <span>You download your quote page and put it on your own website; it sends nothing to us either.</span></div>
+<div class="layout">
+  <main id="editor" class="ed"></main>
+  <aside class="pv" aria-labelledby="pv-title">
+    <div class="pv-head">
+      <h2 id="pv-title">Preview</h2>
+      <span class="grow"></span>
+      <div class="seg" role="group" aria-label="Preview width">
+        <button type="button" id="pv-phone" aria-pressed="true">Phone</button>
+        <button type="button" id="pv-wide" aria-pressed="false">Wide</button>
+      </div>
+    </div>
+    <p class="hint">Your client's page, exactly as it will be. Email and payment links don't open from the preview.</p>
+    <div class="note warn pv-paused" id="pv-paused" hidden></div>
+    <div class="pv-frame phone" id="pv-box"><iframe id="pv" title="Preview of your quote page" sandbox="allow-scripts"></iframe></div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="application/json" id="quote-template">"\u003c!doctype html>\n\u003chtml lang=\"en-CA\">\n\u003chead>\n\u003cmeta charset=\"utf-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n\u003cmeta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'sha256-zITFsoJw335g6818CQfriYxACQSzPl6LkPzymt2Rxm4='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'\">\n\u003cmeta name=\"referrer\" content=\"no-referrer\">\n\u003cmeta name=\"description\" content=\"Appraisal quote\">\n\u003clink rel=\"icon\" type=\"image/svg+xml\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23334155'/%3E%3Cpath d='M8 16l8-7 8 7M11 14v9h10v-9' stroke='white' stroke-width='2.2' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E\">\n\u003ctitle>Appraisal quote\u003c/title>\n\u003cstyle>\n/* Field Office tokens (from fieldoffice/web/static/app.css, via tools/compgrid). --brand is the firm's own colour,\n   set from its rules; it only ever sits behind white text, and setup refuses a colour too light for that. */\n:root {\n  color-scheme: light;\n  --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;\n  --bg: #f5f4f0; --surface: #ffffff; --surface-2: #fbfaf8; --sunken: #efede8; --hover: #f3f1ec;\n  --border: #e5e2db; --border-strong: #c9c4b8;\n  --text: #1b1f1e; --text-2: #4b5350; --text-3: #626a66;\n  --brand: #0f6e6a; --on-brand: #ffffff;\n  --sel: var(--brand); --sel-soft: color-mix(in srgb, var(--brand) 9%, var(--surface));\n  --ok: #1f7a4a; --ok-soft: #e4f3ea;\n  --soon: #8a4f08; --soon-soft: #fcefd9;\n  --late: #b8322a; --late-soft: #fbe6e3;\n  --shadow-1: 0 1px 2px rgba(28, 25, 20, 0.05), 0 1px 1px rgba(28, 25, 20, 0.03);\n  --ring: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--brand) 70%, transparent);\n  --r: 10px; --r-lg: 14px;\n}\n@media (prefers-color-scheme: dark) {\n  :root:not([data-theme=\"light\"]) {\n    color-scheme: dark;\n    --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;\n    --border: #2a302e; --border-strong: #46504d;\n    --text: #e9ecea; --text-2: #b6bebb; --text-3: #959e9a;\n    --sel: color-mix(in srgb, var(--brand) 45%, #ffffff); --sel-soft: color-mix(in srgb, var(--brand) 22%, var(--surface));\n    --ok: #5fcb8e; --ok-soft: rgba(80, 200, 130, 0.12);\n    --soon: #f0b65a; --soon-soft: rgba(240, 175, 70, 0.13);\n    --late: #f4847a; --late-soft: rgba(240, 110, 100, 0.13);\n    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);\n    --ring: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--brand) 45%, #ffffff);\n  }\n}\n:root[data-theme=\"dark\"] {\n  color-scheme: dark;\n  --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;\n  --border: #2a302e; --border-strong: #46504d;\n  --text: #e9ecea; --text-2: #b6bebb; --text-3: #959e9a;\n  --sel: color-mix(in srgb, var(--brand) 45%, #ffffff); --sel-soft: color-mix(in srgb, var(--brand) 22%, var(--surface));\n  --ok: #5fcb8e; --ok-soft: rgba(80, 200, 130, 0.12);\n  --soon: #f0b65a; --soon-soft: rgba(240, 175, 70, 0.13);\n  --late: #f4847a; --late-soft: rgba(240, 110, 100, 0.13);\n  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);\n  --ring: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--brand) 45%, #ffffff);\n}\n*, *::before, *::after { box-sizing: border-box; }\nhtml { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }\nbody { margin: 0; font-family: var(--font); font-size: 16px; line-height: 1.5; color: var(--text); background: var(--bg); overflow-x: hidden; -webkit-font-smoothing: antialiased; }\nbutton, input, select, textarea { font: inherit; color: inherit; }\nh1, h2, h3 { margin: 0; line-height: 1.25; letter-spacing: -0.01em; }\np { margin: 0; }\n[hidden] { display: none !important; }\n:focus { outline: none; }\n:focus-visible { box-shadow: var(--ring); border-radius: 6px; }\n.num { font-variant-numeric: tabular-nums; }\n.muted { color: var(--text-3); }\n.skip { position: absolute; left: 16px; top: -60px; background: var(--surface); padding: 8px 12px; border-radius: 8px; z-index: 10; }\n.skip:focus { top: 8px; }\n.noscript { max-width: 640px; margin: 24px auto; padding: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); }\n\n.top { background: var(--surface); border-bottom: 1px solid var(--border); }\n.top-in { max-width: 720px; margin: 0 auto; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }\n.badge { width: 44px; height: 44px; border-radius: 10px; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font-weight: 750; font-size: 16px; letter-spacing: 0.02em; flex: none; overflow: hidden; }\n.firm-name { font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }\n.firm-area { color: var(--text-3); font-size: 14px; overflow-wrap: anywhere; }\n.sample { background: var(--soon-soft); color: var(--soon); font-weight: 650; font-size: 14px; }\n.sample p { max-width: 720px; margin: 0 auto; padding: 10px 16px; }\n\n.wrap { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }\n.lead h1 { font-size: 24px; }\n.lead p { color: var(--text-2); margin-top: 6px; }\n.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 16px; margin-top: 16px; }\nfieldset { border: 0; margin: 0; padding: 0; min-width: 0; }\nlegend, .h2 { font-size: 18px; font-weight: 700; padding: 0; margin-bottom: 12px; display: flex; gap: 10px; align-items: baseline; }\n.n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--sunken); color: var(--text-2); font-size: 14px; font-weight: 700; flex: none; transform: translateY(2px); }\n.opts { display: grid; gap: 8px; grid-template-columns: 1fr; }\n@media (min-width: 560px) { .opts { grid-template-columns: 1fr 1fr; } }\n.opt { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border: 1.5px solid var(--border-strong); border-radius: var(--r); background: var(--surface); cursor: pointer; }\n.opt:hover { background: var(--hover); }\n.opt input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--sel); }\n.opt:has(input:checked) { border-color: var(--sel); background: var(--sel-soft); }\n.opt:has(input:focus-visible) { box-shadow: var(--ring); }\n.opt input:focus-visible { box-shadow: none; }\n.opt .sub { display: block; color: var(--text-3); font-size: 14px; }\n.field { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }\n.field label, .field .lbl { font-weight: 650; font-size: 15px; }\n.hint { color: var(--text-3); font-size: 14px; }\n.input, .select, .textarea { width: 100%; min-height: 48px; padding: 10px 12px; border: 1.5px solid var(--border-strong); border-radius: var(--r); background: var(--surface); font-size: 16px; }\n.textarea { min-height: 88px; resize: vertical; }\n.input:focus, .select:focus, .textarea:focus { border-color: var(--sel); box-shadow: var(--ring); }\n[aria-invalid=\"true\"] { border-color: var(--late) !important; }\n.ferr { color: var(--late); font-weight: 600; font-size: 14px; }\n.check { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; cursor: pointer; }\n.check input { width: 22px; height: 22px; margin: 1px 0 0; flex: none; accent-color: var(--sel); }\n\n.quote { border-width: 2px; }\n.quote.priced { border-color: var(--sel); }\n.quote.confirm { border-color: var(--soon); }\n.quote h2 { font-size: 20px; }\n.quote ul { margin: 8px 0 0; padding-left: 20px; }\n.quote .why { margin-top: 10px; font-weight: 600; }\n.lines { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 16px; }\n.lines th { text-align: left; font-weight: 500; padding: 7px 8px 7px 0; vertical-align: top; }\n.lines td { text-align: right; padding: 7px 0; white-space: nowrap; vertical-align: top; }\n.lines tr + tr th, .lines tr + tr td { border-top: 1px solid var(--border); }\n.lines .sum th, .lines .sum td { color: var(--text-2); }\n.lines .total th, .lines .total td { font-weight: 750; font-size: 19px; border-top: 2px solid var(--text); }\n.lines .dep th, .lines .dep td { font-weight: 700; background: var(--sel-soft); padding-left: 8px; padding-right: 8px; }\n.facts { margin-top: 12px; color: var(--text-2); font-size: 15px; display: grid; gap: 4px; }\n\n.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 10px 18px; border-radius: var(--r); border: 1.5px solid var(--border-strong); background: var(--surface); color: var(--text); font-weight: 650; text-decoration: none; cursor: pointer; text-align: center; }\n.btn:hover { background: var(--hover); }\n.btn-primary { background: var(--brand); color: var(--on-brand); border-color: transparent; }\n.btn-primary:hover { background: var(--brand); filter: brightness(1.1); }\n.btn-lg { width: 100%; min-height: 56px; font-size: 18px; margin-top: 18px; }\n.btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }\n.ref { margin-top: 14px; font-weight: 650; }\ndetails.terms { margin-top: 14px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface-2); }\ndetails.terms summary { cursor: pointer; padding: 12px 14px; font-weight: 650; min-height: 48px; }\n.terms-body { padding: 0 14px 14px; color: var(--text-2); font-size: 15px; display: grid; gap: 10px; overflow-wrap: anywhere; }\n.errbox { margin-top: 14px; padding: 12px 14px; border-radius: var(--r); background: var(--late-soft); color: var(--late); font-weight: 600; }\n.errbox ul { margin: 6px 0 0; padding-left: 20px; }\n.errbox a { color: inherit; }\n.changed { margin-top: 14px; padding: 12px 14px; border-radius: var(--r); background: var(--soon-soft); color: var(--soon); font-weight: 600; }\n\n.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }\n.steps h3 { font-size: 18px; display: flex; gap: 10px; align-items: baseline; }\n.steps p { margin-top: 6px; color: var(--text-2); }\n.paybox { margin-top: 10px; padding: 12px 14px; border-radius: var(--r); background: var(--surface-2); border: 1px solid var(--border); display: grid; gap: 6px; }\n.copyline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }\n.copyline code { font-family: inherit; font-weight: 700; font-size: 17px; overflow-wrap: anywhere; }\n.btn-sm { min-height: 40px; padding: 6px 12px; font-size: 15px; }\n.mailtext { width: 100%; min-height: 220px; margin-top: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }\n.sumgrid { display: grid; grid-template-columns: minmax(110px, 34%) 1fr; gap: 6px 14px; margin-top: 12px; font-size: 15px; }\n.sumgrid dt { color: var(--text-3); }\n.sumgrid dd { margin: 0; overflow-wrap: anywhere; }\n.sumnote { margin-top: 12px; color: var(--text-3); font-size: 14px; }\n.foot { margin-top: 28px; color: var(--text-3); font-size: 14px; display: grid; gap: 6px; }\n.foot a { color: inherit; }\n.status { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 650; opacity: 0; pointer-events: none; transition: opacity .2s; max-width: calc(100% - 32px); }\n.status.show { opacity: 1; }\n@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }\n@media print {\n  /* Paper is white whatever the screen's theme: the dark tokens would print light grey text. */\n  :root, :root:not([data-theme=\"light\"]), :root[data-theme=\"dark\"] {\n    color-scheme: light; --bg: #fff; --surface: #fff; --surface-2: #fff; --sunken: #f2f2f2;\n    --text: #000; --text-2: #222; --text-3: #444; --border: #bbb; --border-strong: #999;\n    --sel: var(--brand); --sel-soft: #eef1f5; --late: #b8322a; --soon: #8a4f08;\n  }\n  body { background: #fff; font-size: 12pt; }\n  .noprint, .skip, .sample, .status { display: none !important; }\n  .card { box-shadow: none; border-color: #999; break-inside: avoid; }\n  .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }\n}\n\u003c/style>\n\u003c/head>\n\u003cbody>\n\u003ca class=\"skip\" href=\"#main\">Skip to the questions\u003c/a>\n\u003cnoscript>\u003cp class=\"noscript\" id=\"noscript\">This page needs JavaScript to work out your price.\u003c/p>\u003c/noscript>\n\u003cdiv id=\"app\">\u003c/div>\n\u003cdiv class=\"status\" id=\"status\" role=\"status\" aria-live=\"polite\">\u003c/div>\n\u003cscript type=\"application/json\" id=\"quote-config\">{}\u003c/script>\n\u003cscript>\n\"use strict\";\n/* shared:begin */\n// tools/quote/shared.js: the rules format, its strict reader and the price arithmetic, shared by setup.html and the\n// client quote page. sync.py pastes this file into both pages between the shared markers, so the firm's preview and\n// the client's page can never price differently. Edit this file, then run python3 tools/quote/sync.py.\n// Money is integer cents. Tax rates are integer thousandths of a percent (15000 = 15%, 9975 = 9.975%).\n\nconst QUOTE_FORMAT = \"field-office-quote-rules\";\nconst QUOTE_VERSION = 1;\n\nconst PURPOSE_DEFAULTS = [\n  [\"estate\", \"Estate or date of death\"],\n  [\"separation\", \"Separation or matrimonial\"],\n  [\"tax\", \"Tax or capital gains\"],\n  [\"sale\", \"Private sale\"],\n  [\"lender\", \"Private lender or MIC\"],\n  [\"other\", \"Something else\"],\n];\nconst TYPE_DEFAULTS = [\n  [\"detached\", \"Detached house\"],\n  [\"semi\", \"Semi-detached or townhouse\"],\n  [\"condo\", \"Condo unit\"],\n  [\"multi\", \"2 to 4 units\"],\n  [\"rural\", \"Rural or acreage\"],\n  [\"cottage\", \"Cottage\"],\n  [\"land\", \"Vacant land\"],\n];\n// GST/HST starting values, October 2026. Nova Scotia's HST is 14% from 1 April 2025. Quebec adds QST, worked out on\n// the price before GST. Other provincial sales taxes are not included. The firm checks its own rates.\nconst PROVINCES = [\n  [\"AB\", \"Alberta\", [[\"GST\", 5000]]],\n  [\"BC\", \"British Columbia\", [[\"GST\", 5000]]],\n  [\"MB\", \"Manitoba\", [[\"GST\", 5000]]],\n  [\"NB\", \"New Brunswick\", [[\"HST\", 15000]]],\n  [\"NL\", \"Newfoundland and Labrador\", [[\"HST\", 15000]]],\n  [\"NS\", \"Nova Scotia\", [[\"HST\", 14000]]],\n  [\"NT\", \"Northwest Territories\", [[\"GST\", 5000]]],\n  [\"NU\", \"Nunavut\", [[\"GST\", 5000]]],\n  [\"ON\", \"Ontario\", [[\"HST\", 13000]]],\n  [\"PE\", \"Prince Edward Island\", [[\"HST\", 15000]]],\n  [\"QC\", \"Quebec\", [[\"GST\", 5000], [\"QST\", 9975]]],\n  [\"SK\", \"Saskatchewan\", [[\"GST\", 5000]]],\n  [\"YT\", \"Yukon\", [[\"GST\", 5000]]],\n];\nconst MAX_FEE = 5000000;          // $50,000: any single fee above this is a typing slip\nconst RULES_MAX_BYTES = 300000;   // a rules file or a quote page read back into setup\nconst TOP_KEYS = [\"format\", \"version\", \"sample\", \"firm\", \"pricesFrom\", \"validDays\", \"purposes\", \"types\", \"fees\",\n  \"retro\", \"rush\", \"travel\", \"complex\", \"confirmHours\", \"provinces\", \"tax\", \"deposit\", \"turnaround\", \"payment\", \"terms\"];\n\n// ------------------------------------------------------------------ small pure helpers\n\nfunction isPlainObject(v) {\n  return v !== null && typeof v === \"object\" && !Array.isArray(v) && Object.getPrototypeOf(v) === Object.prototype;\n}\n\n/** The path of the first key named __proto__, constructor or prototype at any depth, or \"\". */\nfunction protoKeyPath(v, path) {\n  if (Array.isArray(v)) {\n    for (let i = 0; i \u003c v.length; i++) { const p = protoKeyPath(v[i], path + \".\" + i); if (p) return p; }\n  } else if (v !== null && typeof v === \"object\") {\n    for (const k of Object.keys(v)) {\n      const here = path ? path + \".\" + k : k;\n      if (k === \"__proto__\" || k === \"constructor\" || k === \"prototype\") return here;\n      const p = protoKeyPath(v[k], here);\n      if (p) return p;\n    }\n  }\n  return \"\";\n}\n\nconst CONTROL_RE = /[\\u0000-\\u0008\\u000b-\\u001f\\u007f-\\u009f\\u200b-\\u200f\\u202a-\\u202e\\u2028\\u2029\\u2066-\\u2069\\ufeff]/;\n// A whole surrogate pair (one character, such as an emoji), else half of one on its own. Half a pair is not a\n// character at all, and encodeURIComponent throws on it, which would leave the request email unbuilt.\nconst SURROGATE_RE = /[\\ud800-\\udbff][\\udc00-\\udfff]|[\\ud800-\\udfff]/g;\nconst LINE_BREAK_RE = /[\\n\\t]/;\nconst EMAIL_RE = /^[A-Za-z0-9._+-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\\.[A-Za-z]{2,24}$/;\nconst PHONE_RE = /^[0-9 +().-]{7,25}$/;\nconst COLOR_RE = /^#[0-9a-fA-F]{6}$/;\n\n/** `s` with every half pair replaced by `rep`; whole pairs are kept. */\nfunction fixSurrogates(s, rep) { return s.replace(SURROGATE_RE, m => (m.length === 2 ? m : rep)); }\nfunction hasHalfPair(s) { return fixSurrogates(s, \"\") !== s; }\n\n/** At most `n` UTF-16 units of `s`, never ending in half a pair (slice counts units, so it can cut an emoji). */\nfunction cutText(s, n) {\n  const c = s.slice(0, n);\n  return /[\\ud800-\\udbff]$/.test(c) ? c.slice(0, -1) : c;\n}\n\nfunction isEmail(s) {\n  return typeof s === \"string\" && s.length \u003c= 120 && EMAIL_RE.test(s) && !s.includes(\"..\") && !s.startsWith(\".\");\n}\n\n/** A phone number has 7 to 15 digits and only the characters people write numbers with. */\nfunction isPhone(s) {\n  if (typeof s !== \"string\" || !PHONE_RE.test(s)) return false;\n  const d = s.replace(/[^0-9]/g, \"\").length;\n  return d >= 7 && d \u003c= 15;\n}\n\n/** Only an https: link to a named host, written out in full, with no login part. Anything else is refused,\n    so a javascript:, data: or http: link can never become the payment button. Returns the normalised link or \"\". */\nfunction httpsLink(s) {\n  if (typeof s !== \"string\" || s.length > 500 || CONTROL_RE.test(s) || hasHalfPair(s) || /[\\s\\\\\u003c>\"'`]/.test(s)) return \"\";\n  if (!/^https:\\/\\/[A-Za-z0-9]/.test(s)) return \"\";\n  let u;\n  try { u = new URL(s); } catch (e) { return \"\"; }\n  if (u.protocol !== \"https:\" || u.username || u.password || u.port) return \"\";\n  if (!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\\.[a-z]{2,24}$/.test(u.hostname)) return \"\";\n  return u.href;\n}\n\nfunction isIsoDate(s) {\n  if (typeof s !== \"string\" || !/^\\d{4}-\\d{2}-\\d{2}$/.test(s)) return false;\n  const y = +s.slice(0, 4), m = +s.slice(5, 7), d = +s.slice(8, 10);\n  const t = new Date(Date.UTC(y, m - 1, d));\n  return y >= 1900 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;\n}\n\nfunction pad2(n) { return String(n).padStart(2, \"0\"); }\n\n/** Today's date where the reader is, as YYYY-MM-DD. */\nfunction localToday(d) {\n  d = d || new Date();\n  return d.getFullYear() + \"-\" + pad2(d.getMonth() + 1) + \"-\" + pad2(d.getDate());\n}\n\n/** The same calendar day `years` years earlier (29 Feb becomes 28 Feb), as YYYY-MM-DD. */\nfunction yearsBefore(iso, years) {\n  const y = +iso.slice(0, 4) - years, m = iso.slice(5, 7);\n  let d = iso.slice(8, 10);\n  if (m === \"02\" && d === \"29\" && !(y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0))) d = \"28\";\n  return String(y).padStart(4, \"0\") + \"-\" + m + \"-\" + d;\n}\n\n/** a / b rounded half up, for non-negative integers (tax and deposit cents). */\nfunction roundDiv(a, b) { return Math.floor((2 * a + b) / (2 * b)); }\n\nfunction money(cents) {\n  const neg = cents \u003c 0;\n  const c = Math.abs(cents);\n  const dollars = String(Math.floor(c / 100)).replace(/\\B(?=(\\d{3})+(?!\\d))/g, \",\");\n  return (neg ? \"-\" : \"\") + \"$\" + dollars + \".\" + pad2(c % 100);\n}\n\n/** 15000 -> \"15%\", 9975 -> \"9.975%\". */\nfunction ratePercent(rate) {\n  const whole = Math.floor(rate / 1000), frac = String(rate % 1000).padStart(3, \"0\").replace(/0+$/, \"\");\n  return whole + (frac ? \".\" + frac : \"\") + \"%\";\n}\n\n/** Relative luminance contrast of a #rrggbb colour against white. */\nfunction contrastWithWhite(hex) {\n  const ch = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)\n    .map(c => (c \u003c= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));\n  const lum = 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];\n  return 1.05 / (lum + 0.05);\n}\n\n// ------------------------------------------------------------------ the strict reader\n\n/** Read a rules object as untrusted data. Returns {rules, errors}: `rules` is the canonical copy (key order fixed,\n    text trimmed, the link normalised) when there are no errors, else null. Every problem is named by its path. */\nfunction readRules(raw) {\n  const errors = [];\n  const bad = (path, msg) => { errors.push({ path, msg }); };\n  if (!isPlainObject(raw)) return { rules: null, errors: [{ path: \"\", msg: \"The rules must be one JSON object.\" }] };\n  const proto = protoKeyPath(raw, \"\");\n  if (proto) return { rules: null, errors: [{ path: proto, msg: \"A key named __proto__, constructor or prototype is not allowed.\" }] };\n\n  const keysOf = (obj, path, allowed, optional) => {\n    if (!isPlainObject(obj)) { bad(path, \"Must be a group of settings.\"); return false; }\n    for (const k of Object.keys(obj)) if (!allowed.includes(k)) bad(path ? path + \".\" + k : k, \"Unknown setting.\");\n    for (const k of allowed) if (!(k in obj) && !(optional || []).includes(k)) bad(path ? path + \".\" + k : k, \"Missing.\");\n    return true;\n  };\n  const line = (v, path, min, max) => {\n    if (typeof v !== \"string\") { bad(path, \"Must be text.\"); return \"\"; }\n    const s = v.trim();\n    if (CONTROL_RE.test(s) || hasHalfPair(s) || LINE_BREAK_RE.test(s) || /\\r/.test(s)) bad(path, \"Must be one line of plain text.\");\n    else if (s.length \u003c min) bad(path, min === 1 ? \"Required.\" : \"Needs at least \" + min + \" characters.\");\n    else if (s.length > max) bad(path, \"Too long: at most \" + max + \" characters.\");\n    return s;\n  };\n  const text = (v, path, max) => {\n    if (typeof v !== \"string\") { bad(path, \"Must be text.\"); return \"\"; }\n    const s = v.replace(/\\r\\n?/g, \"\\n\").replace(/[ \\t]+$/gm, \"\").trim();\n    if (CONTROL_RE.test(s) || hasHalfPair(s) || /\\t/.test(s)) bad(path, \"Must be plain text.\");\n    else if (s.length > max) bad(path, \"Too long: at most \" + max + \" characters.\");\n    return s;\n  };\n  const int = (v, path, min, max, what) => {\n    if (typeof v !== \"number\" || !Number.isInteger(v)) { bad(path, \"Must be a whole number\" + (what ? \" (\" + what + \")\" : \"\") + \".\"); return 0; }\n    if (v \u003c min || v > max) bad(path, \"Must be from \" + min + \" to \" + max + (what ? \" \" + what : \"\") + \".\");\n    return v;\n  };\n  const cents = (v, path, min, max) => {\n    if (typeof v !== \"number\" || !Number.isInteger(v)) { bad(path, \"Must be an amount in whole cents.\"); return 0; }\n    if (v \u003c min || v > max) bad(path, \"Must be from \" + money(min) + \" to \" + money(max) + \".\");\n    return v;\n  };\n\n  keysOf(raw, \"\", TOP_KEYS, [\"sample\", \"rush\", \"complex\"]);\n  const out = {};\n  if (raw.format !== QUOTE_FORMAT) bad(\"format\", \"Not a quote rules file (format line missing).\");\n  if (raw.version !== QUOTE_VERSION) bad(\"version\", \"Version \" + QUOTE_VERSION + \" is the only version this page reads.\");\n  out.format = QUOTE_FORMAT;\n  out.version = QUOTE_VERSION;\n  if (\"sample\" in raw) {\n    const s = line(raw.sample, \"sample\", 0, 300);\n    if (s) out.sample = s;\n  }\n\n  const f = raw.firm, firm = {};\n  if (keysOf(f, \"firm\", [\"name\", \"logoText\", \"color\", \"email\", \"phone\", \"area\"])) {\n    firm.name = line(f.name, \"firm.name\", 1, 80);\n    firm.logoText = line(f.logoText, \"firm.logoText\", 1, 4);\n    firm.color = typeof f.color === \"string\" ? f.color.toLowerCase() : f.color;\n    if (!COLOR_RE.test(String(f.color))) bad(\"firm.color\", \"Must be a colour written like #1d4f91.\");\n    else if (contrastWithWhite(firm.color) \u003c 4.5) bad(\"firm.color\", \"Too light: white text on it would be hard to read. Pick a darker colour.\");\n    firm.email = line(f.email, \"firm.email\", 1, 120);\n    if (firm.email && !isEmail(firm.email)) bad(\"firm.email\", \"Not an email address.\");\n    firm.phone = line(f.phone, \"firm.phone\", 0, 25);\n    if (firm.phone && !isPhone(firm.phone)) bad(\"firm.phone\", \"Not a phone number (digits, spaces, + - ( ) . only).\");\n    firm.area = line(f.area, \"firm.area\", 0, 120);\n  }\n  out.firm = firm;\n  out.pricesFrom = raw.pricesFrom;\n  if (!isIsoDate(raw.pricesFrom)) bad(\"pricesFrom\", \"Must be a date written YYYY-MM-DD.\");\n  out.validDays = int(raw.validDays, \"validDays\", 1, 365, \"days\");\n\n  const list = (arr, path, defaults, what) => {\n    const res = [];\n    if (!Array.isArray(arr) || arr.length \u003c 1 || arr.length > defaults.length) { bad(path, \"Offer at least one \" + what + \".\"); return res; }\n    const ids = defaults.map(d => d[0]), seen = new Set();\n    arr.forEach((x, i) => {\n      const p = path + \".\" + i;\n      if (!keysOf(x, p, [\"id\", \"label\"])) return;\n      if (!ids.includes(x.id) || seen.has(x.id)) { bad(p + \".id\", \"Unknown or repeated \" + what + \".\"); return; }\n      seen.add(x.id);\n      res.push({ id: x.id, label: line(x.label, p + \".label\", 1, 60) });\n    });\n    return res;\n  };\n  out.purposes = list(raw.purposes, \"purposes\", PURPOSE_DEFAULTS, \"purpose\");\n  out.types = list(raw.types, \"types\", TYPE_DEFAULTS, \"property type\");\n\n  const fees = {};\n  if (keysOf(raw.fees, \"fees\", out.purposes.map(p => p.id))) {\n    for (const p of out.purposes) {\n      const row = raw.fees[p.id], r = {};\n      if (keysOf(row, \"fees.\" + p.id, out.types.map(t => t.id))) {\n        for (const t of out.types) {\n          const v = row[t.id], path = \"fees.\" + p.id + \".\" + t.id;\n          r[t.id] = v === null ? null : cents(v, path, 100, MAX_FEE);\n        }\n      }\n      fees[p.id] = r;\n    }\n  }\n  out.fees = fees;\n\n  const retro = {};\n  if (keysOf(raw.retro, \"retro\", [\"fee\", \"confirmYears\"])) {\n    retro.fee = cents(raw.retro.fee, \"retro.fee\", 0, MAX_FEE);\n    retro.confirmYears = int(raw.retro.confirmYears, \"retro.confirmYears\", 0, 100, \"years\");\n  }\n  out.retro = retro;\n\n  if (raw.rush !== undefined && raw.rush !== null) {\n    if (keysOf(raw.rush, \"rush\", [\"fee\", \"turnaround\"])) {\n      out.rush = { fee: cents(raw.rush.fee, \"rush.fee\", 100, MAX_FEE), turnaround: line(raw.rush.turnaround, \"rush.turnaround\", 1, 80) };\n    }\n  }\n\n  const tr = raw.travel, travel = {};\n  if (isPlainObject(tr) && tr.mode === \"none\") {\n    keysOf(tr, \"travel\", [\"mode\"]);\n    travel.mode = \"none\";\n  } else if (isPlainObject(tr) && tr.mode === \"towns\") {\n    keysOf(tr, \"travel\", [\"mode\", \"zones\"]);\n    travel.mode = \"towns\";\n    travel.zones = [];\n    const seen = new Map();\n    if (!Array.isArray(tr.zones) || tr.zones.length \u003c 1 || tr.zones.length > 20) bad(\"travel.zones\", \"Add 1 to 20 zones.\");\n    else tr.zones.forEach((z, i) => {\n      const p = \"travel.zones.\" + i;\n      if (!keysOf(z, p, [\"label\", \"fee\", \"towns\"])) return;\n      const zone = { label: line(z.label, p + \".label\", 1, 60), fee: cents(z.fee, p + \".fee\", 0, MAX_FEE), towns: [] };\n      if (!Array.isArray(z.towns) || z.towns.length \u003c 1 || z.towns.length > 300) bad(p + \".towns\", \"List 1 to 300 towns.\");\n      else z.towns.forEach((t, j) => {\n        const name = line(t, p + \".towns\", 1, 60);\n        const key = name.toLowerCase();\n        if (name && seen.has(key)) bad(p + \".towns\", \"\\u201c\" + name + \"\\u201d is listed twice (\" + seen.get(key) + \").\");\n        else if (name) seen.set(key, zone.label || \"zone \" + (i + 1));\n        zone.towns.push(name);\n      });\n      travel.zones.push(zone);\n    });\n  } else if (isPlainObject(tr) && tr.mode === \"km\") {\n    keysOf(tr, \"travel\", [\"mode\", \"from\", \"bands\"]);\n    travel.mode = \"km\";\n    travel.from = line(tr.from, \"travel.from\", 1, 80);\n    travel.bands = [];\n    if (!Array.isArray(tr.bands) || tr.bands.length \u003c 1 || tr.bands.length > 10) bad(\"travel.bands\", \"Add 1 to 10 distance bands.\");\n    else tr.bands.forEach((b, i) => {\n      const p = \"travel.bands.\" + i;\n      if (!keysOf(b, p, [\"upTo\", \"fee\"])) return;\n      const band = { upTo: int(b.upTo, p + \".upTo\", 1, 1000, \"km\"), fee: cents(b.fee, p + \".fee\", 0, MAX_FEE) };\n      if (i > 0 && travel.bands[i - 1] && band.upTo \u003c= travel.bands[i - 1].upTo) bad(p + \".upTo\", \"Each band must reach further than the one before.\");\n      travel.bands.push(band);\n    });\n  } else {\n    bad(\"travel\", \"Travel must be none, towns or km.\");\n  }\n  out.travel = travel;\n\n  if (raw.complex !== undefined && raw.complex !== null) {\n    if (keysOf(raw.complex, \"complex\", [\"hint\"])) out.complex = { hint: line(raw.complex.hint, \"complex.hint\", 1, 200) };\n  }\n  out.confirmHours = int(raw.confirmHours, \"confirmHours\", 1, 168, \"hours\");\n\n  const codes = PROVINCES.map(p => p[0]);\n  out.provinces = [];\n  if (!Array.isArray(raw.provinces) || raw.provinces.length \u003c 1) bad(\"provinces\", \"Pick the province (or provinces) your properties are in.\");\n  else raw.provinces.forEach((c, i) => {\n    if (!codes.includes(c) || out.provinces.includes(c)) bad(\"provinces.\" + i, \"Unknown or repeated province.\");\n    else out.provinces.push(c);\n  });\n  out.tax = {};\n  if (keysOf(raw.tax, \"tax\", out.provinces)) {\n    for (const c of out.provinces) {\n      const lines = raw.tax[c], p = \"tax.\" + c;\n      if (!Array.isArray(lines) || lines.length > 2) { bad(p, \"Up to two tax lines.\"); continue; }\n      out.tax[c] = lines.map((l, i) => {\n        if (!keysOf(l, p + \".\" + i, [\"label\", \"rate\"])) return { label: \"\", rate: 0 };\n        return { label: line(l.label, p + \".\" + i + \".label\", 1, 20), rate: int(l.rate, p + \".\" + i + \".rate\", 1, 30000, \"thousandths of a percent\") };\n      });\n    }\n  }\n\n  const d = raw.deposit;\n  if (isPlainObject(d) && d.mode === \"none\") { keysOf(d, \"deposit\", [\"mode\"]); out.deposit = { mode: \"none\" }; }\n  else if (isPlainObject(d) && d.mode === \"percent\") { keysOf(d, \"deposit\", [\"mode\", \"percent\"]); out.deposit = { mode: \"percent\", percent: int(d.percent, \"deposit.percent\", 1, 100, \"percent\") }; }\n  else if (isPlainObject(d) && d.mode === \"fixed\") { keysOf(d, \"deposit\", [\"mode\", \"fee\"]); out.deposit = { mode: \"fixed\", fee: cents(d.fee, \"deposit.fee\", 100, MAX_FEE) }; }\n  else { bad(\"deposit\", \"Deposit must be none, percent or fixed.\"); out.deposit = { mode: \"none\" }; }\n\n  out.turnaround = line(raw.turnaround, \"turnaround\", 1, 120);\n  const pay = {};\n  if (keysOf(raw.payment, \"payment\", [\"etransfer\", \"link\", \"note\"])) {\n    pay.etransfer = line(raw.payment.etransfer, \"payment.etransfer\", 0, 120);\n    if (pay.etransfer && !isEmail(pay.etransfer)) bad(\"payment.etransfer\", \"Not an email address.\");\n    const rawLink = typeof raw.payment.link === \"string\" ? raw.payment.link.trim() : raw.payment.link;\n    pay.link = \"\";\n    if (typeof rawLink !== \"string\") bad(\"payment.link\", \"Must be text.\");\n    else if (rawLink) {\n      pay.link = httpsLink(rawLink);\n      if (!pay.link) bad(\"payment.link\", \"Only a full https:// link to your payment page is allowed.\");\n    }\n    pay.note = line(raw.payment.note, \"payment.note\", 0, 200);\n    if (out.deposit.mode !== \"none\" && !pay.etransfer && !pay.link) bad(\"payment\", \"A deposit needs an e-transfer email or a payment link.\");\n  }\n  out.payment = pay;\n  out.terms = text(raw.terms, \"terms\", 8000);\n\n  return errors.length ? { rules: null, errors } : { rules: out, errors: [] };\n}\n\n// ------------------------------------------------------------------ the arithmetic\n\n/** Work out the quote for the client's choices. `sel`: {purpose, type, when: \"current\"|\"past\", date, province,\n    place: \"zone.town\" | \"band index\" | \"other\" | \"beyond\", rush, complex}. Returns\n    {status: \"incomplete\"|\"confirm\"|\"priced\", missing, problems, confirm, lines, subtotal, taxes, total, deposit}.\n    Nothing here guesses: a blank price, an unlisted town or a date too far back becomes \"we'll confirm\". */\nfunction priceQuote(rules, sel, today) {\n  const r = { status: \"incomplete\", missing: [], problems: [], confirm: [], lines: [], subtotal: 0, taxes: [], total: 0, deposit: 0, province: \"\", place: null };\n  const p = rules.purposes.find(x => x.id === sel.purpose);\n  const t = rules.types.find(x => x.id === sel.type);\n  if (!p) r.missing.push(\"purpose\");\n  if (!t) r.missing.push(\"type\");\n  if (sel.when !== \"current\" && sel.when !== \"past\") r.missing.push(\"when\");\n  else if (sel.when === \"past\") {\n    if (!sel.date) r.missing.push(\"date\");\n    else if (!isIsoDate(sel.date)) r.problems.push(\"dateBad\");\n    else if (sel.date >= today) r.problems.push(\"dateNotPast\");\n  }\n  const tr = rules.travel;\n  if (tr.mode === \"towns\") {\n    if (!sel.place) r.missing.push(\"place\");\n    else if (sel.place === \"other\") r.place = { other: true };\n    else {\n      const m = /^(\\d+)\\.(\\d+)$/.exec(sel.place);\n      const z = m && tr.zones[+m[1]];\n      if (!z || !z.towns[+m[2]]) r.missing.push(\"place\");\n      else r.place = { zone: z, town: z.towns[+m[2]] };\n    }\n  } else if (tr.mode === \"km\") {\n    if (!sel.place) r.missing.push(\"place\");\n    else if (sel.place === \"beyond\") r.place = { beyond: tr.bands[tr.bands.length - 1].upTo };\n    else {\n      const i = /^\\d+$/.test(sel.place) ? +sel.place : -1;\n      if (!tr.bands[i]) r.missing.push(\"place\");\n      else r.place = { band: tr.bands[i], index: i };\n    }\n  }\n  r.province = rules.provinces.length === 1 ? rules.provinces[0] : sel.province;\n  if (!rules.provinces.includes(r.province)) { r.province = \"\"; r.missing.push(\"province\"); }\n  if (r.missing.length || r.problems.length) return r;\n\n  const base = rules.fees[p.id][t.id];\n  if (base === null) r.confirm.push({ code: \"caseByCase\" });\n  else r.lines.push({ code: \"base\", cents: base });\n  if (sel.when === \"past\") {\n    if (rules.retro.confirmYears > 0 && sel.date \u003c yearsBefore(today, rules.retro.confirmYears)) r.confirm.push({ code: \"oldDate\", years: rules.retro.confirmYears });\n    else if (rules.retro.fee > 0) r.lines.push({ code: \"retro\", cents: rules.retro.fee });\n  }\n  const pl = r.place || {};  // null when the firm charges no travel\n  if (pl.other) r.confirm.push({ code: \"townOther\" });\n  if (pl.beyond) r.confirm.push({ code: \"beyond\", km: pl.beyond });\n  if (pl.zone && pl.zone.fee > 0) r.lines.push({ code: \"travelZone\", cents: pl.zone.fee, zone: pl.zone.label });\n  if (pl.band && pl.band.fee > 0) r.lines.push({ code: \"travelKm\", cents: pl.band.fee, index: pl.index });\n  if (sel.rush && rules.rush) r.lines.push({ code: \"rush\", cents: rules.rush.fee });\n  if (sel.complex && rules.complex) r.confirm.push({ code: \"complex\" });\n  if (r.confirm.length) { r.status = \"confirm\"; return r; }\n\n  r.subtotal = r.lines.reduce((a, l) => a + l.cents, 0);\n  r.taxes = rules.tax[r.province].map(l => ({ label: l.label, rate: l.rate, cents: roundDiv(r.subtotal * l.rate, 100000) }));\n  r.total = r.subtotal + r.taxes.reduce((a, l) => a + l.cents, 0);\n  const d = rules.deposit;\n  r.deposit = d.mode === \"percent\" ? roundDiv(r.total * d.percent, 100) : d.mode === \"fixed\" ? Math.min(d.fee, r.total) : 0;\n  r.status = \"priced\";\n  return r;\n}\n\n// ------------------------------------------------------------------ DOM\n\n/** Build an element. Text always goes in as text (never HTML); an href must be https:, mailto:, tel: or #. */\nfunction el(tag, attrs) {\n  const n = document.createElement(tag);\n  for (const [k, v] of Object.entries(attrs || {})) {\n    if (v === null || v === undefined || v === false) continue;\n    if (k === \"class\") n.className = v;\n    else if (k === \"text\") n.textContent = v;\n    else if (k.startsWith(\"on\")) n.addEventListener(k.slice(2), v);\n    else if (k === \"href\") {\n      if (!/^(https:|mailto:|tel:|#)/.test(String(v))) throw new Error(\"refused link\");\n      n.setAttribute(\"href\", v);\n    } else if (/^(src|srcdoc|style|innerHTML|outerHTML)$/i.test(k)) throw new Error(\"refused attribute \" + k);\n    else n.setAttribute(k, v === true ? \"\" : String(v));\n  }\n  for (let i = 2; i \u003c arguments.length; i++) {\n    const kids = [arguments[i]].flat(Infinity);\n    for (const c of kids) if (c !== null && c !== undefined && c !== false) n.append(c instanceof Node ? c : String(c));\n  }\n  return n;\n}\n\n/** Replace a node's children; nested lists are flattened and null, undefined and false are skipped (the DOM's own\n    replaceChildren would print them as text). */\nfunction fill(node) {\n  node.replaceChildren(...[].slice.call(arguments, 1).flat(Infinity).filter(k => k !== null && k !== undefined && k !== false));\n  return node;\n}\n/* shared:end */\n\n// Every word the client sees, in one table, so a French page is one more entry here.\nconst STR = {\n  en: {\n    brokenTitle: \"This quote page isn't set up correctly\",\n    brokenBody: \"It can't show prices until it's fixed. If you run this page, open it in the quote setup page to see what's wrong:\",\n    sampleBanner: \"Sample page: this firm, its towns, its terms and every fee here are invented.\",\n    heading: \"See your appraisal price now\",\n    intro: \"Answer a few questions and your price shows straight away. Nothing you type is sent anywhere until you send the email yourself.\",\n    qPurpose: \"What is the appraisal for?\",\n    qType: \"What kind of property is it?\",\n    qWhen: \"Value as of which date?\",\n    whenCurrent: \"Today (current value)\",\n    whenPast: \"A past date\",\n    dateLabel: \"The past date\",\n    dateHint: \"For an estate, this is usually the date of death. Your lawyer can tell you which date to use.\",\n    qPlace: \"Where is the property?\",\n    provinceLabel: \"Province\",\n    provincePick: \"Choose a province\",\n    townLabel: \"Town or community\",\n    townPick: \"Choose a town\",\n    townOther: \"My town isn't listed\",\n    bandFirst: \"Within {km} km of {from}\",\n    bandNext: \"{a} to {b} km from {from}\",\n    bandBeyond: \"More than {km} km from {from}\",\n    bandShortFirst: \"within {km} km\",\n    bandShortNext: \"{a} to {b} km\",\n    qExtra: \"Anything else?\",\n    rushLabel: \"Rush ({fee})\",\n    rushSub: \"Ready {turnaround}\",\n    complexLabel: \"The property is large or unusual\",\n    quoteHeading: \"Your price\",\n    quoteWaiting: \"Answer the questions above to see your price.\",\n    stillNeed: \"Still to answer:\",\n    need_purpose: \"what the appraisal is for\",\n    need_type: \"the kind of property\",\n    need_when: \"the date\",\n    need_date: \"the past date\",\n    need_place: \"where the property is\",\n    need_province: \"the province\",\n    prob_dateBad: \"The past date isn't a real date.\",\n    prob_dateNotPast: \"A past date has to be before today. For today's value, choose \\u201cToday\\u201d.\",\n    confirmHeading: \"We'll confirm your price within {hours} hours\",\n    confirmWhy: \"This one needs a look first:\",\n    conf_caseByCase: \"We price this kind of appraisal case by case.\",\n    conf_oldDate: \"The date is more than {years} years ago.\",\n    conf_townOther: \"Your town isn't on our price list.\",\n    conf_beyond: \"The property is more than {km} km away.\",\n    conf_complex: \"You said the property is large or unusual.\",\n    confirmNext: \"Send your request below and we'll reply with your price. Don't pay anything yet.\",\n    lineBase: \"{type}: {purpose}\",\n    lineRetro: \"Past date\",\n    lineTravelZone: \"Travel: {zone}\",\n    lineTravelKm: \"Travel: {band}\",\n    lineRush: \"Rush\",\n    subtotal: \"Subtotal\",\n    taxLine: \"{label} {rate}\",\n    total: \"Total\",\n    depositPercent: \"Deposit due now ({percent}%)\",\n    depositFixed: \"Deposit due now\",\n    balance: \"Balance when you get the report\",\n    noDeposit: \"No deposit: you pay when you get the report.\",\n    ready: \"Ready {text}.\",\n    readyRush: \"Ready {text} (rush).\",\n    valid: \"Price good for {days} days. From our price list of {date}.\",\n    detailsHeading: \"Request this appraisal\",\n    detailsIntro: \"Fill this in and press the button. Your email app opens with everything written out, for you to check and send.\",\n    fName: \"Your name\",\n    fEmail: \"Your email\",\n    fPhone: \"Your phone\",\n    fAddress: \"Property address\",\n    fAddressHint: \"Street, unit and town\",\n    fLawyer: \"Your lawyer (optional)\",\n    fLawyerHint: \"Name and firm, if a lawyer is involved\",\n    fUse: \"What will you use the appraisal for?\",\n    fUseHint: \"For example: to settle my father's estate, or for my separation agreement.\",\n    fUsers: \"Who else will rely on the report? (optional)\",\n    fUsersHint: \"For example: the estate's lawyer, the CRA, the court, or the other party's lawyer.\",\n    termsSummary: \"Read our engagement terms\",\n    termsAck: \"I have read the engagement terms\",\n    refLine: \"Your reference: {ref}\",\n    requestBtn: \"Request this appraisal\",\n    changedNote: \"Your answers changed after you made your request. Press \\u201cRequest this appraisal\\u201d again to send the updated one.\",\n    errOne: \"Please fix this first:\",\n    errMany: \"Please fix these first:\",\n    err_quote: \"Answer the questions about the property first.\",\n    err_name: \"Enter your name.\",\n    err_email: \"Enter an email address, like name@example.com.\",\n    err_phone: \"Enter a phone number, like 902-555-0123.\",\n    err_address: \"Enter the property's address.\",\n    err_use: \"Say in a few words what the appraisal is for.\",\n    err_terms: \"Tick the box to say you've read the terms.\",\n    err_long: \"This is too long: at most {max} characters.\",\n    nextHeading: \"What happens next\",\n    step1: \"Send the email\",\n    step1Body: \"Your email app should have opened with your request written out. Check it, then press Send. Nothing reaches us until you do.\",\n    openAgain: \"Open the email again\",\n    noApp: \"No email app? Copy the request and email it to {email}.\",\n    noLink: \"Copy the request and email it to {email}. Nothing reaches us until you do.\",\n    copyRequest: \"Copy the request\",\n    copyEmail: \"Copy\",\n    copied: \"Copied\",\n    copyFailed: \"Couldn't copy: select the text and copy it.\",\n    step2Pay: \"Pay the deposit: {amount}\",\n    payEtransfer: \"Send an Interac e-Transfer to:\",\n    payMessage: \"In the message, write your reference:\",\n    payRefLink: \"Add your reference to the payment:\",\n    payLink: \"Pay the deposit online\",\n    payLinkHost: \"Opens {host}\",\n    payOr: \"Or pay online:\",\n    step2Wait: \"Wait for our price\",\n    step2WaitBody: \"We'll reply within {hours} hours with your price and how to pay. Don't pay anything yet.\",\n    step2None: \"No deposit needed\",\n    step2NoneBody: \"You pay when you get the report.\",\n    step3: \"Keep a copy\",\n    step3Body: \"Print this summary or save it as a PDF.\",\n    printBtn: \"Print or save as PDF\",\n    sumHeading: \"Engagement summary\",\n    sumFirm: \"Appraiser\",\n    sumRef: \"Reference\",\n    sumDate: \"Requested\",\n    sumClient: \"Client\",\n    sumProperty: \"Property\",\n    sumPlace: \"Location\",\n    sumType: \"Property type\",\n    sumPurpose: \"Purpose\",\n    sumEffective: \"Value as of\",\n    sumUse: \"Intended use\",\n    sumUsers: \"Other intended users\",\n    sumLawyer: \"Lawyer\",\n    sumRush: \"Rush\",\n    sumComplex: \"Large or unusual\",\n    sumPrice: \"Price\",\n    sumDeposit: \"Deposit\",\n    sumTurnaround: \"Turnaround\",\n    sumTerms: \"Engagement terms\",\n    yes: \"Yes\",\n    no: \"No\",\n    none: \"None given\",\n    usersNone: \"None named\",\n    effCurrent: \"Today's value (as of the inspection)\",\n    placeOther: \"Not on the price list\",\n    priceToConfirm: \"To be confirmed within {hours} hours\",\n    sumNote: \"This is a summary of your request and our quote, not a signed agreement. We confirm the engagement by email before we book the inspection.\",\n    footPrivacy: \"This page keeps nothing and sends nothing. What you type stays in your browser until you send the email yourself.\",\n    footPrices: \"Prices from our price list of {date}.\",\n    mailSubject: \"Appraisal request {ref}: {address}\",\n    mailIntro: \"Please book this appraisal. My details and your quote are below.\",\n    mailRef: \"Reference: {ref}\",\n    mailMade: \"Quote made on your quote page on {date} (price list of {list}).\",\n    mailProperty: \"PROPERTY\",\n    mailAppraisal: \"APPRAISAL\",\n    mailPrice: \"PRICE\",\n    mailPriceConfirm: \"PRICE TO CONFIRM (you said within {hours} hours)\",\n    mailClient: \"CLIENT\",\n    mailKV: \"{k}: {v}\",\n    mailEmail: \"Email\",\n    mailPhone: \"Phone\",\n    mailTerms: \"I have read the engagement terms on your quote page.\",\n    mailCopyTo: \"To: {email}\",\n    mailCopySubject: \"Subject: {subject}\",\n    months: [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"],\n  },\n};\nconst LANG = \"en\";\n\nfunction t(key, vars) {\n  const s = STR[LANG][key];\n  if (typeof s !== \"string\") throw new Error(\"missing string \" + key);\n  return s.replace(/\\{(\\w+)\\}/g, (m, k) => (vars && k in vars ? String(vars[k]) : m));\n}\nfunction longDate(iso) { return +iso.slice(8, 10) + \" \" + STR[LANG].months[+iso.slice(5, 7) - 1] + \" \" + iso.slice(0, 4); }\n\n// Client fields: one line each (the use may wrap), no control characters, a sane length.\nconst FIELDS = [\n  { id: \"name\", label: \"fName\", max: 80, auto: \"name\", type: \"text\" },\n  { id: \"email\", label: \"fEmail\", max: 120, auto: \"email\", type: \"email\" },\n  { id: \"phone\", label: \"fPhone\", max: 25, auto: \"tel\", type: \"tel\" },\n  { id: \"address\", label: \"fAddress\", hint: \"fAddressHint\", max: 160, auto: \"off\", type: \"text\" },\n  { id: \"lawyer\", label: \"fLawyer\", hint: \"fLawyerHint\", max: 120, auto: \"off\", type: \"text\", optional: true },\n  { id: \"use\", label: \"fUse\", hint: \"fUseHint\", max: 300, auto: \"off\", type: \"textarea\" },\n  { id: \"users\", label: \"fUsers\", hint: \"fUsersHint\", max: 200, auto: \"off\", type: \"text\", optional: true },\n];\nconst STRIP_RE = new RegExp(CONTROL_RE.source, \"g\");\nfunction clean(s) { return fixSurrogates(String(s || \"\"), \"\").replace(STRIP_RE, \"\").replace(/\\s+/g, \" \").trim(); }\n\nlet RULES = null;\nconst TODAY = localToday();\nconst sel = { purpose: \"\", type: \"\", when: \"\", date: \"\", province: \"\", place: \"\", rush: false, complex: false };\nconst who = { name: \"\", email: \"\", phone: \"\", address: \"\", lawyer: \"\", use: \"\", users: \"\", terms: false };\nconst REF = makeRef();\nconst $ = id => document.getElementById(id);\n\nfunction makeRef() {\n  const abc = \"ABCDEFGHJKMNPQRSTUVWXYZ23456789\", out = [];\n  const buf = new Uint8Array(16);\n  while (out.length \u003c 4) {\n    crypto.getRandomValues(buf);\n    for (const b of buf) if (b \u003c 248 && out.length \u003c 4) out.push(abc[b % 31]);\n  }\n  return \"Q-\" + TODAY.slice(2).replace(/-/g, \"\") + \"-\" + out.join(\"\");\n}\n\nfunction boot() {\n  let raw = null, errors = [];\n  try { raw = JSON.parse($(\"quote-config\").textContent); } catch (e) { errors = [{ path: \"\", msg: \"The rules block is not valid JSON.\" }]; }\n  const read = raw === null ? { rules: null, errors } : readRules(raw);\n  if (!read.rules) return renderBroken(read.errors);\n  RULES = read.rules;\n  document.documentElement.style.setProperty(\"--brand\", RULES.firm.color);\n  render();\n}\n\nfunction renderBroken(errors) {\n  const app = $(\"app\");\n  fill(app, el(\"main\", { class: \"wrap\", id: \"main\" },\n    el(\"div\", { class: \"card\", role: \"alert\" },\n      el(\"h1\", { class: \"h2\", text: t(\"brokenTitle\") }),\n      el(\"p\", { text: t(\"brokenBody\") }),\n      el(\"ul\", null, errors.slice(0, 8).map(e => el(\"li\", { text: (e.path ? e.path + \": \" : \"\") + e.msg }))))));\n}\n\n// ------------------------------------------------------------------ the page\n\nfunction render() {\n  const R = RULES, app = $(\"app\");\n  let n = 0;\n  const num = () => el(\"span\", { class: \"n\", \"aria-hidden\": \"true\", text: String(++n) });\n  const radios = (name, items, onPick) => el(\"div\", { class: \"opts\" }, items.map(([value, label, sub]) =>\n    el(\"label\", { class: \"opt\" },\n      el(\"input\", { type: \"radio\", name, value, onchange: () => onPick(value) }),\n      el(\"span\", null, label, sub ? el(\"span\", { class: \"sub\", text: sub }) : null))));\n\n  const head = el(\"header\", { class: \"top\" }, el(\"div\", { class: \"top-in\" },\n    el(\"div\", { class: \"badge\", \"aria-hidden\": \"true\", text: R.firm.logoText }),\n    el(\"div\", null, el(\"p\", { class: \"firm-name\", text: R.firm.name }), R.firm.area ? el(\"p\", { class: \"firm-area\", text: R.firm.area }) : null)));\n  const sample = R.sample ? el(\"div\", { class: \"sample\", role: \"note\" }, el(\"p\", { text: t(\"sampleBanner\") })) : null;\n\n  const qPurpose = el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-purpose\" }, el(\"fieldset\", null,\n    el(\"legend\", { id: \"l-purpose\" }, num(), t(\"qPurpose\")),\n    radios(\"purpose\", R.purposes.map(p => [p.id, p.label]), v => { sel.purpose = v; update(); })));\n  const qType = el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-type\" }, el(\"fieldset\", null,\n    el(\"legend\", { id: \"l-type\" }, num(), t(\"qType\")),\n    radios(\"type\", R.types.map(x => [x.id, x.label]), v => { sel.type = v; update(); })));\n\n  const yesterday = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return localToday(d); })();\n  const dateBox = el(\"div\", { class: \"field\", id: \"date-box\", hidden: true },\n    el(\"label\", { for: \"f-date\", text: t(\"dateLabel\") }),\n    el(\"input\", { class: \"input\", id: \"f-date\", type: \"date\", min: \"1900-01-01\", max: yesterday, \"aria-describedby\": \"h-date\",\n      oninput: e => { sel.date = e.target.value; update(); } }),\n    el(\"p\", { class: \"hint\", id: \"h-date\", text: t(\"dateHint\") }));\n  const qWhen = el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-when\" }, el(\"fieldset\", null,\n    el(\"legend\", { id: \"l-when\" }, num(), t(\"qWhen\")),\n    radios(\"when\", [[\"current\", t(\"whenCurrent\")], [\"past\", t(\"whenPast\")]], v => {\n      sel.when = v; $(\"date-box\").hidden = v !== \"past\"; update();\n      if (v === \"past\") $(\"f-date\").focus();\n    }), dateBox));\n\n  const placeKids = [];\n  if (R.provinces.length > 1) {\n    placeKids.push(el(\"div\", { class: \"field\" },\n      el(\"label\", { for: \"f-province\", text: t(\"provinceLabel\") }),\n      el(\"select\", { class: \"select\", id: \"f-province\", onchange: e => { sel.province = e.target.value; update(); } },\n        el(\"option\", { value: \"\", text: t(\"provincePick\") }),\n        R.provinces.map(c => el(\"option\", { value: c, text: PROVINCES.find(p => p[0] === c)[1] })))));\n  }\n  if (R.travel.mode === \"towns\") {\n    const towns = [];\n    R.travel.zones.forEach((z, zi) => z.towns.forEach((name, ti) => towns.push([name, zi + \".\" + ti])));\n    towns.sort((a, b) => a[0].localeCompare(b[0], \"en-CA\"));\n    placeKids.push(el(\"div\", { class: \"field\" },\n      el(\"label\", { for: \"f-town\", text: t(\"townLabel\") }),\n      el(\"select\", { class: \"select\", id: \"f-town\", onchange: e => { sel.place = e.target.value; update(); } },\n        el(\"option\", { value: \"\", text: t(\"townPick\") }),\n        towns.map(([name, v]) => el(\"option\", { value: v, text: name })),\n        el(\"option\", { value: \"other\", text: t(\"townOther\") }))));\n  } else if (R.travel.mode === \"km\") {\n    const items = R.travel.bands.map((b, i) => [String(i), bandText(i, false)]);\n    items.push([\"beyond\", t(\"bandBeyond\", { km: R.travel.bands[R.travel.bands.length - 1].upTo, from: R.travel.from })]);\n    placeKids.push(radios(\"place\", items, v => { sel.place = v; update(); }));\n  }\n  const qPlace = placeKids.length ? el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-place\" }, el(\"fieldset\", null,\n    el(\"legend\", { id: \"l-place\" }, num(), t(\"qPlace\")), placeKids)) : null;\n\n  const extras = [];\n  if (R.rush) extras.push(el(\"label\", { class: \"opt\" },\n    el(\"input\", { type: \"checkbox\", id: \"f-rush\", onchange: e => { sel.rush = e.target.checked; update(); } }),\n    el(\"span\", null, t(\"rushLabel\", { fee: \"+\" + money(R.rush.fee) }), el(\"span\", { class: \"sub\", text: t(\"rushSub\", { turnaround: R.rush.turnaround }) }))));\n  if (R.complex) extras.push(el(\"label\", { class: \"opt\" },\n    el(\"input\", { type: \"checkbox\", id: \"f-complex\", onchange: e => { sel.complex = e.target.checked; update(); } }),\n    el(\"span\", null, t(\"complexLabel\"), el(\"span\", { class: \"sub\", text: R.complex.hint }))));\n  const qExtra = extras.length ? el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-extra\" }, el(\"fieldset\", null,\n    el(\"legend\", { id: \"l-extra\" }, num(), t(\"qExtra\")), el(\"div\", { class: \"opts\" }, extras))) : null;\n\n  const quote = el(\"section\", { class: \"card quote\", id: \"quote\", \"aria-live\": \"polite\", \"aria-atomic\": \"true\" });\n\n  const fields = FIELDS.map(f => {\n    const id = \"f-\" + f.id;\n    const attrs = { class: f.type === \"textarea\" ? \"textarea\" : \"input\", id, name: f.id, autocomplete: f.auto, maxlength: String(f.max + 40),\n      \"aria-describedby\": (f.hint ? \"h-\" + f.id + \" \" : \"\") + \"e-\" + f.id,\n      oninput: e => { who[f.id] = e.target.value; answersChanged(); refreshMail(); clearFieldError(f.id); } };\n    if (f.type !== \"textarea\") attrs.type = f.type;\n    if (f.id === \"email\") { attrs.inputmode = \"email\"; attrs.autocapitalize = \"off\"; attrs.spellcheck = \"false\"; }\n    if (f.id === \"phone\") attrs.inputmode = \"tel\";\n    return el(\"div\", { class: \"field\" },\n      el(\"label\", { for: id, text: t(f.label) }),\n      f.hint ? el(\"p\", { class: \"hint\", id: \"h-\" + f.id, text: t(f.hint) }) : null,\n      el(f.type === \"textarea\" ? \"textarea\" : \"input\", attrs),\n      el(\"p\", { class: \"ferr\", id: \"e-\" + f.id, hidden: true }));\n  });\n  const terms = R.terms ? [\n    el(\"details\", { class: \"terms\" }, el(\"summary\", { text: t(\"termsSummary\") }), termsBody()),\n    el(\"label\", { class: \"check\" },\n      el(\"input\", { type: \"checkbox\", id: \"f-terms\", \"aria-describedby\": \"e-terms\", onchange: e => { who.terms = e.target.checked; answersChanged(); refreshMail(); clearFieldError(\"terms\"); } }),\n      el(\"span\", { text: t(\"termsAck\") })),\n    el(\"p\", { class: \"ferr\", id: \"e-terms\", hidden: true }),\n  ] : [];\n  const details = el(\"section\", { class: \"card\", \"aria-labelledby\": \"l-details\" },\n    el(\"h2\", { class: \"h2\", id: \"l-details\" }, num(), t(\"detailsHeading\")),\n    el(\"p\", { class: \"hint\", text: t(\"detailsIntro\") }),\n    fields, terms,\n    el(\"div\", { class: \"errbox\", id: \"errbox\", role: \"alert\", tabindex: \"-1\", hidden: true }),\n    el(\"p\", { class: \"ref\", text: t(\"refLine\", { ref: REF }) }),\n    el(\"p\", { class: \"changed\", id: \"changed\", role: \"status\", hidden: true, text: t(\"changedNote\") }),\n    el(\"a\", { class: \"btn btn-primary btn-lg\", id: \"request\", href: \"#\", onclick: onRequest, text: t(\"requestBtn\") }));\n\n  const next = el(\"section\", { class: \"card\", id: \"next\", \"aria-labelledby\": \"l-next\", hidden: true });\n  const summary = el(\"section\", { class: \"card\", id: \"summary\", \"aria-labelledby\": \"l-summary\", hidden: true });\n\n  const foot = el(\"footer\", { class: \"foot\" },\n    el(\"p\", null, R.firm.name,\n      R.firm.phone ? [\" \\u00b7 \", el(\"a\", { href: \"tel:\" + R.firm.phone.replace(/[^0-9+]/g, \"\"), text: R.firm.phone })] : null,\n      \" \\u00b7 \", el(\"span\", { text: R.firm.email })),\n    el(\"p\", { text: t(\"footPrices\", { date: longDate(R.pricesFrom) }) }),\n    el(\"p\", { text: t(\"footPrivacy\") }));\n\n  const lead = el(\"div\", { class: \"lead noprint\" }, el(\"h1\", { text: t(\"heading\") }), el(\"p\", { text: t(\"intro\") }));\n  const main = el(\"main\", { class: \"wrap\", id: \"main\" }, lead,\n    [qPurpose, qType, qWhen, qPlace, qExtra, quote, details].filter(Boolean).map(s => { s.classList.add(\"noprint\"); return s; }),\n    next, summary, foot);\n  next.classList.add(\"noprint\");\n  foot.classList.add(\"noprint\");\n  fill(app, head, sample || \"\", main);\n  document.title = R.firm.name + \": appraisal quote\";\n  update();\n}\n\nfunction bandText(i, short) {\n  const b = RULES.travel.bands, from = RULES.travel.from;\n  if (i === 0) return t(short ? \"bandShortFirst\" : \"bandFirst\", { km: b[0].upTo, from });\n  return t(short ? \"bandShortNext\" : \"bandNext\", { a: b[i - 1].upTo, b: b[i].upTo, from });\n}\n\nfunction termsBody() {\n  return el(\"div\", { class: \"terms-body\" }, RULES.terms.split(/\\n{2,}/).map(par => el(\"p\", null,\n    par.split(\"\\n\").map((ln, i) => (i ? [el(\"br\"), ln] : ln)))));\n}\n\n// ------------------------------------------------------------------ the quote\n\nfunction current() { return priceQuote(RULES, sel, TODAY); }\n\nfunction lineLabel(l) {\n  const p = RULES.purposes.find(x => x.id === sel.purpose), ty = RULES.types.find(x => x.id === sel.type);\n  if (l.code === \"base\") return t(\"lineBase\", { type: ty.label, purpose: p.label });\n  if (l.code === \"retro\") return t(\"lineRetro\");\n  if (l.code === \"travelZone\") return t(\"lineTravelZone\", { zone: l.zone });\n  if (l.code === \"travelKm\") return t(\"lineTravelKm\", { band: bandText(l.index, true) });\n  if (l.code === \"rush\") return t(\"lineRush\");\n  return l.code;\n}\n\nfunction priceRows(q) {\n  const rows = q.lines.map(l => [lineLabel(l), money(l.cents), \"\"]);\n  if (q.taxes.length) rows.push([t(\"subtotal\"), money(q.subtotal), \"sum\"]);\n  for (const x of q.taxes) rows.push([t(\"taxLine\", { label: x.label, rate: ratePercent(x.rate) }), money(x.cents), \"sum\"]);\n  rows.push([t(\"total\"), money(q.total), \"total\"]);\n  const d = RULES.deposit;\n  if (d.mode !== \"none\" && q.deposit > 0) {\n    rows.push([d.mode === \"percent\" ? t(\"depositPercent\", { percent: d.percent }) : t(\"depositFixed\"), money(q.deposit), \"dep\"]);\n    if (q.total - q.deposit > 0) rows.push([t(\"balance\"), money(q.total - q.deposit), \"sum\"]);\n  }\n  return rows;\n}\n\nfunction update() {\n  answersChanged();\n  const q = current(), box = $(\"quote\");\n  box.className = \"card quote noprint \" + q.status;\n  if (q.status === \"incomplete\") {\n    fill(box, el(\"h2\", { class: \"h2\", text: t(\"quoteHeading\") }),\n      q.problems.length ? el(\"p\", { class: \"ferr\", text: q.problems.map(p => t(\"prob_\" + p)).join(\" \") }) : el(\"p\", { text: t(\"quoteWaiting\") }),\n      q.missing.length ? el(\"p\", { class: \"muted\", text: t(\"stillNeed\") + \" \" + q.missing.map(m => t(\"need_\" + m)).join(\", \") + \".\" }) : null);\n  } else if (q.status === \"confirm\") {\n    fill(box, el(\"h2\", { class: \"h2\", text: t(\"confirmHeading\", { hours: RULES.confirmHours }) }),\n      el(\"p\", { class: \"why\", text: t(\"confirmWhy\") }),\n      el(\"ul\", null, q.confirm.map(c => el(\"li\", { text: t(\"conf_\" + c.code, c) }))),\n      el(\"p\", { class: \"why\", text: t(\"confirmNext\") }));\n  } else {\n    fill(box, el(\"h2\", { class: \"h2\", text: t(\"quoteHeading\") }),\n      el(\"table\", { class: \"lines num\" }, el(\"tbody\", null, priceRows(q).map(([k, v, cls]) =>\n        el(\"tr\", { class: cls || null }, el(\"th\", { scope: \"row\", text: k }), el(\"td\", { text: v }))))),\n      el(\"div\", { class: \"facts\" },\n        RULES.deposit.mode === \"none\" ? el(\"p\", { text: t(\"noDeposit\") }) : null,\n        el(\"p\", { text: sel.rush && RULES.rush ? t(\"readyRush\", { text: RULES.rush.turnaround }) : t(\"ready\", { text: RULES.turnaround }) }),\n        el(\"p\", { text: t(\"valid\", { days: RULES.validDays, date: longDate(RULES.pricesFrom) }) })));\n  }\n  refreshMail();\n}\n\n// ------------------------------------------------------------------ the request\n\nfunction placeText(q) {\n  if (!q.place) return \"\";\n  if (q.place.other) return t(\"placeOther\");\n  if (q.place.beyond) return t(\"bandBeyond\", { km: q.place.beyond, from: RULES.travel.from });\n  if (q.place.zone) return q.place.town + \" (\" + q.place.zone.label + \")\";\n  if (q.place.band) return bandText(q.place.index, false);\n  return \"\";\n}\n\nfunction effectiveText() { return sel.when === \"past\" && isIsoDate(sel.date) ? longDate(sel.date) + \" (\" + sel.date + \")\" : t(\"effCurrent\"); }\n\nfunction mailParts() {\n  const R = RULES, q = current();\n  const p = R.purposes.find(x => x.id === sel.purpose), ty = R.types.find(x => x.id === sel.type);\n  const kv = (k, v) => t(\"mailKV\", { k, v });\n  const c = {};\n  for (const f of FIELDS) c[f.id] = cutText(clean(who[f.id]), f.max);\n  const L = [t(\"mailIntro\"), \"\", t(\"mailRef\", { ref: REF }), t(\"mailMade\", { date: longDate(TODAY), list: longDate(R.pricesFrom) }), \"\",\n    t(\"mailProperty\"), kv(t(\"sumProperty\"), c.address)];\n  const place = placeText(q);\n  if (place) L.push(kv(t(\"sumPlace\"), place));\n  if (q.province) L.push(kv(t(\"provinceLabel\"), PROVINCES.find(x => x[0] === q.province)[1]));\n  L.push(kv(t(\"sumType\"), ty ? ty.label : \"\"), \"\", t(\"mailAppraisal\"), kv(t(\"sumPurpose\"), p ? p.label : \"\"),\n    kv(t(\"sumEffective\"), effectiveText()), kv(t(\"sumUse\"), c.use), kv(t(\"sumUsers\"), c.users || t(\"usersNone\")));\n  if (R.rush) L.push(kv(t(\"sumRush\"), sel.rush ? t(\"yes\") + \" (\" + R.rush.turnaround + \")\" : t(\"no\")));\n  if (R.complex) L.push(kv(t(\"sumComplex\"), sel.complex ? t(\"yes\") : t(\"no\")));\n  L.push(\"\");\n  if (q.status === \"priced\") {\n    L.push(t(\"mailPrice\"));\n    for (const [k, v] of priceRows(q)) L.push(kv(k, v));\n  } else if (q.status === \"confirm\") {\n    L.push(t(\"mailPriceConfirm\", { hours: R.confirmHours }));\n    for (const x of q.confirm) L.push(\"- \" + t(\"conf_\" + x.code, x));\n  }\n  L.push(\"\", t(\"mailClient\"), kv(t(\"sumClient\"), c.name), kv(t(\"mailEmail\"), c.email),\n    kv(t(\"mailPhone\"), c.phone), kv(t(\"sumLawyer\"), c.lawyer || t(\"none\")));\n  if (R.terms && who.terms) L.push(\"\", t(\"mailTerms\"));\n  const subject = cutText(t(\"mailSubject\", { ref: REF, address: c.address || \"\" }), 140);\n  return { subject, body: L, clean: c, quote: q };\n}\n\n/** The mailto: link. Half a surrogate pair can't reach here (clean() strips them and readRules() refuses them), but\n    encodeURIComponent throws on one, so any that did would become U+FFFD instead of leaving the link unbuilt. */\nfunction mailtoHref(m) {\n  const enc = s => encodeURIComponent(fixSurrogates(s, \"\\ufffd\"));\n  return \"mailto:\" + RULES.firm.email + \"?subject=\" + enc(m.subject) + \"&body=\" + enc(m.body.join(\"\\r\\n\"));\n}\n\n/** Keep the button's own link current (for a long press or \"copy link\"). If it can't be built, it points nowhere\n    rather than at an older request. */\nfunction refreshMail() {\n  const a = $(\"request\");\n  if (!a) return;\n  try { a.setAttribute(\"href\", mailtoHref(mailParts())); } catch (e) { a.setAttribute(\"href\", \"#\"); }\n}\n\n/** After a request, any change to an answer or a field makes the steps and the summary describe a request that was\n    not sent (an old price, an old deposit, or a deposit on what is now a \"we'll confirm\"). Hide them and say so by\n    the button, until the client presses it again. */\nfunction answersChanged() {\n  const next = $(\"next\");\n  if (!next || next.hidden) return;\n  next.hidden = true;\n  fill(next);\n  const s = $(\"summary\");\n  s.hidden = true;\n  fill(s);\n  $(\"changed\").hidden = false;\n}\n\nfunction fieldErrors(c) {\n  const errs = [];\n  if (current().status === \"incomplete\") errs.push([\"quote\", t(\"err_quote\")]);\n  for (const f of FIELDS) {\n    const raw = String(who[f.id] || \"\");\n    const v = c[f.id];\n    if (clean(raw).length > f.max) errs.push([f.id, t(\"err_long\", { max: f.max })]);\n    else if (!f.optional && !v) errs.push([f.id, t(\"err_\" + f.id)]);\n    else if (f.id === \"email\" && !isEmail(v)) errs.push([f.id, t(\"err_email\")]);\n    else if (f.id === \"phone\" && !isPhone(v)) errs.push([f.id, t(\"err_phone\")]);\n  }\n  if (RULES.terms && !who.terms) errs.push([\"terms\", t(\"err_terms\")]);\n  return errs;\n}\n\nfunction clearFieldError(id) {\n  const e = $(\"e-\" + id), f = $(\"f-\" + id);\n  if (e) { e.hidden = true; e.textContent = \"\"; }\n  if (f) f.removeAttribute(\"aria-invalid\");\n}\n\nfunction onRequest(ev) {\n  // Navigate only once the request is checked and its link is built, so a failure can never open an older request.\n  ev.preventDefault();\n  $(\"changed\").hidden = true;\n  const m = mailParts();\n  const errs = fieldErrors(m.clean);\n  for (const f of FIELDS) clearFieldError(f.id);\n  clearFieldError(\"terms\");\n  const box = $(\"errbox\");\n  if (errs.length) {\n    for (const [id, msg] of errs) {\n      const e = $(\"e-\" + id), f = $(\"f-\" + id);\n      if (e) { e.textContent = msg; e.hidden = false; }\n      if (f) f.setAttribute(\"aria-invalid\", \"true\");\n    }\n    fill(box, el(\"p\", { text: errs.length === 1 ? t(\"errOne\") : t(\"errMany\") }),\n      el(\"ul\", null, errs.map(([id, msg]) => el(\"li\", null, id === \"quote\" ? el(\"a\", { href: \"#quote\", text: msg }) : el(\"a\", { href: \"#f-\" + id, text: msg })))));\n    box.hidden = false;\n    box.focus();\n    return;\n  }\n  box.hidden = true;\n  let href = \"\";\n  try { href = mailtoHref(m); } catch (e) { href = \"\"; }\n  ev.currentTarget.setAttribute(\"href\", href || \"#\");\n  // The email is the request itself, so it opens even if drawing the next steps fails.\n  try { showNext(m, href); } finally { if (href) window.location.href = href; }\n}\n\n// ------------------------------------------------------------------ after the request\n\nfunction copyText(text, input) {\n  const done = ok => toast(ok ? t(\"copied\") : t(\"copyFailed\"));\n  if (navigator.clipboard && window.isSecureContext) {\n    navigator.clipboard.writeText(text).then(() => done(true), () => done(fallback()));\n  } else done(fallback());\n  function fallback() {\n    if (!input) return false;\n    input.focus();\n    input.select();\n    try { return document.execCommand(\"copy\"); } catch (e) { return false; }\n  }\n}\n\nlet toastTimer = 0;\nfunction toast(msg) {\n  const s = $(\"status\");\n  s.textContent = msg;\n  s.classList.add(\"show\");\n  clearTimeout(toastTimer);\n  toastTimer = setTimeout(() => s.classList.remove(\"show\"), 2200);\n}\n\n/** The next steps. Without `href` (the email link could not be built) there is no \"open again\" button, and the\n    copy-the-request box is the way to send it. */\nfunction showNext(m, href) {\n  const R = RULES, q = m.quote, next = $(\"next\");\n  const plain = [t(\"mailCopyTo\", { email: R.firm.email }), t(\"mailCopySubject\", { subject: m.subject }), \"\"].concat(m.body).join(\"\\n\");\n  const area = el(\"textarea\", { class: \"textarea mailtext\", readonly: true, \"aria-label\": t(\"copyRequest\") });\n  area.value = plain;\n  let n = 0;\n  const num = () => el(\"span\", { class: \"n\", \"aria-hidden\": \"true\", text: String(++n) });\n\n  const step1 = el(\"li\", null, el(\"h3\", null, num(), t(\"step1\")), el(\"p\", { text: href ? t(\"step1Body\") : t(\"noLink\", { email: R.firm.email }) }),\n    el(\"div\", { class: \"btn-row\" }, href ? el(\"a\", { class: \"btn\", href, text: t(\"openAgain\") }) : null,\n      el(\"button\", { class: \"btn\", type: \"button\", onclick: () => copyText(plain, area), text: t(\"copyRequest\") })),\n    href ? el(\"p\", { text: t(\"noApp\", { email: R.firm.email }) }) : null, area);\n\n  let step2;\n  if (q.status === \"confirm\") {\n    step2 = el(\"li\", null, el(\"h3\", null, num(), t(\"step2Wait\")), el(\"p\", { text: t(\"step2WaitBody\", { hours: R.confirmHours }) }));\n  } else if (R.deposit.mode === \"none\" || q.deposit \u003c= 0) {\n    step2 = el(\"li\", null, el(\"h3\", null, num(), t(\"step2None\")), el(\"p\", { text: t(\"step2NoneBody\") }));\n  } else {\n    const box = el(\"div\", { class: \"paybox\" });\n    const refCode = el(\"code\", { text: REF });\n    if (R.payment.etransfer) {\n      const em = el(\"code\", { text: R.payment.etransfer });\n      box.append(el(\"p\", { text: t(\"payEtransfer\") }),\n        el(\"div\", { class: \"copyline\" }, em, el(\"button\", { class: \"btn btn-sm\", type: \"button\", onclick: () => copyText(R.payment.etransfer), text: t(\"copyEmail\") })),\n        el(\"p\", { text: t(\"payMessage\") }),\n        el(\"div\", { class: \"copyline\" }, refCode, el(\"button\", { class: \"btn btn-sm\", type: \"button\", onclick: () => copyText(REF), text: t(\"copyEmail\") })));\n    }\n    if (R.payment.link) {\n      const host = new URL(R.payment.link).host;\n      if (R.payment.etransfer) box.append(el(\"p\", { text: t(\"payOr\") }));\n      else box.append(el(\"p\", { text: t(\"payRefLink\") }), el(\"div\", { class: \"copyline\" }, refCode,\n        el(\"button\", { class: \"btn btn-sm\", type: \"button\", onclick: () => copyText(REF), text: t(\"copyEmail\") })));\n      box.append(el(\"div\", null, el(\"a\", { class: \"btn btn-primary\", id: \"paylink\", href: R.payment.link, target: \"_blank\", rel: \"noopener noreferrer\", text: t(\"payLink\") })),\n        el(\"p\", { class: \"hint\", text: t(\"payLinkHost\", { host }) }));\n    }\n    if (R.payment.note) box.append(el(\"p\", { class: \"hint\", text: R.payment.note }));\n    step2 = el(\"li\", null, el(\"h3\", null, num(), t(\"step2Pay\", { amount: money(q.deposit) })), box);\n  }\n  const step3 = el(\"li\", null, el(\"h3\", null, num(), t(\"step3\")), el(\"p\", { text: t(\"step3Body\") }),\n    el(\"div\", { class: \"btn-row\" }, el(\"button\", { class: \"btn\", type: \"button\", onclick: () => window.print(), text: t(\"printBtn\") })));\n\n  fill(next, el(\"h2\", { class: \"h2\", id: \"l-next\", tabindex: \"-1\", text: t(\"nextHeading\") }), el(\"ol\", { class: \"steps\" }, step1, step2, step3));\n  next.hidden = false;\n  renderSummary(m);\n  $(\"l-next\").focus();\n}\n\nfunction renderSummary(m) {\n  const R = RULES, q = m.quote, c = m.clean;\n  const p = R.purposes.find(x => x.id === sel.purpose), ty = R.types.find(x => x.id === sel.type);\n  const rows = [[t(\"sumFirm\"), R.firm.name + (R.firm.phone ? \" \\u00b7 \" + R.firm.phone : \"\") + \" \\u00b7 \" + R.firm.email],\n    [t(\"sumRef\"), REF], [t(\"sumDate\"), longDate(TODAY)],\n    [t(\"sumClient\"), c.name + \" \\u00b7 \" + c.email + \" \\u00b7 \" + c.phone],\n    [t(\"sumProperty\"), c.address], [t(\"sumPlace\"), placeText(q)], [t(\"sumType\"), ty.label], [t(\"sumPurpose\"), p.label],\n    [t(\"sumEffective\"), effectiveText()], [t(\"sumUse\"), c.use], [t(\"sumUsers\"), c.users || t(\"usersNone\")],\n    [t(\"sumLawyer\"), c.lawyer || t(\"none\")]];\n  if (R.rush) rows.push([t(\"sumRush\"), sel.rush ? t(\"yes\") + \" (\" + R.rush.turnaround + \")\" : t(\"no\")]);\n  if (R.complex) rows.push([t(\"sumComplex\"), sel.complex ? t(\"yes\") : t(\"no\")]);\n  rows.push([t(\"sumTurnaround\"), sel.rush && R.rush ? R.rush.turnaround : R.turnaround]);\n  const price = q.status === \"priced\"\n    ? el(\"table\", { class: \"lines num\" }, el(\"tbody\", null, priceRows(q).map(([k, v, cls]) => el(\"tr\", { class: cls || null }, el(\"th\", { scope: \"row\", text: k }), el(\"td\", { text: v })))))\n    : el(\"p\", { class: \"why\", text: t(\"priceToConfirm\", { hours: R.confirmHours }) });\n  const s = $(\"summary\");\n  fill(s, el(\"h2\", { class: \"h2\", id: \"l-summary\", text: t(\"sumHeading\") + \": \" + R.firm.name }),\n    el(\"dl\", { class: \"sumgrid\" }, rows.map(([k, v]) => [el(\"dt\", { text: k }), el(\"dd\", { text: v })])),\n    el(\"h3\", { class: \"why\", text: t(\"sumPrice\") }), price,\n    R.terms ? [el(\"h3\", { class: \"why\", text: t(\"sumTerms\") }), termsBody()] : null,\n    el(\"p\", { class: \"sumnote\", text: t(\"sumNote\") }));\n  s.hidden = false;\n}\n\nboot();\n\u003c/script>\n\u003c/body>\n\u003c/html>\n"</script>
+<script type="application/json" id="sample-rules">{"format":"field-office-quote-rules","version":1,"sample":"FICTIONAL: Sample Appraisal Co., its towns, its terms and every fee here are invented. Write your own.","firm":{"name":"Sample Appraisal Co.","logoText":"SA","color":"#1d4f91","email":"quotes@sample-appraisal.example","phone":"902-555-0142","area":"Residential appraisals around Ellery Harbour and the north shore"},"pricesFrom":"2026-10-01","validDays":30,"purposes":[{"id":"estate","label":"Estate or date of death"},{"id":"separation","label":"Separation or matrimonial"},{"id":"tax","label":"Tax or capital gains"},{"id":"sale","label":"Private sale"},{"id":"lender","label":"Private lender or MIC"},{"id":"other","label":"Something else"}],"types":[{"id":"detached","label":"Detached house"},{"id":"semi","label":"Semi-detached or townhouse"},{"id":"condo","label":"Condo unit"},{"id":"multi","label":"2 to 4 units"},{"id":"rural","label":"Rural or acreage"},{"id":"cottage","label":"Cottage"},{"id":"land","label":"Vacant land"}],"fees":{"estate":{"detached":55000,"semi":52500,"condo":50000,"multi":75000,"rural":70000,"cottage":60000,"land":45000},"separation":{"detached":57500,"semi":55000,"condo":52500,"multi":77500,"rural":72500,"cottage":62500,"land":47500},"tax":{"detached":60000,"semi":57500,"condo":55000,"multi":80000,"rural":75000,"cottage":65000,"land":50000},"sale":{"detached":50000,"semi":47500,"condo":45000,"multi":70000,"rural":65000,"cottage":55000,"land":42500},"lender":{"detached":65000,"semi":62500,"condo":60000,"multi":85000,"rural":80000,"cottage":70000,"land":null},"other":{"detached":null,"semi":null,"condo":null,"multi":null,"rural":null,"cottage":null,"land":null}},"retro":{"fee":7500,"confirmYears":10},"rush":{"fee":15000,"turnaround":"3 business days after the inspection"},"travel":{"mode":"towns","zones":[{"label":"Ellery Harbour area","fee":0,"towns":["Ellery Harbour","Port Wyncott","Tamsin Bay"]},{"label":"North shore","fee":5000,"towns":["Gullwhistle","Kettlemarsh","Wrenwick Cove"]},{"label":"Up the valley","fee":10000,"towns":["Otterbeck Mills","Upper Saltmarrow"]}]},"complex":{"hint":"Over 4,000 sq ft, over 10 acres, more than one home on the lot, or unusual construction such as log, straw bale or earth-sheltered"},"confirmHours":24,"provinces":["PE"],"tax":{"PE":[{"label":"HST","rate":15000}]},"deposit":{"mode":"percent","percent":50},"turnaround":"5 to 7 business days after the inspection","payment":{"etransfer":"deposits@sample-appraisal.example","link":"https://pay.sample-appraisal.example/deposit","note":"Auto-deposit is on, so no security question is needed."},"terms":"SAMPLE TERMS, INVENTED FOR THIS DEMO. Write your own, or paste the terms your lawyer gave you.\n\nWe appraise the property for the purpose and the effective date you chose on this page. The report is for you and any other intended users you named in your request, and only for the intended use you described.\n\nThe price on this page is our fee for the report. Taxes are extra and shown. The deposit holds your place in our schedule and comes off the final invoice. If you cancel before the inspection, we refund the deposit in full. After the inspection, the deposit covers the work done.\n\nWe confirm the engagement by email before we book the inspection. Nothing is booked until you hear from us."}</script>
+<script>
+"use strict";
+/* shared:begin */
+// tools/quote/shared.js: the rules format, its strict reader and the price arithmetic, shared by setup.html and the
+// client quote page. sync.py pastes this file into both pages between the shared markers, so the firm's preview and
+// the client's page can never price differently. Edit this file, then run python3 tools/quote/sync.py.
+// Money is integer cents. Tax rates are integer thousandths of a percent (15000 = 15%, 9975 = 9.975%).
+
+const QUOTE_FORMAT = "field-office-quote-rules";
+const QUOTE_VERSION = 1;
+
+const PURPOSE_DEFAULTS = [
+  ["estate", "Estate or date of death"],
+  ["separation", "Separation or matrimonial"],
+  ["tax", "Tax or capital gains"],
+  ["sale", "Private sale"],
+  ["lender", "Private lender or MIC"],
+  ["other", "Something else"],
+];
+const TYPE_DEFAULTS = [
+  ["detached", "Detached house"],
+  ["semi", "Semi-detached or townhouse"],
+  ["condo", "Condo unit"],
+  ["multi", "2 to 4 units"],
+  ["rural", "Rural or acreage"],
+  ["cottage", "Cottage"],
+  ["land", "Vacant land"],
+];
+// GST/HST starting values, October 2026. Nova Scotia's HST is 14% from 1 April 2025. Quebec adds QST, worked out on
+// the price before GST. Other provincial sales taxes are not included. The firm checks its own rates.
+const PROVINCES = [
+  ["AB", "Alberta", [["GST", 5000]]],
+  ["BC", "British Columbia", [["GST", 5000]]],
+  ["MB", "Manitoba", [["GST", 5000]]],
+  ["NB", "New Brunswick", [["HST", 15000]]],
+  ["NL", "Newfoundland and Labrador", [["HST", 15000]]],
+  ["NS", "Nova Scotia", [["HST", 14000]]],
+  ["NT", "Northwest Territories", [["GST", 5000]]],
+  ["NU", "Nunavut", [["GST", 5000]]],
+  ["ON", "Ontario", [["HST", 13000]]],
+  ["PE", "Prince Edward Island", [["HST", 15000]]],
+  ["QC", "Quebec", [["GST", 5000], ["QST", 9975]]],
+  ["SK", "Saskatchewan", [["GST", 5000]]],
+  ["YT", "Yukon", [["GST", 5000]]],
+];
+const MAX_FEE = 5000000;          // $50,000: any single fee above this is a typing slip
+const RULES_MAX_BYTES = 300000;   // a rules file or a quote page read back into setup
+const TOP_KEYS = ["format", "version", "sample", "firm", "pricesFrom", "validDays", "purposes", "types", "fees",
+  "retro", "rush", "travel", "complex", "confirmHours", "provinces", "tax", "deposit", "turnaround", "payment", "terms"];
+
+// ------------------------------------------------------------------ small pure helpers
+
+function isPlainObject(v) {
+  return v !== null && typeof v === "object" && !Array.isArray(v) && Object.getPrototypeOf(v) === Object.prototype;
+}
+
+/** The path of the first key named __proto__, constructor or prototype at any depth, or "". */
+function protoKeyPath(v, path) {
+  if (Array.isArray(v)) {
+    for (let i = 0; i < v.length; i++) { const p = protoKeyPath(v[i], path + "." + i); if (p) return p; }
+  } else if (v !== null && typeof v === "object") {
+    for (const k of Object.keys(v)) {
+      const here = path ? path + "." + k : k;
+      if (k === "__proto__" || k === "constructor" || k === "prototype") return here;
+      const p = protoKeyPath(v[k], here);
+      if (p) return p;
+    }
+  }
+  return "";
+}
+
+const CONTROL_RE = /[\u0000-\u0008\u000b-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2028\u2029\u2066-\u2069\ufeff]/;
+// A whole surrogate pair (one character, such as an emoji), else half of one on its own. Half a pair is not a
+// character at all, and encodeURIComponent throws on it, which would leave the request email unbuilt.
+const SURROGATE_RE = /[\ud800-\udbff][\udc00-\udfff]|[\ud800-\udfff]/g;
+const LINE_BREAK_RE = /[\n\t]/;
+const EMAIL_RE = /^[A-Za-z0-9._+-]{1,64}@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.[A-Za-z]{2,24}$/;
+const PHONE_RE = /^[0-9 +().-]{7,25}$/;
+const COLOR_RE = /^#[0-9a-fA-F]{6}$/;
+
+/** `s` with every half pair replaced by `rep`; whole pairs are kept. */
+function fixSurrogates(s, rep) { return s.replace(SURROGATE_RE, m => (m.length === 2 ? m : rep)); }
+function hasHalfPair(s) { return fixSurrogates(s, "") !== s; }
+
+/** At most `n` UTF-16 units of `s`, never ending in half a pair (slice counts units, so it can cut an emoji). */
+function cutText(s, n) {
+  const c = s.slice(0, n);
+  return /[\ud800-\udbff]$/.test(c) ? c.slice(0, -1) : c;
+}
+
+function isEmail(s) {
+  return typeof s === "string" && s.length <= 120 && EMAIL_RE.test(s) && !s.includes("..") && !s.startsWith(".");
+}
+
+/** A phone number has 7 to 15 digits and only the characters people write numbers with. */
+function isPhone(s) {
+  if (typeof s !== "string" || !PHONE_RE.test(s)) return false;
+  const d = s.replace(/[^0-9]/g, "").length;
+  return d >= 7 && d <= 15;
+}
+
+/** Only an https: link to a named host, written out in full, with no login part. Anything else is refused,
+    so a javascript:, data: or http: link can never become the payment button. Returns the normalised link or "". */
+function httpsLink(s) {
+  if (typeof s !== "string" || s.length > 500 || CONTROL_RE.test(s) || hasHalfPair(s) || /[\s\\<>"'`]/.test(s)) return "";
+  if (!/^https:\/\/[A-Za-z0-9]/.test(s)) return "";
+  let u;
+  try { u = new URL(s); } catch (e) { return ""; }
+  if (u.protocol !== "https:" || u.username || u.password || u.port) return "";
+  if (!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,24}$/.test(u.hostname)) return "";
+  return u.href;
+}
+
+function isIsoDate(s) {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const y = +s.slice(0, 4), m = +s.slice(5, 7), d = +s.slice(8, 10);
+  const t = new Date(Date.UTC(y, m - 1, d));
+  return y >= 1900 && t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+}
+
+function pad2(n) { return String(n).padStart(2, "0"); }
+
+/** Today's date where the reader is, as YYYY-MM-DD. */
+function localToday(d) {
+  d = d || new Date();
+  return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+}
+
+/** The same calendar day `years` years earlier (29 Feb becomes 28 Feb), as YYYY-MM-DD. */
+function yearsBefore(iso, years) {
+  const y = +iso.slice(0, 4) - years, m = iso.slice(5, 7);
+  let d = iso.slice(8, 10);
+  if (m === "02" && d === "29" && !(y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0))) d = "28";
+  return String(y).padStart(4, "0") + "-" + m + "-" + d;
+}
+
+/** a / b rounded half up, for non-negative integers (tax and deposit cents). */
+function roundDiv(a, b) { return Math.floor((2 * a + b) / (2 * b)); }
+
+function money(cents) {
+  const neg = cents < 0;
+  const c = Math.abs(cents);
+  const dollars = String(Math.floor(c / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return (neg ? "-" : "") + "$" + dollars + "." + pad2(c % 100);
+}
+
+/** 15000 -> "15%", 9975 -> "9.975%". */
+function ratePercent(rate) {
+  const whole = Math.floor(rate / 1000), frac = String(rate % 1000).padStart(3, "0").replace(/0+$/, "");
+  return whole + (frac ? "." + frac : "") + "%";
+}
+
+/** Relative luminance contrast of a #rrggbb colour against white. */
+function contrastWithWhite(hex) {
+  const ch = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map(c => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  const lum = 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+  return 1.05 / (lum + 0.05);
+}
+
+// ------------------------------------------------------------------ the strict reader
+
+/** Read a rules object as untrusted data. Returns {rules, errors}: `rules` is the canonical copy (key order fixed,
+    text trimmed, the link normalised) when there are no errors, else null. Every problem is named by its path. */
+function readRules(raw) {
+  const errors = [];
+  const bad = (path, msg) => { errors.push({ path, msg }); };
+  if (!isPlainObject(raw)) return { rules: null, errors: [{ path: "", msg: "The rules must be one JSON object." }] };
+  const proto = protoKeyPath(raw, "");
+  if (proto) return { rules: null, errors: [{ path: proto, msg: "A key named __proto__, constructor or prototype is not allowed." }] };
+
+  const keysOf = (obj, path, allowed, optional) => {
+    if (!isPlainObject(obj)) { bad(path, "Must be a group of settings."); return false; }
+    for (const k of Object.keys(obj)) if (!allowed.includes(k)) bad(path ? path + "." + k : k, "Unknown setting.");
+    for (const k of allowed) if (!(k in obj) && !(optional || []).includes(k)) bad(path ? path + "." + k : k, "Missing.");
+    return true;
+  };
+  const line = (v, path, min, max) => {
+    if (typeof v !== "string") { bad(path, "Must be text."); return ""; }
+    const s = v.trim();
+    if (CONTROL_RE.test(s) || hasHalfPair(s) || LINE_BREAK_RE.test(s) || /\r/.test(s)) bad(path, "Must be one line of plain text.");
+    else if (s.length < min) bad(path, min === 1 ? "Required." : "Needs at least " + min + " characters.");
+    else if (s.length > max) bad(path, "Too long: at most " + max + " characters.");
+    return s;
+  };
+  const text = (v, path, max) => {
+    if (typeof v !== "string") { bad(path, "Must be text."); return ""; }
+    const s = v.replace(/\r\n?/g, "\n").replace(/[ \t]+$/gm, "").trim();
+    if (CONTROL_RE.test(s) || hasHalfPair(s) || /\t/.test(s)) bad(path, "Must be plain text.");
+    else if (s.length > max) bad(path, "Too long: at most " + max + " characters.");
+    return s;
+  };
+  const int = (v, path, min, max, what) => {
+    if (typeof v !== "number" || !Number.isInteger(v)) { bad(path, "Must be a whole number" + (what ? " (" + what + ")" : "") + "."); return 0; }
+    if (v < min || v > max) bad(path, "Must be from " + min + " to " + max + (what ? " " + what : "") + ".");
+    return v;
+  };
+  const cents = (v, path, min, max) => {
+    if (typeof v !== "number" || !Number.isInteger(v)) { bad(path, "Must be an amount in whole cents."); return 0; }
+    if (v < min || v > max) bad(path, "Must be from " + money(min) + " to " + money(max) + ".");
+    return v;
+  };
+
+  keysOf(raw, "", TOP_KEYS, ["sample", "rush", "complex"]);
+  const out = {};
+  if (raw.format !== QUOTE_FORMAT) bad("format", "Not a quote rules file (format line missing).");
+  if (raw.version !== QUOTE_VERSION) bad("version", "Version " + QUOTE_VERSION + " is the only version this page reads.");
+  out.format = QUOTE_FORMAT;
+  out.version = QUOTE_VERSION;
+  if ("sample" in raw) {
+    const s = line(raw.sample, "sample", 0, 300);
+    if (s) out.sample = s;
+  }
+
+  const f = raw.firm, firm = {};
+  if (keysOf(f, "firm", ["name", "logoText", "color", "email", "phone", "area"])) {
+    firm.name = line(f.name, "firm.name", 1, 80);
+    firm.logoText = line(f.logoText, "firm.logoText", 1, 4);
+    firm.color = typeof f.color === "string" ? f.color.toLowerCase() : f.color;
+    if (!COLOR_RE.test(String(f.color))) bad("firm.color", "Must be a colour written like #1d4f91.");
+    else if (contrastWithWhite(firm.color) < 4.5) bad("firm.color", "Too light: white text on it would be hard to read. Pick a darker colour.");
+    firm.email = line(f.email, "firm.email", 1, 120);
+    if (firm.email && !isEmail(firm.email)) bad("firm.email", "Not an email address.");
+    firm.phone = line(f.phone, "firm.phone", 0, 25);
+    if (firm.phone && !isPhone(firm.phone)) bad("firm.phone", "Not a phone number (digits, spaces, + - ( ) . only).");
+    firm.area = line(f.area, "firm.area", 0, 120);
+  }
+  out.firm = firm;
+  out.pricesFrom = raw.pricesFrom;
+  if (!isIsoDate(raw.pricesFrom)) bad("pricesFrom", "Must be a date written YYYY-MM-DD.");
+  out.validDays = int(raw.validDays, "validDays", 1, 365, "days");
+
+  const list = (arr, path, defaults, what) => {
+    const res = [];
+    if (!Array.isArray(arr) || arr.length < 1 || arr.length > defaults.length) { bad(path, "Offer at least one " + what + "."); return res; }
+    const ids = defaults.map(d => d[0]), seen = new Set();
+    arr.forEach((x, i) => {
+      const p = path + "." + i;
+      if (!keysOf(x, p, ["id", "label"])) return;
+      if (!ids.includes(x.id) || seen.has(x.id)) { bad(p + ".id", "Unknown or repeated " + what + "."); return; }
+      seen.add(x.id);
+      res.push({ id: x.id, label: line(x.label, p + ".label", 1, 60) });
+    });
+    return res;
+  };
+  out.purposes = list(raw.purposes, "purposes", PURPOSE_DEFAULTS, "purpose");
+  out.types = list(raw.types, "types", TYPE_DEFAULTS, "property type");
+
+  const fees = {};
+  if (keysOf(raw.fees, "fees", out.purposes.map(p => p.id))) {
+    for (const p of out.purposes) {
+      const row = raw.fees[p.id], r = {};
+      if (keysOf(row, "fees." + p.id, out.types.map(t => t.id))) {
+        for (const t of out.types) {
+          const v = row[t.id], path = "fees." + p.id + "." + t.id;
+          r[t.id] = v === null ? null : cents(v, path, 100, MAX_FEE);
+        }
+      }
+      fees[p.id] = r;
+    }
+  }
+  out.fees = fees;
+
+  const retro = {};
+  if (keysOf(raw.retro, "retro", ["fee", "confirmYears"])) {
+    retro.fee = cents(raw.retro.fee, "retro.fee", 0, MAX_FEE);
+    retro.confirmYears = int(raw.retro.confirmYears, "retro.confirmYears", 0, 100, "years");
+  }
+  out.retro = retro;
+
+  if (raw.rush !== undefined && raw.rush !== null) {
+    if (keysOf(raw.rush, "rush", ["fee", "turnaround"])) {
+      out.rush = { fee: cents(raw.rush.fee, "rush.fee", 100, MAX_FEE), turnaround: line(raw.rush.turnaround, "rush.turnaround", 1, 80) };
+    }
+  }
+
+  const tr = raw.travel, travel = {};
+  if (isPlainObject(tr) && tr.mode === "none") {
+    keysOf(tr, "travel", ["mode"]);
+    travel.mode = "none";
+  } else if (isPlainObject(tr) && tr.mode === "towns") {
+    keysOf(tr, "travel", ["mode", "zones"]);
+    travel.mode = "towns";
+    travel.zones = [];
+    const seen = new Map();
+    if (!Array.isArray(tr.zones) || tr.zones.length < 1 || tr.zones.length > 20) bad("travel.zones", "Add 1 to 20 zones.");
+    else tr.zones.forEach((z, i) => {
+      const p = "travel.zones." + i;
+      if (!keysOf(z, p, ["label", "fee", "towns"])) return;
+      const zone = { label: line(z.label, p + ".label", 1, 60), fee: cents(z.fee, p + ".fee", 0, MAX_FEE), towns: [] };
+      if (!Array.isArray(z.towns) || z.towns.length < 1 || z.towns.length > 300) bad(p + ".towns", "List 1 to 300 towns.");
+      else z.towns.forEach((t, j) => {
+        const name = line(t, p + ".towns", 1, 60);
+        const key = name.toLowerCase();
+        if (name && seen.has(key)) bad(p + ".towns", "\u201c" + name + "\u201d is listed twice (" + seen.get(key) + ").");
+        else if (name) seen.set(key, zone.label || "zone " + (i + 1));
+        zone.towns.push(name);
+      });
+      travel.zones.push(zone);
+    });
+  } else if (isPlainObject(tr) && tr.mode === "km") {
+    keysOf(tr, "travel", ["mode", "from", "bands"]);
+    travel.mode = "km";
+    travel.from = line(tr.from, "travel.from", 1, 80);
+    travel.bands = [];
+    if (!Array.isArray(tr.bands) || tr.bands.length < 1 || tr.bands.length > 10) bad("travel.bands", "Add 1 to 10 distance bands.");
+    else tr.bands.forEach((b, i) => {
+      const p = "travel.bands." + i;
+      if (!keysOf(b, p, ["upTo", "fee"])) return;
+      const band = { upTo: int(b.upTo, p + ".upTo", 1, 1000, "km"), fee: cents(b.fee, p + ".fee", 0, MAX_FEE) };
+      if (i > 0 && travel.bands[i - 1] && band.upTo <= travel.bands[i - 1].upTo) bad(p + ".upTo", "Each band must reach further than the one before.");
+      travel.bands.push(band);
+    });
+  } else {
+    bad("travel", "Travel must be none, towns or km.");
+  }
+  out.travel = travel;
+
+  if (raw.complex !== undefined && raw.complex !== null) {
+    if (keysOf(raw.complex, "complex", ["hint"])) out.complex = { hint: line(raw.complex.hint, "complex.hint", 1, 200) };
+  }
+  out.confirmHours = int(raw.confirmHours, "confirmHours", 1, 168, "hours");
+
+  const codes = PROVINCES.map(p => p[0]);
+  out.provinces = [];
+  if (!Array.isArray(raw.provinces) || raw.provinces.length < 1) bad("provinces", "Pick the province (or provinces) your properties are in.");
+  else raw.provinces.forEach((c, i) => {
+    if (!codes.includes(c) || out.provinces.includes(c)) bad("provinces." + i, "Unknown or repeated province.");
+    else out.provinces.push(c);
+  });
+  out.tax = {};
+  if (keysOf(raw.tax, "tax", out.provinces)) {
+    for (const c of out.provinces) {
+      const lines = raw.tax[c], p = "tax." + c;
+      if (!Array.isArray(lines) || lines.length > 2) { bad(p, "Up to two tax lines."); continue; }
+      out.tax[c] = lines.map((l, i) => {
+        if (!keysOf(l, p + "." + i, ["label", "rate"])) return { label: "", rate: 0 };
+        return { label: line(l.label, p + "." + i + ".label", 1, 20), rate: int(l.rate, p + "." + i + ".rate", 1, 30000, "thousandths of a percent") };
+      });
+    }
+  }
+
+  const d = raw.deposit;
+  if (isPlainObject(d) && d.mode === "none") { keysOf(d, "deposit", ["mode"]); out.deposit = { mode: "none" }; }
+  else if (isPlainObject(d) && d.mode === "percent") { keysOf(d, "deposit", ["mode", "percent"]); out.deposit = { mode: "percent", percent: int(d.percent, "deposit.percent", 1, 100, "percent") }; }
+  else if (isPlainObject(d) && d.mode === "fixed") { keysOf(d, "deposit", ["mode", "fee"]); out.deposit = { mode: "fixed", fee: cents(d.fee, "deposit.fee", 100, MAX_FEE) }; }
+  else { bad("deposit", "Deposit must be none, percent or fixed."); out.deposit = { mode: "none" }; }
+
+  out.turnaround = line(raw.turnaround, "turnaround", 1, 120);
+  const pay = {};
+  if (keysOf(raw.payment, "payment", ["etransfer", "link", "note"])) {
+    pay.etransfer = line(raw.payment.etransfer, "payment.etransfer", 0, 120);
+    if (pay.etransfer && !isEmail(pay.etransfer)) bad("payment.etransfer", "Not an email address.");
+    const rawLink = typeof raw.payment.link === "string" ? raw.payment.link.trim() : raw.payment.link;
+    pay.link = "";
+    if (typeof rawLink !== "string") bad("payment.link", "Must be text.");
+    else if (rawLink) {
+      pay.link = httpsLink(rawLink);
+      if (!pay.link) bad("payment.link", "Only a full https:// link to your payment page is allowed.");
+    }
+    pay.note = line(raw.payment.note, "payment.note", 0, 200);
+    if (out.deposit.mode !== "none" && !pay.etransfer && !pay.link) bad("payment", "A deposit needs an e-transfer email or a payment link.");
+  }
+  out.payment = pay;
+  out.terms = text(raw.terms, "terms", 8000);
+
+  return errors.length ? { rules: null, errors } : { rules: out, errors: [] };
+}
+
+// ------------------------------------------------------------------ the arithmetic
+
+/** Work out the quote for the client's choices. `sel`: {purpose, type, when: "current"|"past", date, province,
+    place: "zone.town" | "band index" | "other" | "beyond", rush, complex}. Returns
+    {status: "incomplete"|"confirm"|"priced", missing, problems, confirm, lines, subtotal, taxes, total, deposit}.
+    Nothing here guesses: a blank price, an unlisted town or a date too far back becomes "we'll confirm". */
+function priceQuote(rules, sel, today) {
+  const r = { status: "incomplete", missing: [], problems: [], confirm: [], lines: [], subtotal: 0, taxes: [], total: 0, deposit: 0, province: "", place: null };
+  const p = rules.purposes.find(x => x.id === sel.purpose);
+  const t = rules.types.find(x => x.id === sel.type);
+  if (!p) r.missing.push("purpose");
+  if (!t) r.missing.push("type");
+  if (sel.when !== "current" && sel.when !== "past") r.missing.push("when");
+  else if (sel.when === "past") {
+    if (!sel.date) r.missing.push("date");
+    else if (!isIsoDate(sel.date)) r.problems.push("dateBad");
+    else if (sel.date >= today) r.problems.push("dateNotPast");
+  }
+  const tr = rules.travel;
+  if (tr.mode === "towns") {
+    if (!sel.place) r.missing.push("place");
+    else if (sel.place === "other") r.place = { other: true };
+    else {
+      const m = /^(\d+)\.(\d+)$/.exec(sel.place);
+      const z = m && tr.zones[+m[1]];
+      if (!z || !z.towns[+m[2]]) r.missing.push("place");
+      else r.place = { zone: z, town: z.towns[+m[2]] };
+    }
+  } else if (tr.mode === "km") {
+    if (!sel.place) r.missing.push("place");
+    else if (sel.place === "beyond") r.place = { beyond: tr.bands[tr.bands.length - 1].upTo };
+    else {
+      const i = /^\d+$/.test(sel.place) ? +sel.place : -1;
+      if (!tr.bands[i]) r.missing.push("place");
+      else r.place = { band: tr.bands[i], index: i };
+    }
+  }
+  r.province = rules.provinces.length === 1 ? rules.provinces[0] : sel.province;
+  if (!rules.provinces.includes(r.province)) { r.province = ""; r.missing.push("province"); }
+  if (r.missing.length || r.problems.length) return r;
+
+  const base = rules.fees[p.id][t.id];
+  if (base === null) r.confirm.push({ code: "caseByCase" });
+  else r.lines.push({ code: "base", cents: base });
+  if (sel.when === "past") {
+    if (rules.retro.confirmYears > 0 && sel.date < yearsBefore(today, rules.retro.confirmYears)) r.confirm.push({ code: "oldDate", years: rules.retro.confirmYears });
+    else if (rules.retro.fee > 0) r.lines.push({ code: "retro", cents: rules.retro.fee });
+  }
+  const pl = r.place || {};  // null when the firm charges no travel
+  if (pl.other) r.confirm.push({ code: "townOther" });
+  if (pl.beyond) r.confirm.push({ code: "beyond", km: pl.beyond });
+  if (pl.zone && pl.zone.fee > 0) r.lines.push({ code: "travelZone", cents: pl.zone.fee, zone: pl.zone.label });
+  if (pl.band && pl.band.fee > 0) r.lines.push({ code: "travelKm", cents: pl.band.fee, index: pl.index });
+  if (sel.rush && rules.rush) r.lines.push({ code: "rush", cents: rules.rush.fee });
+  if (sel.complex && rules.complex) r.confirm.push({ code: "complex" });
+  if (r.confirm.length) { r.status = "confirm"; return r; }
+
+  r.subtotal = r.lines.reduce((a, l) => a + l.cents, 0);
+  r.taxes = rules.tax[r.province].map(l => ({ label: l.label, rate: l.rate, cents: roundDiv(r.subtotal * l.rate, 100000) }));
+  r.total = r.subtotal + r.taxes.reduce((a, l) => a + l.cents, 0);
+  const d = rules.deposit;
+  r.deposit = d.mode === "percent" ? roundDiv(r.total * d.percent, 100) : d.mode === "fixed" ? Math.min(d.fee, r.total) : 0;
+  r.status = "priced";
+  return r;
+}
+
+// ------------------------------------------------------------------ DOM
+
+/** Build an element. Text always goes in as text (never HTML); an href must be https:, mailto:, tel: or #. */
+function el(tag, attrs) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (k === "href") {
+      if (!/^(https:|mailto:|tel:|#)/.test(String(v))) throw new Error("refused link");
+      n.setAttribute("href", v);
+    } else if (/^(src|srcdoc|style|innerHTML|outerHTML)$/i.test(k)) throw new Error("refused attribute " + k);
+    else n.setAttribute(k, v === true ? "" : String(v));
+  }
+  for (let i = 2; i < arguments.length; i++) {
+    const kids = [arguments[i]].flat(Infinity);
+    for (const c of kids) if (c !== null && c !== undefined && c !== false) n.append(c instanceof Node ? c : String(c));
+  }
+  return n;
+}
+
+/** Replace a node's children; nested lists are flattened and null, undefined and false are skipped (the DOM's own
+    replaceChildren would print them as text). */
+function fill(node) {
+  node.replaceChildren(...[].slice.call(arguments, 1).flat(Infinity).filter(k => k !== null && k !== undefined && k !== false));
+  return node;
+}
+/* shared:end */
+
+const $ = id => document.getElementById(id);
+const TEMPLATE = JSON.parse($("quote-template").textContent);
+const SAMPLE = JSON.parse($("sample-rules").textContent);
+const CONFIG_RE = /(<script type="application\/json" id="quote-config">)([\s\S]*?)(<\/script>)/;
+const TITLE_RE = /<title>[^<]*<\/title>/;
+const DESC_RE = /<meta name="description" content="[^"]*">/;
+const NOSCRIPT_RE = /<p class="noscript" id="noscript">[^<]*<\/p>/;
+// Built from a string so this page's own source never matches the pattern sync.py uses to find this page's policy.
+const CSP_RE = new RegExp("(<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src )([^;\"]*)(;[^\"]*\")");
+const SCRIPT_RE = /<script>([\s\S]*?)<\/script>/g;
+// A draft is the form's own values, saved while problems still stand. It is its own format, so neither readRules()
+// nor a client's page will ever take it for rules.
+const DRAFT_FORMAT = "field-office-quote-draft";
+const DRAFT_TEXT_MAX = 50000;
+
+let draft = blankDraft();
+let unsaved = false;
+let lastErrors = [];
+let lastRules = null;
+// Fields show their own problems once touched, or all of them after a download or save is tried.
+const touched = new Set();
+let showAll = false;
+
+// ------------------------------------------------------------------ the draft: the form's own values, as typed
+
+function blankDraft() {
+  return {
+    sample: "",
+    firm: { name: "", logoText: "", color: "#1d4f91", email: "", phone: "", area: "" },
+    pricesFrom: localToday(), validDays: "30",
+    purposes: PURPOSE_DEFAULTS.map(([id, label]) => ({ id, label, on: id !== "other" })),
+    types: TYPE_DEFAULTS.map(([id, label]) => ({ id, label, on: true })),
+    fees: Object.fromEntries(PURPOSE_DEFAULTS.map(([p]) => [p, Object.fromEntries(TYPE_DEFAULTS.map(([x]) => [x, ""]))])),
+    retro: { fee: "", confirmYears: "10" },
+    rush: { on: false, fee: "", turnaround: "" },
+    travel: { mode: "none", zones: [{ label: "", fee: "0", towns: "" }], from: "", bands: [{ upTo: "25", fee: "0" }] },
+    complex: { on: true, hint: "Over 4,000 sq ft, over 10 acres, more than one home on the lot, or unusual construction" },
+    confirmHours: "24",
+    provinces: [],
+    tax: {},
+    deposit: { mode: "percent", percent: "50", fee: "" },
+    turnaround: "",
+    payment: { etransfer: "", link: "", note: "" },
+    terms: "",
+  };
+}
+
+function centsText(c) { return c % 100 ? (c / 100).toFixed(2) : String(c / 100); }
+function rateText(r) { return ratePercent(r).replace("%", ""); }
+
+/** A rules file, already read strictly, as the form's values. */
+function draftFromRules(R) {
+  const d = blankDraft();
+  d.sample = R.sample || "";
+  d.firm = Object.assign({}, R.firm);
+  d.pricesFrom = R.pricesFrom;
+  d.validDays = String(R.validDays);
+  d.purposes = PURPOSE_DEFAULTS.map(([id, label]) => { const p = R.purposes.find(x => x.id === id); return { id, label: p ? p.label : label, on: !!p }; });
+  d.types = TYPE_DEFAULTS.map(([id, label]) => { const p = R.types.find(x => x.id === id); return { id, label: p ? p.label : label, on: !!p }; });
+  for (const p of R.purposes) for (const x of R.types) { const v = R.fees[p.id][x.id]; d.fees[p.id][x.id] = v === null ? "" : centsText(v); }
+  d.retro = { fee: R.retro.fee ? centsText(R.retro.fee) : "", confirmYears: String(R.retro.confirmYears) };
+  d.rush = R.rush ? { on: true, fee: centsText(R.rush.fee), turnaround: R.rush.turnaround } : { on: false, fee: "", turnaround: "" };
+  d.travel.mode = R.travel.mode;
+  if (R.travel.mode === "towns") d.travel.zones = R.travel.zones.map(z => ({ label: z.label, fee: centsText(z.fee), towns: z.towns.join("\n") }));
+  if (R.travel.mode === "km") { d.travel.from = R.travel.from; d.travel.bands = R.travel.bands.map(b => ({ upTo: String(b.upTo), fee: centsText(b.fee) })); }
+  d.complex = R.complex ? { on: true, hint: R.complex.hint } : { on: false, hint: d.complex.hint };
+  d.confirmHours = String(R.confirmHours);
+  d.provinces = R.provinces.slice();
+  d.tax = {};
+  for (const c of R.provinces) d.tax[c] = R.tax[c].map(l => ({ label: l.label, rate: rateText(l.rate) }));
+  d.deposit = { mode: R.deposit.mode, percent: R.deposit.mode === "percent" ? String(R.deposit.percent) : "50", fee: R.deposit.mode === "fixed" ? centsText(R.deposit.fee) : "" };
+  d.turnaround = R.turnaround;
+  d.payment = Object.assign({}, R.payment);
+  d.terms = R.terms;
+  return d;
+}
+
+/** "550", "550.00", "$1,250.5" -> cents; "" -> "blank"; anything else -> null. */
+function parseMoney(s) {
+  const v = String(s === undefined || s === null ? "" : s).replace(/[\s$,]/g, "");
+  if (v === "") return "blank";
+  const m = /^(\d{1,6})(?:\.(\d{1,2}))?$/.exec(v);
+  return m ? +m[1] * 100 + +(m[2] || "0").padEnd(2, "0") : null;
+}
+/** "15", "9.975", "13%" -> thousandths of a percent; anything else -> null. */
+function parseRate(s) {
+  const m = /^(\d{1,2})(?:\.(\d{1,3}))?$/.exec(String(s).trim().replace(/\s*%$/, ""));
+  return m ? +m[1] * 1000 + +(m[2] || "0").padEnd(3, "0") : null;
+}
+
+/** The form's values as a rules object for readRules(), plus the problems only the form can see (an amount that is
+    not an amount) and the map from rules paths back to form paths (only offered purposes and types are in the rules). */
+function draftToRaw(d) {
+  const errs = [], map = {};
+  const amt = (s, path, blank) => {
+    const v = parseMoney(s);
+    if (v === "blank") { if (blank === "required") { errs.push({ path, msg: "Required." }); return undefined; } return blank; }
+    if (v === null) { errs.push({ path, msg: "Write an amount like 550 or 550.00." }); return undefined; }
+    return v;
+  };
+  const whole = (s, path) => {
+    const v = String(s).trim();
+    if (!/^\d{1,6}$/.test(v)) { errs.push({ path, msg: v ? "Write a whole number." : "Required." }); return undefined; }
+    return +v;
+  };
+  const raw = { format: QUOTE_FORMAT, version: QUOTE_VERSION };
+  if (d.sample) raw.sample = d.sample;
+  raw.firm = Object.assign({}, d.firm);
+  raw.pricesFrom = d.pricesFrom;
+  raw.validDays = whole(d.validDays, "validDays");
+  const pOn = d.purposes.map((p, i) => [p, i]).filter(([p]) => p.on), tOn = d.types.map((x, i) => [x, i]).filter(([x]) => x.on);
+  raw.purposes = pOn.map(([p, i], j) => { map["purposes." + j] = "purposes." + i; return { id: p.id, label: p.label }; });
+  raw.types = tOn.map(([x, i], j) => { map["types." + j] = "types." + i; return { id: x.id, label: x.label }; });
+  raw.fees = {};
+  for (const [p] of pOn) {
+    raw.fees[p.id] = {};
+    for (const [x] of tOn) raw.fees[p.id][x.id] = amt(d.fees[p.id][x.id], "fees." + p.id + "." + x.id, null);
+  }
+  raw.retro = { fee: amt(d.retro.fee, "retro.fee", 0), confirmYears: whole(d.retro.confirmYears, "retro.confirmYears") };
+  if (d.rush.on) raw.rush = { fee: amt(d.rush.fee, "rush.fee", "required"), turnaround: d.rush.turnaround };
+  const tr = d.travel;
+  if (tr.mode === "towns") {
+    raw.travel = { mode: "towns", zones: tr.zones.map((z, i) => ({ label: z.label, fee: amt(z.fee, "travel.zones." + i + ".fee", 0),
+      towns: z.towns.split("\n").map(s => s.trim()).filter(Boolean) })) };
+  } else if (tr.mode === "km") {
+    raw.travel = { mode: "km", from: tr.from, bands: tr.bands.map((b, i) => ({ upTo: whole(b.upTo, "travel.bands." + i + ".upTo"), fee: amt(b.fee, "travel.bands." + i + ".fee", 0) })) };
+  } else raw.travel = { mode: "none" };
+  if (d.complex.on) raw.complex = { hint: d.complex.hint };
+  raw.confirmHours = whole(d.confirmHours, "confirmHours");
+  raw.provinces = PROVINCES.map(p => p[0]).filter(c => d.provinces.includes(c));
+  raw.tax = {};
+  for (const c of raw.provinces) raw.tax[c] = (d.tax[c] || []).map((l, i) => {
+    const r = parseRate(l.rate);
+    if (r === null) errs.push({ path: "tax." + c + "." + i + ".rate", msg: "Write a rate like 15 or 9.975." });
+    return { label: l.label, rate: r === null ? undefined : r };
+  });
+  const dep = d.deposit;
+  raw.deposit = dep.mode === "percent" ? { mode: "percent", percent: whole(dep.percent, "deposit.percent") }
+    : dep.mode === "fixed" ? { mode: "fixed", fee: amt(dep.fee, "deposit.fee", "required") } : { mode: "none" };
+  raw.turnaround = d.turnaround;
+  raw.payment = Object.assign({}, d.payment);
+  raw.terms = d.terms;
+  return { raw, errs, map };
+}
+
+/** A draft file read back as untrusted data: exactly the form's own keys, only text and ticks, ids in the form's
+    order and lists within the form's limits. Its values then go only into the form, which reads them through
+    readRules() like anything typed, so a draft never becomes a page by itself. Returns {draft, errors}. */
+function readDraft(raw) {
+  const errors = [];
+  const bad = (path, msg) => { errors.push({ path, msg }); };
+  const proto = protoKeyPath(raw, "");
+  if (proto) return { draft: null, errors: [{ path: proto, msg: "A key named __proto__, constructor or prototype is not allowed." }] };
+  const group = (v, path, allowed) => {
+    if (!isPlainObject(v)) { bad(path, "Must be a group of settings."); return false; }
+    const before = errors.length, at = k => (path ? path + "." : "") + k;
+    for (const k of Object.keys(v)) if (!allowed.includes(k)) bad(at(k), "Unknown setting.");
+    for (const k of allowed) if (!(k in v)) bad(at(k), "Missing.");
+    return errors.length === before;
+  };
+  const str = (v, path) => {
+    if (typeof v === "string" && v.length <= DRAFT_TEXT_MAX) return v;
+    bad(path, typeof v === "string" ? "Too long." : "Must be text.");
+    return "";
+  };
+  const strs = (v, path, names) => Object.fromEntries(names.map(k => [k, str(v[k], path + "." + k)]));
+  const tick = (v, path) => { if (typeof v === "boolean") return v; bad(path, "Must be true or false."); return false; };
+  const list = (v, path, min, max) => {
+    if (Array.isArray(v) && v.length >= min && v.length <= max) return v;
+    bad(path, "Must be a list of " + min + " to " + max + ".");
+    return null;
+  };
+  const oneOf = (v, path, modes) => { if (modes.includes(v)) return v; bad(path, "Must be " + modes.slice(0, -1).join(", ") + " or " + modes[modes.length - 1] + "."); return modes[0]; };
+
+  if (!group(raw, "", ["format", "version", "draft"])) return { draft: null, errors };
+  if (raw.format !== DRAFT_FORMAT) bad("format", "Not a quote draft.");
+  if (raw.version !== QUOTE_VERSION) bad("version", "Version " + QUOTE_VERSION + " is the only version this page reads.");
+  const r = raw.draft, d = blankDraft();
+  if (!group(r, "draft", Object.keys(d))) return { draft: null, errors };
+  d.sample = str(r.sample, "draft.sample");
+  if (group(r.firm, "draft.firm", Object.keys(d.firm))) d.firm = strs(r.firm, "draft.firm", Object.keys(d.firm));
+  d.pricesFrom = str(r.pricesFrom, "draft.pricesFrom");
+  d.validDays = str(r.validDays, "draft.validDays");
+  for (const [key, defaults] of [["purposes", PURPOSE_DEFAULTS], ["types", TYPE_DEFAULTS]]) {
+    const arr = list(r[key], "draft." + key, defaults.length, defaults.length);
+    if (arr) d[key] = defaults.map(([id], i) => {
+      const x = arr[i], p = "draft." + key + "." + i;
+      if (!group(x, p, ["id", "label", "on"])) return d[key][i];
+      if (x.id !== id) bad(p + ".id", "Not the form's own list.");
+      return { id, label: str(x.label, p + ".label"), on: tick(x.on, p + ".on") };
+    });
+  }
+  const typeIds = TYPE_DEFAULTS.map(x => x[0]);
+  if (group(r.fees, "draft.fees", PURPOSE_DEFAULTS.map(x => x[0]))) {
+    for (const [pid] of PURPOSE_DEFAULTS) if (group(r.fees[pid], "draft.fees." + pid, typeIds)) d.fees[pid] = strs(r.fees[pid], "draft.fees." + pid, typeIds);
+  }
+  if (group(r.retro, "draft.retro", ["fee", "confirmYears"])) d.retro = strs(r.retro, "draft.retro", ["fee", "confirmYears"]);
+  if (group(r.rush, "draft.rush", ["on", "fee", "turnaround"])) d.rush = { on: tick(r.rush.on, "draft.rush.on"), fee: str(r.rush.fee, "draft.rush.fee"), turnaround: str(r.rush.turnaround, "draft.rush.turnaround") };
+  const tr = r.travel;
+  if (group(tr, "draft.travel", ["mode", "zones", "from", "bands"])) {
+    d.travel.mode = oneOf(tr.mode, "draft.travel.mode", ["none", "towns", "km"]);
+    d.travel.from = str(tr.from, "draft.travel.from");
+    const zones = list(tr.zones, "draft.travel.zones", 1, 20), bands = list(tr.bands, "draft.travel.bands", 1, 10);
+    const each = (arr, path, names) => arr.map((x, i) => (group(x, path + "." + i, names) ? strs(x, path + "." + i, names) : {}));
+    if (zones) d.travel.zones = each(zones, "draft.travel.zones", ["label", "fee", "towns"]);
+    if (bands) d.travel.bands = each(bands, "draft.travel.bands", ["upTo", "fee"]);
+  }
+  if (group(r.complex, "draft.complex", ["on", "hint"])) d.complex = { on: tick(r.complex.on, "draft.complex.on"), hint: str(r.complex.hint, "draft.complex.hint") };
+  d.confirmHours = str(r.confirmHours, "draft.confirmHours");
+  const codes = PROVINCES.map(x => x[0]);
+  const provs = list(r.provinces, "draft.provinces", 0, codes.length);
+  if (provs && provs.some((c, i) => !codes.includes(c) || provs.indexOf(c) !== i)) bad("draft.provinces", "Unknown or repeated province.");
+  else if (provs) d.provinces = provs.slice();
+  if (group(r.tax, "draft.tax", Object.keys(r.tax || {}).filter(c => codes.includes(c)))) {
+    for (const c of Object.keys(r.tax)) {
+      const lines = list(r.tax[c], "draft.tax." + c, 0, 2);
+      if (lines) d.tax[c] = lines.map((l, i) => (group(l, "draft.tax." + c + "." + i, ["label", "rate"]) ? strs(l, "draft.tax." + c + "." + i, ["label", "rate"]) : {}));
+    }
+  }
+  if (group(r.deposit, "draft.deposit", ["mode", "percent", "fee"])) {
+    d.deposit = { mode: oneOf(r.deposit.mode, "draft.deposit.mode", ["percent", "fixed", "none"]), percent: str(r.deposit.percent, "draft.deposit.percent"), fee: str(r.deposit.fee, "draft.deposit.fee") };
+  }
+  d.turnaround = str(r.turnaround, "draft.turnaround");
+  if (group(r.payment, "draft.payment", ["etransfer", "link", "note"])) d.payment = strs(r.payment, "draft.payment", ["etransfer", "link", "note"]);
+  d.terms = str(r.terms, "draft.terms");
+  return errors.length ? { draft: null, errors } : { draft: d, errors: [] };
+}
+
+function toDraftPath(path, map) {
+  if (path === "payment") return "payment.etransfer";
+  if (map[path]) return map[path];
+  for (const k of Object.keys(map)) if (path.startsWith(k + ".")) return map[k] + path.slice(k.length);
+  return path;
+}
+
+/** Read the form: problems by form path, and the canonical rules when there are none. */
+function evaluate() {
+  const { raw, errs, map } = draftToRaw(draft);
+  const read = readRules(raw);
+  const seen = new Set(errs.map(e => e.path));
+  const all = errs.slice();
+  for (const e of read.errors) {
+    const p = toDraftPath(e.path, map);
+    if (!seen.has(p)) { seen.add(p); all.push({ path: p, msg: e.msg }); }
+  }
+  return { errors: all, rules: all.length ? null : read.rules };
+}
+
+// ------------------------------------------------------------------ the page that gets built
+
+function escHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+}
+
+function replaceOne(text, re, fn, what) {
+  const all = text.match(new RegExp(re.source, "g"));
+  if (!all || all.length !== 1) throw new Error("The page template is damaged: " + what + ".");
+  return text.replace(re, fn);
+}
+
+/** The firm's quote page: the template with the rules in its data block, the firm's name in the title,
+    description and no-script line (HTML-escaped), and the policy naming the sha256 of the page's own script.
+    sync.py's build() is the same steps in Python; samples/quote.html is its output for the sample rules. */
+function buildQuotePage(rules) {
+  const firm = rules.firm;
+  const data = JSON.stringify(rules).replace(/</g, "\\u003c");
+  let page = TEMPLATE;
+  for (const [what, re] of [["rules block", CONFIG_RE], ["title", TITLE_RE], ["description", DESC_RE], ["no-script line", NOSCRIPT_RE], ["policy", CSP_RE]]) {
+    replaceOne(page, re, m => m, what);
+  }
+  page = page.replace(CONFIG_RE, (m, a, b, c) => a + data + c);
+  page = page.replace(TITLE_RE, () => "<title>" + escHtml(firm.name + ": appraisal quote") + "</title>");
+  page = page.replace(DESC_RE, () => '<meta name="description" content="' + escHtml("See your appraisal price from " + firm.name + " now, and request the appraisal.") + '">');
+  const reach = "Email " + firm.email + (firm.phone ? " or call " + firm.phone : "") + ".";
+  page = page.replace(NOSCRIPT_RE, () => '<p class="noscript" id="noscript">' + escHtml("This page needs JavaScript to work out your price. " + reach) + "</p>");
+  const scripts = [...page.matchAll(SCRIPT_RE)];
+  if (scripts.length !== 1) throw new Error("The page template is damaged: it must have exactly one script.");
+  const hash = sha256Base64(scripts[0][1]);
+  page = replaceOne(page, CSP_RE, (m, a, b, c) => a + "'sha256-" + hash + "'" + c, "policy");
+  const back = JSON.parse(CONFIG_RE.exec(page)[2]);
+  if (JSON.stringify(back) !== JSON.stringify(rules)) throw new Error("The rules did not read back the same from the built page.");
+  return { page, hash, script: scripts[0][1] };
+}
+
+const K256 = [
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+  0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+  0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+  0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+  0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+];
+
+/** SHA-256 of a string's UTF-8 bytes, base64. Plain JavaScript, so it works from file:// and on any host;
+    the download also checks it against the browser's own SubtleCrypto where that exists. */
+function sha256Base64(str) {
+  const bytes = new TextEncoder().encode(str);
+  const len = bytes.length, total = Math.ceil((len + 9) / 64) * 64;
+  const m = new Uint8Array(total);
+  m.set(bytes);
+  m[len] = 0x80;
+  const dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(len / 0x20000000));
+  dv.setUint32(total - 4, (len * 8) >>> 0);
+  const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  const w = new Uint32Array(64);
+  const ror = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let off = 0; off < total; off += 64) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const a = w[i - 15], b = w[i - 2];
+      w[i] = (w[i - 16] + (ror(a, 7) ^ ror(a, 18) ^ (a >>> 3)) + w[i - 7] + (ror(b, 17) ^ ror(b, 19) ^ (b >>> 10))) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (ror(e, 6) ^ ror(e, 11) ^ ror(e, 25)) + ((e & f) ^ (~e & g)) + K256[i] + w[i]) >>> 0;
+      const t2 = ((ror(a, 2) ^ ror(a, 13) ^ ror(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  let bin = "";
+  for (const v of H) bin += String.fromCharCode(v >>> 24, (v >>> 16) & 255, (v >>> 8) & 255, v & 255);
+  return btoa(bin);
+}
+
+async function subtleHash(str) {
+  if (!(window.crypto && crypto.subtle && window.isSecureContext)) return "";
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+}
+
+// ------------------------------------------------------------------ the form
+
+function getPath(obj, path) { return path.split(".").reduce((o, k) => (o === undefined || o === null ? undefined : o[k]), obj); }
+function setPath(obj, path, value) {
+  const ks = path.split("."), last = ks.pop();
+  let o = obj;
+  for (const k of ks) o = o[k];
+  o[last] = value;
+}
+
+/** One labelled input bound to a draft path. */
+function field(k, label, o) {
+  o = o || {};
+  const id = "k-" + k.replace(/[^A-Za-z0-9]/g, "-");
+  const attrs = { id, class: o.area ? "textarea" : "input", "data-k": k, "data-label": o.what || label, "aria-describedby": (o.hint ? "h-" + id + " " : "") + "e-" + id };
+  if (o.placeholder) attrs.placeholder = o.placeholder;
+  if (o.type) attrs.type = o.type;
+  if (o.inputmode) attrs.inputmode = o.inputmode;
+  if (o.rows) attrs.rows = String(o.rows);
+  if (o.auto) attrs.autocomplete = o.auto;
+  const input = el(o.area ? "textarea" : "input", attrs);
+  input.value = getPath(draft, k);
+  return el("div", { class: "field" }, el("label", { for: id, text: label }), o.wrap ? o.wrap(input) : input,
+    el("p", { class: "ferr", id: "e-" + id, hidden: true }), o.hint ? el("p", { class: "hint", id: "h-" + id, text: o.hint }) : null);
+}
+
+function check(k, label, struct, value) {
+  const input = el("input", { type: "checkbox", "data-k": k, "data-struct": struct ? "1" : null, "data-label": label });
+  if (value !== undefined) { input.value = value; input.checked = (getPath(draft, k) || []).includes(value); input.dataset.list = "1"; }
+  else input.checked = !!getPath(draft, k);
+  return el("label", { class: "check" }, input, el("span", { text: label }));
+}
+
+function radio(k, value, label) {
+  const input = el("input", { type: "radio", name: "r-" + k, value, "data-k": k, "data-struct": "1", "data-label": label });
+  input.checked = getPath(draft, k) === value;
+  return el("label", { class: "check" }, input, el("span", { text: label }));
+}
+
+function panel(n, title, sub, ...body) {
+  return el("section", { class: "panel", "aria-labelledby": "p" + n },
+    el("h2", { id: "p" + n }, el("span", { class: "step", "aria-hidden": "true", text: String(n) }), title),
+    sub ? el("p", { class: "panel-sub", text: sub }) : null,
+    el("div", { class: "panel-body" }, body));
+}
+
+function render() {
+  const d = draft, ed = $("editor");
+  const act = document.activeElement;
+  const keep = act && act.dataset && act.dataset.k ? { k: act.dataset.k, v: act.value } : null;
+
+  const tools = el("div", { class: "intro" },
+    el("h1", { text: "Your direct-quote page" }),
+    el("p", { text: "Set your fees once. You get one page, quote.html, for your own website: a client picks the purpose, the property, the date and the town, sees your price straight away, and sends you a complete request by email. Your rules stay in a file on this computer." }),
+    el("div", { class: "btns" },
+      el("label", { class: "btn file-btn" }, "Open rules file", el("input", { type: "file", id: "open", accept: ".json,.html,.htm,application/json,text/html", "aria-label": "Open a rules file or a quote page you made" })),
+      el("button", { class: "btn", type: "button", id: "load-sample", text: "Load the sample firm" }),
+      el("button", { class: "btn btn-ghost", type: "button", id: "start-blank", text: "Start blank" }),
+      el("button", { class: "btn", type: "button", id: "save-rules", text: "Save rules file" })),
+    d.sample ? el("div", { class: "note warn" }, el("p", { text: "These are the sample firm's rules (everything in them is invented). Your page will say it is a sample until you remove the label." }),
+      el("div", { class: "btns" }, el("button", { class: "btn btn-sm", type: "button", id: "unsample", text: "Remove the sample label" }))) : null);
+
+  const p1 = panel(1, "Your firm", "Shown at the top of the page and used for the client's email.",
+    el("div", { class: "row" },
+      field("firm.name", "Firm name", { placeholder: "Your Firm Appraisals" }),
+      field("firm.logoText", "Logo text (1 to 4 characters)", { hint: "Shown in a coloured square, like a monogram.", placeholder: "YF" }),
+      field("firm.color", "Colour", { hint: "Behind white text, so it must be dark enough.", wrap: input => {
+        const pick = el("input", { type: "color", "aria-label": "Pick a colour", "data-pick": "firm.color" });
+        pick.value = COLOR_RE.test(d.firm.color) ? d.firm.color.toLowerCase() : "#1d4f91";
+        return el("div", { class: "colour" }, pick, input);
+      } })),
+    el("div", { class: "row" },
+      field("firm.email", "Email that receives requests", { type: "email", auto: "off", what: "Request email" }),
+      field("firm.phone", "Phone (optional)", { type: "tel", what: "Phone" }),
+      field("firm.area", "One line under your name (optional)", { placeholder: "Residential appraisals in Kings County", what: "Line under your name" })));
+
+  const offerList = (key, label) => el("div", null, el("p", { class: "sub-h", text: label }),
+    el("div", { class: "offer" }, d[key].map((x, i) => {
+      const c = el("input", { type: "checkbox", "data-k": key + "." + i + ".on", "data-struct": "1", "aria-label": "Offer " + x.label });
+      c.checked = x.on;
+      const inp = el("input", { class: "input", "data-k": key + "." + i + ".label", "data-label": label + " label", "aria-label": "Label for " + x.id, disabled: !x.on });
+      inp.value = x.label;
+      return [c, inp];
+    })));
+  const p2 = panel(2, "What you offer", "Tick what clients can pick. You can reword each label.",
+    el("div", { class: "cols" }, offerList("purposes", "Purposes"), offerList("types", "Property types")));
+
+  const pOn = d.purposes.filter(p => p.on), tOn = d.types.filter(x => x.on);
+  const feeTable = el("div", { class: "grid-scroll" }, el("table", { class: "fees" },
+    el("caption", { class: "sr-only", text: "Base fee by purpose and property type, in dollars, before tax" }),
+    el("thead", null, el("tr", null, el("th", { scope: "col", text: "Purpose" }), tOn.map(x => el("th", { scope: "col", text: x.label })))),
+    el("tbody", null, pOn.map((p, pi) => el("tr", null, el("th", { scope: "row" }, el("span", { text: p.label }),
+        pi < pOn.length - 1 ? el("button", { class: "btn btn-sm btn-ghost copydown", type: "button", "data-copyrow": p.id, text: "Copy to rows below", "aria-label": "Copy the " + p.label + " fees to every row below" }) : null),
+      tOn.map(x => {
+        const k = "fees." + p.id + "." + x.id;
+        const inp = el("input", { class: "input num", "data-k": k, "data-label": "Fee: " + p.label + ", " + x.label, inputmode: "decimal", "aria-label": p.label + ", " + x.label + ": fee in dollars", placeholder: "confirm" });
+        inp.value = d.fees[p.id][x.id];
+        return el("td", null, inp);
+      }))))));
+  const p3 = panel(3, "Base fees", "Your fee in dollars, before tax. Leave a box empty and that combination says \u201cwe'll confirm within " + (d.confirmHours || "N") + " hours\u201d instead of a price.",
+    pOn.length && tOn.length ? feeTable : el("p", { class: "note", text: "Tick at least one purpose and one property type first." }));
+
+  const travel = [el("div", { class: "btns" }, radio("travel.mode", "none", "No travel fee"), radio("travel.mode", "towns", "By town (zones)"), radio("travel.mode", "km", "By distance (km bands)"))];
+  if (d.travel.mode === "towns") {
+    d.travel.zones.forEach((z, i) => travel.push(el("div", { class: "zone" },
+      el("div", { class: "zone-top" },
+        field("travel.zones." + i + ".label", "Zone " + (i + 1) + " name", { placeholder: i ? "North shore" : "In town" }),
+        field("travel.zones." + i + ".fee", "Travel fee ($)", { inputmode: "decimal", placeholder: "0", what: "Zone " + (i + 1) + " fee" }),
+        d.travel.zones.length > 1 ? el("button", { class: "btn btn-sm btn-ghost", type: "button", "data-del-zone": String(i), text: "Remove zone" }) : el("span")),
+      field("travel.zones." + i + ".towns", "Towns in this zone, one per line", { area: true, rows: 3, what: "Zone " + (i + 1) + " towns" }))));
+    travel.push(el("div", { class: "btns" }, el("button", { class: "btn btn-sm", type: "button", id: "add-zone", text: "Add a zone" })),
+      el("p", { class: "hint", text: "Clients pick their town from one list. A town that isn't listed gets \u201cwe'll confirm\u201d." }));
+  } else if (d.travel.mode === "km") {
+    travel.push(field("travel.from", "Distance measured from", { placeholder: "our office in Ellery Harbour", what: "Distance from" }));
+    d.travel.bands.forEach((b, i) => travel.push(el("div", { class: "band" }, el("div", { class: "band-row" },
+      field("travel.bands." + i + ".upTo", (i ? "From " + (d.travel.bands[i - 1].upTo || "?") + " up to" : "Up to") + " (km)", { inputmode: "numeric", what: "Band " + (i + 1) + " km" }),
+      field("travel.bands." + i + ".fee", "Travel fee ($)", { inputmode: "decimal", what: "Band " + (i + 1) + " fee" }),
+      d.travel.bands.length > 1 ? el("button", { class: "btn btn-sm btn-ghost", type: "button", "data-del-band": String(i), text: "Remove" }) : el("span")))));
+    travel.push(el("div", { class: "btns" }, el("button", { class: "btn btn-sm", type: "button", id: "add-band", text: "Add a band" })),
+      el("p", { class: "hint", text: "Beyond the last band, the client gets \u201cwe'll confirm\u201d." }));
+  }
+  const p4 = panel(4, "Add-ons and \u201cwe'll confirm\u201d", null,
+    el("div", { class: "cols" },
+      el("div", null, el("p", { class: "sub-h", text: "A past effective date (retrospective)" }),
+        el("div", { class: "row" },
+          field("retro.fee", "Extra fee ($)", { inputmode: "decimal", placeholder: "0", what: "Past date fee" }),
+          field("retro.confirmYears", "Confirm case by case beyond (years)", { inputmode: "numeric", hint: "0 means never.", what: "Past date years" }))),
+      el("div", null, el("p", { class: "sub-h", text: "Rush" }), check("rush.on", "Offer rush", true),
+        d.rush.on ? el("div", { class: "row" },
+          field("rush.fee", "Rush fee ($)", { inputmode: "decimal", what: "Rush fee" }),
+          field("rush.turnaround", "Rush turnaround", { placeholder: "3 business days after the inspection", what: "Rush turnaround" })) : null)),
+    el("p", { class: "sub-h", text: "Travel" }), travel,
+    el("div", { class: "cols" },
+      el("div", null, el("p", { class: "sub-h", text: "Large or unusual properties" }), check("complex.on", "Let clients tick \u201clarge or unusual\u201d", true),
+        d.complex.on ? field("complex.hint", "What counts, in plain words", { what: "Large or unusual" }) : null),
+      el("div", null, el("p", { class: "sub-h", text: "When the price needs a look" }),
+        field("confirmHours", "We'll confirm within (hours)", { inputmode: "numeric", hint: "For an empty fee box, an unlisted town, a date too far back, or large or unusual.", what: "Confirm within" }))));
+
+  const provs = el("div", { class: "provs" }, PROVINCES.map(([c, name]) => check("provinces", name, true, c)));
+  const taxBoxes = d.provinces.map(c => {
+    const name = PROVINCES.find(p => p[0] === c)[1], lines = d.tax[c] || [];
+    return el("div", { class: "taxbox" }, el("p", { class: "lbl", text: name }),
+      lines.map((l, i) => el("div", { class: "tax-row" },
+        field("tax." + c + "." + i + ".label", "Tax name", { what: name + " tax name" }),
+        field("tax." + c + "." + i + ".rate", "Rate (%)", { inputmode: "decimal", what: name + " tax rate" }),
+        el("button", { class: "btn btn-sm btn-ghost", type: "button", "data-del-tax": c + "." + i, text: "Remove" }))),
+      el("div", { class: "btns" },
+        lines.length < 2 ? el("button", { class: "btn btn-sm", type: "button", "data-add-tax": c, text: "Add a tax line" }) : null,
+        el("button", { class: "btn btn-sm btn-ghost", type: "button", "data-reset-tax": c, text: "Starting rate" })));
+  });
+  const p5 = panel(5, "Sales tax", "Where the properties are. The starting rates are GST/HST as of October 2026 (Nova Scotia 14% since 1 April 2025; Quebec adds QST). Check yours with your accountant. Tick more than one and clients pick the province.",
+    provs, taxBoxes);
+
+  const dep = d.deposit;
+  const p6 = panel(6, "Deposit and payment", "The page never takes a payment. It shows your e-transfer address or your own payment link, with the amount and the client's reference.",
+    el("div", { class: "btns" }, radio("deposit.mode", "percent", "Percent of the total"), radio("deposit.mode", "fixed", "Fixed amount"), radio("deposit.mode", "none", "No deposit")),
+    dep.mode === "percent" ? el("div", { class: "row" }, field("deposit.percent", "Deposit (% of the total with tax)", { inputmode: "numeric", what: "Deposit percent" })) : null,
+    dep.mode === "fixed" ? el("div", { class: "row" }, field("deposit.fee", "Deposit ($)", { inputmode: "decimal", what: "Deposit amount", hint: "Never more than the total." })) : null,
+    el("div", { class: "row" },
+      field("payment.etransfer", "E-transfer email (optional)", { type: "email", auto: "off", what: "E-transfer email" }),
+      field("payment.link", "Your payment link (optional)", { type: "url", auto: "off", placeholder: "https://", what: "Payment link",
+        hint: "A full https:// link to a payment page you made, for example a payment link where the client enters the amount. Nothing else is accepted." })),
+    field("payment.note", "Payment note (optional)", { placeholder: "Auto-deposit is on, so no security question is needed.", what: "Payment note" }));
+
+  const p7 = panel(7, "Turnaround, validity and terms", null,
+    el("div", { class: "row" },
+      field("turnaround", "Usual turnaround", { placeholder: "5 to 7 business days after the inspection", what: "Turnaround" }),
+      field("validDays", "A quote is good for (days)", { inputmode: "numeric", what: "Days a quote is good for" }),
+      field("pricesFrom", "Price list dated", { type: "date", what: "Price list date" })),
+    field("terms", "Engagement terms (optional)", { area: true, rows: 8, what: "Engagement terms",
+      hint: "Plain text. A blank line starts a new paragraph. The client must tick that they read them, and they print with the summary." }));
+
+  const p8 = panel(8, "Make your page", null,
+    el("div", { id: "status-box" }),
+    el("div", { class: "btns" },
+      el("button", { class: "btn btn-primary", type: "button", id: "download", text: "Download quote.html" }),
+      el("button", { class: "btn", type: "button", id: "save-rules-2", text: "Save rules file" }),
+      el("span", { class: "hint", id: "size" })),
+    el("p", { class: "hint", text: "Put quote.html on your own website (your web host's file manager, or any static host) and link a \u201cGet a quote\u201d button to it. When you change a fee, download it again and replace the old file. Save your rules file too: it is how you change the page later." }));
+
+  ed.replaceChildren(tools, p1, p2, p3, p4, p5, p6, p7, p8);
+  if (keep) {
+    const same = [...ed.querySelectorAll('[data-k="' + CSS.escape(keep.k) + '"]')];
+    const again = same.length > 1 ? same.find(n => n.value === keep.v) : same[0];
+    if (again) again.focus();
+  }
+  refresh(true);
+}
+
+// ------------------------------------------------------------------ events
+
+function markDirty() { unsaved = true; $("dirty").hidden = false; }
+function markSaved() { unsaved = false; $("dirty").hidden = true; }
+
+$("editor").addEventListener("input", onEdit);
+$("editor").addEventListener("change", onEdit);
+function onEdit(e) {
+  const t = e.target;
+  if (t.dataset && t.dataset.pick) {
+    if (e.type !== "input") return;
+    setPath(draft, t.dataset.pick, t.value);
+    const txt = document.querySelector('[data-k="' + t.dataset.pick + '"]');
+    if (txt) txt.value = t.value;
+    markDirty();
+    return refresh();
+  }
+  const k = t.dataset && t.dataset.k;
+  if (!k) return;
+  touched.add(k);
+  if (t.type === "checkbox" && t.dataset.list) {
+    if (e.type !== "change") return;
+    const list = getPath(draft, k).filter(v => v !== t.value);
+    if (t.checked) list.push(t.value);
+    setPath(draft, k, list);
+    if (k === "provinces" && t.checked && !draft.tax[t.value]) draft.tax[t.value] = startingTax(t.value);
+  } else if (t.type === "checkbox") {
+    if (e.type !== "change") return;
+    setPath(draft, k, t.checked);
+  } else if (t.type === "radio") {
+    if (e.type !== "change" || !t.checked) return;
+    setPath(draft, k, t.value);
+  } else {
+    if (e.type === "change" && t.tagName !== "SELECT") return;
+    setPath(draft, k, t.value);
+    if (k === "firm.color") { const pick = document.querySelector('[data-pick="firm.color"]'); if (pick && COLOR_RE.test(t.value)) pick.value = t.value.toLowerCase(); }
+  }
+  markDirty();
+  if (t.dataset.struct) render(); else refresh();
+}
+
+function startingTax(code) { return PROVINCES.find(p => p[0] === code)[2].map(([label, rate]) => ({ label, rate: rateText(rate) })); }
+
+$("editor").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const ds = b.dataset;
+  if (b.id === "load-sample") return loadRules(SAMPLE, "the sample firm");
+  if (b.id === "start-blank") { if (unsaved && !confirm("Start blank? Your unsaved changes will be lost.")) return; draft = blankDraft(); touched.clear(); showAll = false; markSaved(); return render(); }
+  if (b.id === "save-rules" || b.id === "save-rules-2") return saveRules();
+  if (b.id === "download") return download();
+  if (b.id === "unsample") { draft.sample = ""; markDirty(); return render(); }
+  if (b.id === "add-zone") { draft.travel.zones.push({ label: "", fee: "", towns: "" }); markDirty(); return render(); }
+  if (b.id === "add-band") { draft.travel.bands.push({ upTo: "", fee: "" }); markDirty(); return render(); }
+  if (ds.delZone) { draft.travel.zones.splice(+ds.delZone, 1); markDirty(); return render(); }
+  if (ds.delBand) { draft.travel.bands.splice(+ds.delBand, 1); markDirty(); return render(); }
+  if (ds.addTax) { (draft.tax[ds.addTax] = draft.tax[ds.addTax] || []).push({ label: "", rate: "" }); markDirty(); return render(); }
+  if (ds.delTax) { const [c, i] = ds.delTax.split("."); draft.tax[c].splice(+i, 1); markDirty(); return render(); }
+  if (ds.resetTax) { draft.tax[ds.resetTax] = startingTax(ds.resetTax); markDirty(); return render(); }
+  if (ds.copyrow) {
+    const ids = draft.purposes.filter(p => p.on).map(p => p.id), from = ids.indexOf(ds.copyrow);
+    for (const pid of ids.slice(from + 1)) for (const x of draft.types) draft.fees[pid][x.id] = draft.fees[ds.copyrow][x.id];
+    markDirty();
+    return render();
+  }
+  if (ds.focus) {
+    const f = document.querySelector('[data-k="' + CSS.escape(ds.focus) + '"]');
+    if (f) { f.focus(); f.scrollIntoView({ block: "center" }); }
+  }
+});
+
+$("editor").addEventListener("change", e => { if (e.target.id === "open" && e.target.files[0]) openFile(e.target.files[0], e.target); });
+
+window.addEventListener("beforeunload", e => { if (unsaved) { e.preventDefault(); e.returnValue = ""; } });
+
+// ------------------------------------------------------------------ validation shown in the form
+
+let refreshTimer = 0, previewTimer = 0;
+function refresh(now) {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(showState, now ? 0 : 120);
+}
+
+function showState() {
+  const { errors, rules } = evaluate();
+  lastErrors = errors;
+  lastRules = rules;
+  document.querySelectorAll("[aria-invalid]").forEach(n => n.removeAttribute("aria-invalid"));
+  document.querySelectorAll(".ferr").forEach(n => { n.hidden = true; n.textContent = ""; });
+  const named = [];
+  for (const e of errors) {
+    let k = e.path, input = null;
+    while (k && !(input = document.querySelector('[data-k="' + CSS.escape(k) + '"]:not([type="radio"]):not([type="checkbox"])'))) k = k.includes(".") ? k.slice(0, k.lastIndexOf(".")) : "";
+    if (!input && e.path === "provinces") input = document.querySelector('[data-k="provinces"]');
+    if (input && (showAll || touched.has(input.dataset.k))) {
+      input.setAttribute("aria-invalid", "true");
+      const msg = input.id && $("e-" + input.id);
+      if (msg) { msg.textContent = (msg.textContent ? msg.textContent + " " : "") + e.msg; msg.hidden = false; }
+    }
+    const top = { purposes: "Purposes", types: "Property types", provinces: "Sales tax", travel: "Travel", fees: "Base fees" }[e.path.split(".")[0]];
+    const label = input && input.type !== "checkbox" ? input.dataset.label || e.path : top || e.path || "Rules";
+    named.push({ k: input ? input.dataset.k : "", label, msg: e.msg });
+  }
+  const box = $("status-box");
+  if (!box) return;
+  if (errors.length) {
+    box.replaceChildren(el("div", { class: "note bad", role: "status" },
+      el("p", { text: errors.length === 1 ? "1 thing to fix before you can download:" : errors.length + " things to fix before you can download:" }),
+      el("ul", null, named.slice(0, 12).map(n => el("li", null, n.k ? el("button", { class: "linkish", type: "button", "data-focus": n.k, text: n.label }) : el("span", { text: n.label }), ": " + n.msg))),
+      named.length > 12 ? el("p", { text: "and " + (named.length - 12) + " more." }) : null));
+    $("size").textContent = "";
+  } else {
+    // Ready either way, but a page with no fee at all never shows a price, which defeats it: say so plainly.
+    const combos = rules.purposes.flatMap(p => rules.types.map(x => rules.fees[p.id][x.id]));
+    const blank = combos.filter(v => v === null).length;
+    const hours = rules.confirmHours;
+    box.replaceChildren(blank === combos.length
+      ? el("div", { class: "note warn", role: "status" }, el("p", null,
+        "Ready, but no base fee is filled in: every client will see \u201cwe'll confirm within " + hours + " hours\u201d instead of a price. ",
+        el("button", { class: "linkish", type: "button", "data-focus": "fees." + rules.purposes[0].id + "." + rules.types[0].id, text: "Fill in your base fees" }),
+        " to show prices."))
+      : el("div", { class: "note good", role: "status", text: "Ready. Every fee, tax and link checks out." +
+        (blank ? " " + blank + " of " + combos.length + " fee boxes are empty, so those say \u201cwe'll confirm\u201d." : "") }));
+  }
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(showPreview, 350);
+}
+
+let shownPreview = "";
+function showPreview() {
+  const paused = $("pv-paused");
+  if (!lastRules) {
+    paused.textContent = shownPreview ? "Preview paused at the last good version: fix the problems listed under \u201cMake your page\u201d." : "The preview appears once the rules check out.";
+    paused.hidden = false;
+    return;
+  }
+  paused.hidden = true;
+  let built;
+  try { built = buildQuotePage(lastRules); } catch (err) { paused.textContent = String(err.message || err); paused.hidden = false; return; }
+  $("size").textContent = Math.round(new TextEncoder().encode(built.page).length / 1024) + " KB, one file";
+  if (built.page !== shownPreview) { $("pv").srcdoc = built.page; shownPreview = built.page; }
+}
+
+for (const [id, phone] of [["pv-phone", true], ["pv-wide", false]]) {
+  $(id).addEventListener("click", () => {
+    $("pv-box").classList.toggle("phone", phone);
+    $("pv-phone").setAttribute("aria-pressed", String(phone));
+    $("pv-wide").setAttribute("aria-pressed", String(!phone));
+  });
+}
+
+// ------------------------------------------------------------------ files
+
+let toastTimer = 0;
+function toast(msg, bad) {
+  const tEl = $("toast");
+  tEl.textContent = msg;
+  tEl.classList.toggle("err", !!bad);
+  tEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => tEl.classList.remove("show"), bad ? 6000 : 3000);
+}
+
+function saveBlob(text, name, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/** Save the rules, or, while problems still stand, a draft of the form's own values. A setup stopped halfway (no
+    payment link yet, a GST question for the accountant) is then never lost; only Download needs a clean form. */
+function saveRules() {
+  showAll = true;
+  showState();
+  if (lastRules) {
+    saveBlob(JSON.stringify(lastRules, null, 2) + "\n", "quote-rules-" + (lastRules.sample ? "SAMPLE-" : "") + localToday() + ".json", "application/json");
+    markSaved();
+    return toast("Rules file saved. Keep it with your office files: open it here to change your page later.");
+  }
+  const n = lastErrors.length;
+  saveBlob(JSON.stringify({ format: DRAFT_FORMAT, version: QUOTE_VERSION, draft }, null, 2) + "\n",
+    "quote-rules-" + (draft.sample ? "SAMPLE-" : "") + "DRAFT-" + localToday() + ".json", "application/json");
+  markSaved();
+  toast("Draft saved, with " + n + (n === 1 ? " thing" : " things") + " still to fix. Open it here to carry on; quote.html downloads once " + (n === 1 ? "it is" : "they are") + " fixed.");
+}
+
+async function download() {
+  showAll = true;
+  showState();
+  if (!lastRules) { $("status-box").scrollIntoView({ block: "center" }); return toast("Not downloaded: fix the problems listed under \u201cMake your page\u201d first.", true); }
+  let built;
+  try { built = buildQuotePage(lastRules); } catch (err) { return toast(String(err.message || err), true); }
+  try {
+    const check = await subtleHash(built.script);
+    if (check && check !== built.hash) return toast("The page's security hash did not check out, so nothing was downloaded. Reload this page and try again.", true);
+  } catch (e) { /* no SubtleCrypto here (an http: page); the pure-JavaScript hash stands */ }
+  saveBlob(built.page, "quote.html", "text/html;charset=utf-8");
+  toast("quote.html downloaded. Put it on your website in place of the old one.");
+}
+
+function loadRules(raw, what) {
+  if (unsaved && !confirm("Open " + what + "? Your unsaved changes will be lost.")) return false;
+  const isDraft = isPlainObject(raw) && raw.format === DRAFT_FORMAT;
+  const read = isDraft ? readDraft(raw) : readRules(raw);
+  const got = isDraft ? read.draft : read.rules;
+  if (!got) {
+    toast("Not opened: " + read.errors.slice(0, 5).map(e => (e.path ? e.path + ": " : "") + e.msg).join(" \u00b7 ") + (read.errors.length > 5 ? " (and " + (read.errors.length - 5) + " more)" : ""), true);
+    return false;
+  }
+  draft = isDraft ? got : draftFromRules(got);
+  touched.clear();
+  showAll = isDraft;  // a draft was saved with problems standing: show them at once
+  render();
+  markSaved();
+  toast(isDraft ? "Opened the draft " + what + ". What is still to fix is listed under \u201cMake your page\u201d." : "Opened " + what + ".");
+  return true;
+}
+
+function openFile(file, input) {
+  input.value = "";
+  if (file.size > RULES_MAX_BYTES) return toast("Not opened: the file is over " + Math.round(RULES_MAX_BYTES / 1000) + " KB, so it is not a rules file or a quote page.", true);
+  const fr = new FileReader();
+  fr.onload = () => {
+    const text = String(fr.result);
+    let raw;
+    try {
+      if (/^\s*</.test(text)) {
+        const m = CONFIG_RE.exec(text);
+        if (!m) return toast("Not opened: that page has no quote rules in it.", true);
+        raw = JSON.parse(m[2]);
+      } else raw = JSON.parse(text);
+    } catch (e) { return toast("Not opened: the file is not valid JSON.", true); }
+    loadRules(raw, file.name);
+  };
+  fr.onerror = () => toast("Not opened: the file could not be read.", true);
+  fr.readAsText(file);
+}
+
+render();
+</script>
+</body>
+</html>

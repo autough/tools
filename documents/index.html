@@ -1,0 +1,1899 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- The page may not make a single network request. This policy makes the browser enforce that. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-h9Fjn4LRU4xeI+AUS8pRi8ya3PAEWKEiC+NJ/it5olE='; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<!-- An inline icon. Some browsers still ask the serving host for /favicon.ico; that request comes from the browser and carries no data. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f6e6a'/%3E%3Crect x='6' y='9' width='20' height='14' rx='2.5' stroke='white' stroke-width='2.2' fill='none'/%3E%3Cpath d='M7 11l9 6.5 9-6.5' stroke='white' stroke-width='2.2' fill='none'/%3E%3C/svg%3E">
+<title>Document Chase</title>
+<style>
+/* Field Office tokens, copied from fieldoffice/web/static/app.css (via tools/compgrid). Keep in step with that file. */
+:root {
+  color-scheme: light;
+  --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --bg: #f5f4f0; --surface: #ffffff; --surface-2: #fbfaf8; --sunken: #efede8; --hover: #f3f1ec;
+  --border: #e5e2db; --border-strong: #d3cfc5;
+  --text: #1b1f1e; --text-2: #4b5350; --text-3: #626a66;
+  --accent: #0f6e6a; --accent-hover: #0b5c58; --accent-text: #0b5f5b; --accent-soft: #e2f0ee; --accent-soft-2: #cfe6e3; --on-accent: #ffffff;
+  --ok: #1f7a4a;      --ok-soft: #e4f3ea;   --ok-mark: #2e9a5e;
+  --soon: #96560a;    --soon-soft: #fcefd9; --soon-mark: #d98b12;
+  --late: #b8322a;    --late-soft: #fbe6e3; --late-mark: #d9473d; --on-late: #ffffff;
+  --unknown: #556070; --unknown-soft: #eaedf1; --unknown-mark: #7d8796;
+  --shadow-1: 0 1px 2px rgba(28, 25, 20, 0.05), 0 1px 1px rgba(28, 25, 20, 0.03);
+  --shadow-2: 0 1px 2px rgba(28, 25, 20, 0.04), 0 4px 12px -2px rgba(28, 25, 20, 0.08);
+  --shadow-3: 0 2px 6px rgba(28, 25, 20, 0.06), 0 16px 40px -8px rgba(28, 25, 20, 0.18);
+  --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(15, 110, 106, 0.55);
+  --r-sm: 8px; --r: 10px; --r-lg: 14px;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;
+    --border: #2a302e; --border-strong: #3a4240;
+    --text: #e9ecea; --text-2: #b6bebb; --text-3: #8f9894;
+    --accent: #2fa59d; --accent-hover: #3bb8b0; --accent-text: #6fd1c9; --accent-soft: rgba(63, 181, 173, 0.13); --accent-soft-2: rgba(63, 181, 173, 0.22); --on-accent: #062321;
+    --ok: #5fcb8e;      --ok-soft: rgba(80, 200, 130, 0.12);   --ok-mark: #4cbf7f;
+    --soon: #f0b65a;    --soon-soft: rgba(240, 175, 70, 0.13); --soon-mark: #eaa23a;
+    --late: #f4847a;    --late-soft: rgba(240, 110, 100, 0.13); --late-mark: #ec6a5f; --on-late: #2a0a07;
+    --unknown: #a7b0bf; --unknown-soft: rgba(160, 172, 190, 0.13); --unknown-mark: #8f99a8;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px -4px rgba(0, 0, 0, 0.45);
+    --shadow-3: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px -8px rgba(0, 0, 0, 0.6);
+    --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(69, 189, 180, 0.7);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111413; --surface: #191d1c; --surface-2: #1d2221; --sunken: #0d100f; --hover: #222827;
+  --border: #2a302e; --border-strong: #3a4240;
+  --text: #e9ecea; --text-2: #b6bebb; --text-3: #8f9894;
+  --accent: #2fa59d; --accent-hover: #3bb8b0; --accent-text: #6fd1c9; --accent-soft: rgba(63, 181, 173, 0.13); --accent-soft-2: rgba(63, 181, 173, 0.22); --on-accent: #062321;
+  --ok: #5fcb8e;      --ok-soft: rgba(80, 200, 130, 0.12);   --ok-mark: #4cbf7f;
+  --soon: #f0b65a;    --soon-soft: rgba(240, 175, 70, 0.13); --soon-mark: #eaa23a;
+  --late: #f4847a;    --late-soft: rgba(240, 110, 100, 0.13); --late-mark: #ec6a5f; --on-late: #2a0a07;
+  --unknown: #a7b0bf; --unknown-soft: rgba(160, 172, 190, 0.13); --unknown-mark: #8f99a8;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px -4px rgba(0, 0, 0, 0.45);
+  --shadow-3: 0 2px 8px rgba(0, 0, 0, 0.4), 0 20px 48px -8px rgba(0, 0, 0, 0.6);
+  --ring: 0 0 0 2px var(--surface), 0 0 0 4px rgba(69, 189, 180, 0.7);
+}
+
+/* ---------------------------------------------------------------- base */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; font-family: var(--font); font-size: 14px; line-height: 1.45;
+  color: var(--text); background: var(--bg); overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+p { margin: 0; }
+[hidden] { display: none !important; }
+.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.ico-sm { width: 14px; height: 14px; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--text-3); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+:focus { outline: none; }
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--r-sm); }
+.skip { position: absolute; left: 16px; top: -48px; z-index: 50; background: var(--surface); padding: 8px 12px; border-radius: var(--r-sm); box-shadow: var(--shadow-2); }
+.skip:focus { top: 8px; }
+
+/* ---------------------------------------------------------------- chrome */
+.top {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 12px;
+  height: 56px; padding: 0 24px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -0.01em; min-width: 0; }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; flex: none; }
+.brand-mark .ico { width: 16px; height: 16px; stroke-width: 2; }
+.brand small { font-weight: 500; color: var(--text-3); font-size: 12.5px; white-space: nowrap; }
+.top .grow { flex: 1; }
+.icon-btn {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: var(--r-sm); flex: none;
+  border: 1px solid transparent; background: transparent; color: var(--text-2);
+  transition: background .15s var(--ease), color .15s var(--ease);
+}
+.icon-btn:hover { background: var(--hover); color: var(--text); }
+.icon-btn.armed { width: auto; padding: 0 10px; gap: 6px; display: inline-flex; align-items: center; background: var(--late); color: var(--on-late); font-size: 13px; font-weight: 650; white-space: nowrap; }
+.seg { display: inline-flex; padding: 3px; border-radius: 10px; background: var(--sunken); border: 1px solid var(--border); gap: 2px; flex: none; }
+.seg button { height: 30px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--text-2); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+
+.privacy {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 24px; background: var(--accent-soft); color: var(--accent-text);
+  border-bottom: 1px solid var(--accent-soft-2); font-weight: 600; font-size: 14px;
+}
+.privacy .ico { width: 20px; height: 20px; stroke-width: 2; }
+.privacy span.sub { font-weight: 500; color: var(--text-2); font-size: 12.5px; }
+.privacy .grow { flex: 1; min-width: 0; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 48px; }
+.cap { max-width: 780px; margin: 0 auto; }
+.intro { margin-bottom: 22px; max-width: 760px; }
+.intro h1 { font-size: 24px; letter-spacing: -0.02em; line-height: 1.25; }
+.intro p { color: var(--text-2); margin-top: 8px; font-size: 14.5px; }
+.rule-line { display: inline-flex; align-items: flex-start; gap: 8px; margin-top: 12px; padding: 6px 10px; border-radius: var(--r-sm); background: var(--sunken); color: var(--text-2); font-size: 13px; font-weight: 550; }
+.rule-line .ico { margin-top: 2px; }
+
+/* ---------------------------------------------------------------- panels */
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); margin-bottom: 18px; scroll-margin-top: 116px; }
+.panel-head { display: flex; align-items: center; gap: 8px 12px; padding: 16px 20px 0; flex-wrap: wrap; }
+.panel-head h2 { font-size: 16px; display: flex; align-items: center; gap: 10px; }
+.step { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: inline-grid; place-items: center; font-size: 12.5px; font-weight: 700; flex: none; }
+.step .ico { width: 14px; height: 14px; stroke-width: 2; }
+.panel-head .opt { font-size: 12.5px; color: var(--text-3); font-weight: 500; }
+.panel-head .grow { flex: 1; }
+.panel-sub { padding: 4px 20px 0; color: var(--text-3); font-size: 13px; }
+.panel-body { padding: 14px 20px 20px; }
+
+/* ---------------------------------------------------------------- controls */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; padding: 0 14px; border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  font-weight: 550; font-size: 13.5px; white-space: nowrap; box-shadow: var(--shadow-1); text-decoration: none;
+  transition: background .15s var(--ease), border-color .15s var(--ease), transform .08s var(--ease);
+}
+.btn:hover { background: var(--hover); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; transform: none; }
+.btn-primary { background: var(--accent); border-color: transparent; color: var(--on-accent); box-shadow: 0 1px 2px rgba(15,110,106,.3), inset 0 1px 0 rgba(255,255,255,.12); }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-ghost { background: transparent; border-color: transparent; box-shadow: none; color: var(--text-2); }
+.btn-ghost:hover { background: var(--hover); color: var(--text); }
+.btn-danger { background: var(--late); border-color: transparent; color: var(--on-late); }
+.btn-danger:hover { background: var(--late); filter: brightness(1.08); }
+.btn-sm { height: 32px; padding: 0 11px; font-size: 13px; border-radius: 7px; gap: 6px; }
+.btn-xs { height: 26px; padding: 0 8px; font-size: 12px; border-radius: 6px; gap: 4px; box-shadow: none; }
+.file-btn { position: relative; cursor: pointer; }
+.file-btn:focus-within { box-shadow: var(--ring); }
+.input, .select, .textarea {
+  width: 100%; height: 36px; padding: 0 10px; border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+  transition: border-color .15s var(--ease), box-shadow .15s var(--ease);
+}
+.select { padding-right: 6px; }
+.textarea { height: auto; min-height: 72px; padding: 9px 11px; resize: vertical; line-height: 1.45; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft-2); }
+.input[aria-invalid="true"] { border-color: var(--late); }
+.input::placeholder, .textarea::placeholder { color: var(--text-3); }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field > label, .field > .lbl { font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.ferr { font-size: 12px; color: var(--late); }
+.check { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--text-2); cursor: pointer; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; flex: none; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row .grow { flex: 1; }
+.msg { font-size: 13px; color: var(--text-2); min-width: 0; overflow-wrap: anywhere; }
+.msg.err { color: var(--late); }
+.hint { margin-top: 8px; font-size: 12.5px; color: var(--text-3); }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px 16px; align-items: start; }
+.fgrid .wide { grid-column: 1 / -1; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
+  height: 22px; padding: 0 8px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  background: var(--sunken); color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; flex: none;
+}
+.chip-acc { background: var(--accent-soft); color: var(--accent-text); }
+.chip-ok { background: var(--ok-soft); color: var(--ok); }
+.chip-soon { background: var(--soon-soft); color: var(--soon); }
+.chip-late { background: var(--late-soft); color: var(--late); }
+.chip-unknown { background: var(--unknown-soft); color: var(--unknown); }
+
+.status { margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-sm); background: var(--sunken); font-size: 13px; color: var(--text-2); }
+.status.err { background: var(--late-soft); color: var(--late); }
+.status.warn { background: var(--soon-soft); color: var(--soon); }
+.status.ok { background: var(--ok-soft); color: var(--ok); }
+.status .ico { margin-top: 1px; }
+.status > div { min-width: 0; overflow-wrap: anywhere; }
+.warnbox { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r); background: var(--soon-soft); color: var(--text); font-size: 13.5px; border: 1px solid color-mix(in srgb, var(--soon-mark) 35%, transparent); }
+.warnbox .ico { color: var(--soon); margin-top: 1px; }
+.warnbox strong { color: var(--soon); }
+
+.drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;
+  min-height: 140px; padding: 22px; border-radius: var(--r);
+  border: 1.5px dashed var(--border-strong); background: var(--surface-2); color: var(--text-2);
+  cursor: pointer; transition: border-color .15s var(--ease), background .15s var(--ease);
+}
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop:focus-within { box-shadow: var(--ring); }
+.drop .ico { width: 28px; height: 28px; color: var(--accent-text); stroke-width: 1.6; }
+.drop strong { color: var(--text); font-size: 15px; }
+.drop .muted { font-size: 12.5px; }
+.samples { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 14px; font-size: 13px; color: var(--text-3); }
+
+/* ---------------------------------------------------------------- doc chase: chrome */
+.save-st { font-size: 12px; color: var(--text-3); display: inline-flex; gap: 5px; align-items: center; white-space: nowrap; }
+.save-st.err { color: var(--late); font-weight: 600; white-space: normal; }
+.tabs { position: sticky; top: 56px; z-index: 15; display: flex; gap: 6px; overflow-x: auto; padding: 10px 24px; background: var(--bg); border-bottom: 1px solid var(--border); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { flex: none; height: 34px; padding: 0 13px; border-radius: 17px; background: var(--surface); border: 1px solid var(--border); color: var(--text-2); font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.tabs button:hover { border-color: var(--border-strong); color: var(--text); }
+.tabs button[aria-pressed="true"] { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.tabs .n { font-size: 11px; font-weight: 700; padding: 0 6px; border-radius: 8px; background: var(--sunken); color: var(--text-3); line-height: 17px; }
+.tabs button[aria-pressed="true"] .n { background: rgba(255,255,255,.22); color: var(--on-accent); }
+.tabs .n.due { background: var(--late-soft); color: var(--late); }
+.banner { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 10px 24px; font-size: 13px; font-weight: 600; }
+.banner.test { background: var(--soon-soft); color: var(--soon); }
+.banner.tab { background: var(--unknown-soft); color: var(--unknown); }
+.banner .grow { flex: 1; min-width: 0; }
+
+/* ---------------------------------------------------------------- lists and cards */
+.sec-h { display: flex; align-items: baseline; gap: 8px 12px; flex-wrap: wrap; margin: 26px 0 10px; }
+.sec-h:first-child { margin-top: 0; }
+.sec-h h2 { font-size: 16px; }
+.sec-h .cnt { font-size: 12.5px; color: var(--text-3); font-weight: 500; }
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: 14px 16px; min-width: 0; }
+.card.late { border-left: 3px solid var(--late-mark); }
+.card.today { border-left: 3px solid var(--soon-mark); }
+.c-top { display: flex; gap: 8px 12px; align-items: flex-start; flex-wrap: wrap; }
+.c-top .t { flex: 1 1 240px; min-width: 0; }
+.c-top .t strong { font-size: 14.5px; }
+.c-top .t .addr { display: block; color: var(--text-2); overflow-wrap: anywhere; }
+.c-meta { margin-top: 6px; font-size: 13px; color: var(--text-3); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.c-meta span { white-space: nowrap; }
+.out-list { margin: 10px 0 0; padding-left: 20px; font-size: 13.5px; }
+.out-list li { margin: 2px 0; overflow-wrap: anywhere; }
+.out-list .muted { font-size: 12.5px; }
+.c-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.mini { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.mini li { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); }
+.mini li .w { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; font-size: 13.5px; }
+.mini li .w span { color: var(--text-3); font-size: 12.5px; }
+.empty { padding: 18px 12px; text-align: center; color: var(--text-3); font-size: 13.5px; border: 1px dashed var(--border-strong); border-radius: var(--r); }
+
+/* the file list */
+.filters { display: flex; gap: 8px 12px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.filters .input { flex: 1 1 260px; width: auto; }
+.flist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.frow { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow-1); }
+.frow:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.frow .m { overflow-wrap: anywhere; }
+.frow .s { font-size: 12.5px; color: var(--text-3); }
+.frow .ch { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+
+/* ---------------------------------------------------------------- one file */
+.back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+.f-head h1 { font-size: 21px; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.f-head .addr { color: var(--text-2); font-size: 15px; margin-top: 2px; overflow-wrap: anywhere; }
+.f-head .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 16px 0 18px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; min-width: 0; }
+.kpi .k { font-size: 12px; color: var(--text-3); font-weight: 600; }
+.kpi .v { font-size: 18px; font-weight: 650; font-variant-numeric: tabular-nums; margin-top: 2px; overflow-wrap: anywhere; }
+.kpi .v.late { color: var(--late); }
+.kpi .s { font-size: 12px; color: var(--text-3); }
+
+.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: it; }
+.item { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface-2); padding: 10px 12px; }
+.item.got { background: var(--surface); }
+.item.got .it-name { color: var(--text-2); }
+.it-top { display: flex; gap: 8px 10px; align-items: flex-start; }
+.it-top .check { flex: 1 1 auto; align-items: flex-start; color: var(--text); font-size: 14px; font-weight: 600; min-width: 0; }
+.it-top .check input { margin-top: 1px; width: 20px; height: 20px; }
+.it-name { overflow-wrap: anywhere; }
+.it-why { font-size: 12.5px; color: var(--text-3); margin: 4px 0 0 28px; overflow-wrap: anywhere; }
+.it-line { font-size: 12.5px; color: var(--text-2); margin: 6px 0 0 28px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.it-line .na-r { color: var(--text-3); overflow-wrap: anywhere; }
+.it-more { margin: 10px 0 0 28px; padding-top: 10px; border-top: 1px dashed var(--border-strong); }
+.it-more .fgrid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.linkish { border: 0; background: none; padding: 0; color: var(--accent-text); font-weight: 600; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
+.add-item { margin-top: 12px; padding: 12px; border: 1px dashed var(--border-strong); border-radius: var(--r); }
+.add-item .fgrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
+
+.mail { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.mail .textarea { min-height: 260px; font-size: 13.5px; }
+.mail .hint { margin-top: 0; }
+.logrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+.logrow .lbl { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.logrow .input { width: auto; }
+.inline-date { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-2); }
+.inline-date .input { width: 160px; }
+.sched { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13.5px; color: var(--text-2); }
+.sched .input { width: 64px; text-align: right; }
+.sched .select { width: auto; }
+.log { list-style: none; margin: 10px 0 0; padding: 0; font-size: 13px; }
+.log li { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.log li:last-child { border-bottom: 0; }
+.log li .w { flex: 1 1 200px; min-width: 0; }
+.del-zone { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.confirm { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 10px 12px; border-radius: var(--r-sm); background: var(--late-soft); color: var(--text); font-size: 13.5px; }
+.confirm strong { color: var(--late); }
+
+/* new request: the checklist */
+.tpl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tpl li { border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; background: var(--surface-2); }
+.tpl li.off { opacity: .7; background: transparent; }
+.tpl .tp-top { display: flex; gap: 10px; align-items: center; }
+.tpl .tp-top .input { flex: 1; font-weight: 600; }
+.tpl .tp-top input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin: 0; }
+.tpl .tp-why { margin: 6px 0 0 30px; }
+.tpl .tp-why .input { font-size: 13px; color: var(--text-2); height: 32px; }
+
+/* summary */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); }
+.sum-t { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.sum-t th, .sum-t td { text-align: right; padding: 8px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.sum-t th:first-child, .sum-t td:first-child { text-align: left; }
+.sum-t thead th { background: var(--surface-2); font-size: 12px; color: var(--text-3); font-weight: 650; }
+.sum-t tbody tr:last-child td { border-bottom: 0; }
+.sum-t tr.all td { font-weight: 700; background: var(--surface-2); }
+/* The first column stays put while a narrow screen scrolls the table sideways. */
+.sum-t th:first-child, .sum-t td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; }
+.sum-t thead th:first-child, .sum-t tr.all td:first-child { background: var(--surface-2); }
+.drop { min-height: 110px; }
+
+/* ---------------------------------------------------------------- footer, toast, dialog */
+footer { max-width: 1100px; margin: 0 auto; padding: 0 24px 40px; color: var(--text-3); font-size: 12.5px; display: flex; gap: 8px 20px; flex-wrap: wrap; }
+footer strong { color: var(--text-2); font-weight: 600; }
+.toast {
+  position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translate(-50%, 16px); opacity: 0; pointer-events: none; z-index: 40;
+  display: flex; align-items: center; gap: 8px; max-width: calc(100vw - 32px); width: max-content;
+  padding: 10px 14px; border-radius: var(--r); background: var(--text); color: var(--bg); font-size: 13px; font-weight: 550; box-shadow: var(--shadow-3);
+  transition: opacity .2s var(--ease), transform .2s var(--ease); overflow-wrap: anywhere;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.err { background: var(--late); color: var(--on-late); }
+.toast.act { pointer-events: auto; }
+.toast button { flex: none; margin-left: 4px; height: 32px; padding: 0 12px; border-radius: 7px; border: 1px solid currentColor; background: transparent; color: inherit; font-weight: 700; font-size: 13px; }
+dialog.manual { border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); padding: 18px; width: min(560px, calc(100vw - 32px)); }
+dialog.manual::backdrop { background: rgba(0, 0, 0, .35); }
+dialog.manual h2 { font-size: 15px; margin-bottom: 6px; }
+dialog.manual p { color: var(--text-2); font-size: 13px; margin-bottom: 10px; }
+dialog.manual .row { justify-content: flex-end; margin-top: 10px; }
+dialog.manual .textarea { font-family: var(--mono); font-size: 12.5px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---------------------------------------------------------------- narrow (a phone, 375 px) */
+@media (max-width: 640px) {
+  /* On a phone only the view tabs stay put; the brand bar scrolls away. */
+  .top { padding: 0 12px; gap: 8px; position: relative; }
+  .tabs { top: 0; }
+  .brand small { display: none; }
+  .save-st { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .privacy { padding: 10px 16px; font-size: 13px; align-items: flex-start; }
+  .privacy span.sub { display: block; }
+  .tabs { padding: 8px 16px; }
+  .tabs button { height: 40px; padding: 0 13px; border-radius: 20px; }
+  .banner { padding: 10px 16px; }
+  .wrap { padding: 16px 16px 40px; }
+  .intro h1 { font-size: 20px; }
+  .panel-head { padding: 14px 14px 0; }
+  .panel-sub { padding: 4px 14px 0; }
+  .panel-body { padding: 12px 14px 16px; }
+  .card { padding: 12px; }
+  .fgrid, .add-item .fgrid, .it-more .fgrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  /* 16px text stops iPhone Safari zooming into a field; 44px is a thumb-sized target. */
+  .input, .select { height: 44px; font-size: 16px; }
+  .textarea { font-size: 16px; }
+  /* Buttons may wrap to two lines on a phone rather than push the page sideways. */
+  .btn { height: auto; min-height: 42px; white-space: normal; padding-top: 6px; padding-bottom: 6px; text-align: center; }
+  .btn-sm { min-height: 40px; }
+  .btn-xs { min-height: 36px; }
+  .icon-btn { width: 44px; height: 44px; }
+  .mail .textarea { font-size: 16px; }
+  .seg button { height: 38px; }
+  .it-top { flex-wrap: wrap; }
+  .it-top .chip { margin-left: 28px; }
+  .it-why, .it-line, .it-more { margin-left: 0; }
+  .tpl .tp-why { margin-left: 0; }
+  .tpl .tp-why .input { height: 40px; font-size: 16px; }
+  .inline-date .input, .logrow .input { width: 100%; }
+  .inline-date { width: 100%; flex-wrap: wrap; }
+  .sched .input { width: 72px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  footer { padding: 0 16px 32px; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the page</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5V6.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4.5M12 17.2v.01"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9L12 4.5 16.5 9"/><path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4.5v11M7.5 11l4.5 4.5 4.5-4.5"/><path d="M4.5 15v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5z"/><path d="M14 3.5v5h5M9 13h6M9 16.5h6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4.5 19.5h15M7.5 16v-5M12 16V7M16.5 16v-8"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4L18 18M6 18l1.6-1.6M16.4 7.6L18 6"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark"><svg class="ico"><use href="#i-mail"/></svg></span>
+    <span class="brand-t">Document Chase</span>
+    <small>Field Office prototype</small>
+  </div>
+  <div class="grow"></div>
+  <span class="save-st" id="save-st" role="status"></span>
+  <button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode" title="Dark mode"><svg class="ico"><use href="#i-moon"/></svg></button>
+</header>
+
+<div class="privacy" role="note">
+  <svg class="ico"><use href="#i-lock"/></svg>
+  <div class="grow">Runs on this computer only. Nothing is uploaded and nothing is sent from this page.<span class="sub">&nbsp;It keeps file numbers, addresses, the recipient's first name, document names and reasons, dates, your notes, and your own signature (name, firm, phone, email) in this browser. Never a document, and never the recipient's email address.</span></div>
+</div>
+<div class="banner test" id="test-banner" hidden></div>
+<div class="banner tab" id="tab-banner" hidden><svg class="ico ico-sm"><use href="#i-info"/></svg><span class="grow">This list was changed in another tab of this page.</span><button type="button" class="btn btn-sm" id="tab-reload">Show the latest</button></div>
+
+<nav class="tabs" id="tabs" aria-label="Views">
+  <button type="button" data-view="today" aria-pressed="true"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-clock"/></svg>Chase today<span class="n" id="n-today"></span></button>
+  <button type="button" data-view="files" aria-pressed="false"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-list"/></svg>Files<span class="n" id="n-files"></span></button>
+  <button type="button" data-view="new" aria-pressed="false"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+  <button type="button" data-view="summary" aria-pressed="false"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-chart"/></svg>Days waiting</button>
+  <button type="button" data-view="settings" aria-pressed="false"><svg class="ico ico-sm" aria-hidden="true"><use href="#i-gear"/></svg>Settings and data</button>
+</nav>
+
+<main class="wrap" id="main" tabindex="-1">
+  <div id="view"></div>
+</main>
+
+<footer>
+  <span><strong>Field Office prototype.</strong> Not yet tried by an appraiser on real files.</span>
+  <span>The sample files are fictional: invented file numbers, addresses, towns and first names.</span>
+  <span>Kept in this browser on this device: the files you track here and your signature (IndexedDB) until you delete them, and in localStorage only the theme and the last view. Never a document.</span>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog class="manual" id="manual" aria-labelledby="manual-h">
+  <h2 id="manual-h">Copy by hand</h2>
+  <p>Your browser did not let this page use the clipboard. The text below is selected: press <strong>Ctrl+C</strong> (or <strong>⌘C</strong> on a Mac), then close this.</p>
+  <textarea class="textarea" id="manual-text" readonly rows="8"></textarea>
+  <div class="row"><button type="button" class="btn btn-sm" id="manual-close">Close</button></div>
+</dialog>
+
+<!-- Data blocks, written by tools/docchase/sync.py. They are not scripts: the browser never runs them. -->
+<script type="application/json" id="templates">{"format":"field-office-doc-chase-templates","version":1,"note":"Checklists per property type. Each item has a short plain-language reason, written for the owner or lender who reads the request. Items marked opt start unticked: the appraiser ticks them when they apply. Edit here, then run python3 tools/docchase/sync.py.","recipients":[{"id":"owner","label":"Owner","plural":"Owners","line":"Scans, photos of paper copies or spreadsheets are all fine."},{"id":"borrower","label":"Borrower","plural":"Borrowers","line":"Scans, photos of paper copies or PDFs are all fine."},{"id":"lender","label":"Lender","plural":"Lenders","line":"If any of these are already in your file, copies are all we need."},{"id":"lawyer","label":"Lawyer","plural":"Lawyers","line":"Copies from your file are all we need."},{"id":"manager","label":"Property manager","plural":"Property managers","line":"Reports exported from your property management software are fine."},{"id":"accountant","label":"Accountant","plural":"Accountants","line":"Copies of the statements you prepared are all we need."},{"id":"other","label":"Other","plural":"Others","line":"Scans, photos of paper copies or spreadsheets are all fine."}],"types":[{"id":"hotel","label":"Hotel, inn, B&B or seasonal tourism","short":"Hotel / inn","items":[{"name":"Revenue and profit-and-loss statements for the last 3 years","why":"The income approach starts from what the business actually earned. Three years shows the trend and evens out one unusual season."},{"name":"Room rates by season (peak, shoulder and off-season)","why":"Rates change through the year. We need them to see what a typical night earns across the whole season, not only in summer."},{"name":"Occupancy by month or season for the last 3 years","why":"Occupancy and rates together show the room income, which we check against the statements."},{"name":"The dates the property is open each year","why":"A seasonal property earns in fewer months. The open dates let us compare it fairly with places that run all year."},{"name":"Latest property tax bill","why":"Property tax is an operating cost, and the bill confirms the assessment."},{"name":"Insurance: the current yearly premium","why":"Insurance is an operating cost in the income approach."},{"name":"Staffing: the positions, seasonal staff and total wages for the last year","why":"Staff is usually the largest cost for a hotel or inn, so it changes the net income the most."},{"name":"Capital work in the last 5 years, and any planned (roof, room renovations, equipment)","why":"Recent and planned work affects the condition, the life left in the buildings and what a buyer would pay."},{"name":"A list of the furniture, fixtures and equipment that come with the property","why":"Furniture and equipment are valued apart from the land and buildings, or noted in the report.","opt":true}]},{"id":"apartment","label":"Apartment or multi-unit residential","short":"Apartment","items":[{"name":"Current rent roll: each unit, its rent, lease dates and any vacant units","why":"The rent roll is what the building earns today, the starting point of the income approach."},{"name":"Copies of the leases (or one standard lease and any that differ)","why":"Leases confirm the rents, the terms and which costs the tenants pay."},{"name":"Operating expenses for the last 2 to 3 years (heat, power, water, repairs, management, snow removal)","why":"Expenses turn the rent into net income, and the net income drives the value."},{"name":"Latest property tax bill","why":"Property tax is an operating cost, and the bill confirms the assessment."},{"name":"Insurance: the current yearly premium","why":"Insurance is an operating cost in the income approach."},{"name":"Vacancy over the last 2 to 3 years: which units sat empty, and for how long","why":"Vacancy shows how much rent is lost in a normal year."},{"name":"Other income: laundry, parking, storage","why":"Laundry, parking and storage income add to what the building earns."},{"name":"Capital work in the last 5 years (roof, windows, boiler, unit renovations)","why":"Recent work affects the condition, the life left in the building and what a buyer would pay."}]},{"id":"commercial","label":"Retail, office or industrial","short":"Commercial","items":[{"name":"Rent roll: each tenant, the area they lease, their rent and lease dates","why":"The rent roll is what the property earns today, the starting point of the income approach."},{"name":"Leases and any amendments, for every tenant","why":"Leases show the rent increases, renewal options and which costs each tenant pays back."},{"name":"Operating costs and recoveries for the last 2 to 3 years (what tenants pay back for taxes, insurance and common areas)","why":"Recoveries decide how much of the cost the owner really carries, which changes the net income."},{"name":"Latest property tax bill","why":"Property tax is an operating cost, and the bill confirms the assessment."},{"name":"The leasable area of each unit, with a site plan or floor plans if you have them","why":"Areas let us compare the rent per square foot with similar buildings."},{"name":"Vacant units, and any recent renewals or offers to lease","why":"Recent leasing shows what tenants are paying now."},{"name":"Capital work in the last 5 years, and any planned","why":"Recent and planned work affects the condition, the life left in the building and what a buyer would pay."},{"name":"Environmental reports (Phase I or II), if any","why":"Contamination can change the value. A report on file answers that question early.","opt":true}]},{"id":"land","label":"Land","short":"Land","items":[{"name":"Survey or registered plan","why":"The survey confirms the boundaries, the area and any easements."},{"name":"Zoning and permitted uses (a letter from the municipality, or the by-law section)","why":"What the land may be used for is the biggest single factor in its value."},{"name":"Development approvals or permits (subdivision, building permit)","why":"Approvals already in place save a buyer time and risk."},{"name":"Access and services: road access, and whether water, sewer and power reach the lot","why":"Year-round access and services are a large part of a lot's value."},{"name":"Environmental reports (Phase I or II), if any","why":"Contamination can change the value. A report on file answers that question early."},{"name":"Wetland, watercourse or coastal setbacks that limit where you can build, if known","why":"Setbacks can shrink the area that can be built on."},{"name":"Latest property tax bill","why":"The bill confirms the assessment and the yearly cost of holding the land."}]},{"id":"farm","label":"Farm","short":"Farm","items":[{"name":"Acreage by use: cropland, pasture, woodland, wetland","why":"Each kind of land sells at a different price per acre."},{"name":"Quotas and licences (milk, poultry, eggs), with the amounts","why":"Quota is valued apart from the land and buildings, and can be a large part of the total."},{"name":"A list of the buildings: use, size and year built (barns, storage, houses)","why":"Each building is described and valued for its use on the farm."},{"name":"Survey or plan of the property","why":"The survey confirms the boundaries and the total area."},{"name":"Land rented in or out, and the rent","why":"Rent paid for farmland is evidence of what the land earns."},{"name":"Drainage, irrigation and wells (tile drainage, irrigation ponds)","why":"Tile drainage and irrigation add value to cropland."},{"name":"Latest property tax bill","why":"The bill confirms the assessment and the yearly cost of holding the land."}]},{"id":"mixed","label":"Mixed-use (commercial and residential)","short":"Mixed-use","items":[{"name":"Rent roll for every unit, commercial and residential","why":"The rent roll is what the property earns today, the starting point of the income approach."},{"name":"Commercial leases and any amendments","why":"Leases show the rent increases, renewal options and which costs each tenant pays back."},{"name":"Residential leases (or one standard lease and any that differ)","why":"Leases confirm the rents, the terms and which costs the tenants pay."},{"name":"Operating expenses for the last 2 to 3 years","why":"Expenses turn the rent into net income, and the net income drives the value."},{"name":"Recoveries: what the commercial tenants pay back for taxes, insurance and common areas","why":"Recoveries decide how much of the cost the owner really carries."},{"name":"Latest property tax bill","why":"Property tax is an operating cost, and the bill confirms the assessment."},{"name":"Vacancy over the last 2 to 3 years, for both the commercial and residential units","why":"Vacancy shows how much rent is lost in a normal year."},{"name":"Capital work in the last 5 years, and any planned","why":"Recent and planned work affects the condition, the life left in the building and what a buyer would pay."}]},{"id":"residential","label":"Residential (lender's file)","short":"Residential","items":[{"name":"Agreement of purchase and sale, with every amendment and schedule","why":"The price and terms of the sale go in the report, and the lender asks us to review them."},{"name":"New build: the plans and specifications (the finishes list)","why":"For a home not yet built, the plans and specifications are what we appraise.","opt":true},{"name":"New build: the builder's contract or cost breakdown","why":"The contract price is a check on the cost approach.","opt":true},{"name":"2 to 4 units: the lease or current rent for each unit","why":"The rent from each unit is part of the value of a 2 to 4 unit property.","opt":true},{"name":"Condo: the condo fee, the status certificate and any special assessment","why":"Condo fees and special assessments affect a unit's value, and lenders ask about them.","opt":true},{"name":"Who will let us in for the inspection, and how to reach them","why":"We book the inspection with them directly.","opt":true}]}]}</script>
+<script type="text/plain" id="sample-files">{"format": "field-office-doc-chase", "version": 1,
+"sample": "FICTIONAL SAMPLE DATA - invented files, addresses, towns and first names. Loading it moves every date so that the anchor day is today.",
+"anchor": "2026-10-07", "exportedAt": "2026-10-07T12:00:00Z",
+"files": [
+{"id": "f-sample201", "fileNo": "SAMPLE-201", "address": "The Gannet Inn, 4 Spindrift Road, Port Wyncott", "recipient": "owner", "firstName": "Morgan", "propertyType": "hotel", "due": "2026-10-05", "created": "2026-09-23", "sent": "2026-09-23", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "", "notes": "FICTIONAL. Owner is away on weekends during the season; the bookkeeper keeps the occupancy figures.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s201-1", "name": "Revenue and profit-and-loss statements for the last 3 years", "why": "The income approach starts from what the business actually earned. Three years shows the trend and evens out one unusual season.", "requested": "2026-09-23", "received": "2026-09-30", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-2", "name": "Room rates by season (peak, shoulder and off-season)", "why": "Rates change through the year. We need them to see what a typical night earns across the whole season, not only in summer.", "requested": "2026-09-23", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-3", "name": "Occupancy by month or season for the last 3 years", "why": "Occupancy and rates together show the room income, which we check against the statements.", "requested": "2026-09-23", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-4", "name": "The dates the property is open each year", "why": "A seasonal property earns in fewer months. The open dates let us compare it fairly with places that run all year.", "requested": "2026-09-23", "received": "2026-09-25", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-5", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-09-23", "received": "2026-09-25", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-6", "name": "Insurance: the current yearly premium", "why": "Insurance is an operating cost in the income approach.", "requested": "2026-09-23", "received": "", "na": "2026-10-01", "naReason": "Insured under the owner's other businesses: no separate premium for the inn", "notes": ""}, {"id": "i-s201-7", "name": "Staffing: the positions, seasonal staff and total wages for the last year", "why": "Staff is usually the largest cost for a hotel or inn, so it changes the net income the most.", "requested": "2026-09-23", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s201-8", "name": "Capital work in the last 5 years, and any planned (roof, room renovations, equipment)", "why": "Recent and planned work affects the condition, the life left in the buildings and what a buyer would pay.", "requested": "2026-09-23", "received": "2026-09-30", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-09-26", "how": "email", "items": ["i-s201-1", "i-s201-2", "i-s201-3", "i-s201-6", "i-s201-7", "i-s201-8"]}, {"date": "2026-09-30", "how": "email", "items": ["i-s201-2", "i-s201-3", "i-s201-6", "i-s201-7"]}, {"date": "2026-10-03", "how": "email", "items": ["i-s201-2", "i-s201-3", "i-s201-7"]}]},
+{"id": "f-sample202", "fileNo": "SAMPLE-202", "address": "18 Tidewater Street, Ellery Harbour (12 units)", "recipient": "manager", "firstName": "Avery", "propertyType": "apartment", "due": "2026-10-13", "created": "2026-10-03", "sent": "2026-10-03", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "", "notes": "FICTIONAL. The manager sends from the property management office; the owner is copied.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s202-1", "name": "Current rent roll: each unit, its rent, lease dates and any vacant units", "why": "The rent roll is what the building earns today, the starting point of the income approach.", "requested": "2026-10-03", "received": "2026-10-05", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-2", "name": "Copies of the leases (or one standard lease and any that differ)", "why": "Leases confirm the rents, the terms and which costs the tenants pay.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-3", "name": "Operating expenses for the last 2 to 3 years (heat, power, water, repairs, management, snow removal)", "why": "Expenses turn the rent into net income, and the net income drives the value.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-4", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-5", "name": "Insurance: the current yearly premium", "why": "Insurance is an operating cost in the income approach.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-6", "name": "Vacancy over the last 2 to 3 years: which units sat empty, and for how long", "why": "Vacancy shows how much rent is lost in a normal year.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-7", "name": "Other income: laundry, parking, storage", "why": "Laundry, parking and storage income add to what the building earns.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s202-8", "name": "Capital work in the last 5 years (roof, windows, boiler, unit renovations)", "why": "Recent work affects the condition, the life left in the building and what a buyer would pay.", "requested": "2026-10-03", "received": "", "na": "", "naReason": "", "notes": ""}], "chases": []},
+{"id": "f-sample203", "fileNo": "SAMPLE-203", "address": "Quarry Road Plaza, 210 Quarry Road, Tamsin Bay", "recipient": "lawyer", "firstName": "Robin", "propertyType": "commercial", "due": "2026-10-09", "created": "2026-09-28", "sent": "2026-09-28", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "", "notes": "FICTIONAL. Refinancing; the lawyer collects from the owner.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s203-1", "name": "Rent roll: each tenant, the area they lease, their rent and lease dates", "why": "The rent roll is what the property earns today, the starting point of the income approach.", "requested": "2026-09-28", "received": "2026-10-02", "na": "", "naReason": "", "notes": ""}, {"id": "i-s203-2", "name": "Leases and any amendments, for every tenant", "why": "Leases show the rent increases, renewal options and which costs each tenant pays back.", "requested": "2026-09-28", "received": "2026-10-02", "na": "", "naReason": "", "notes": ""}, {"id": "i-s203-3", "name": "Operating costs and recoveries for the last 2 to 3 years (what tenants pay back for taxes, insurance and common areas)", "why": "Recoveries decide how much of the cost the owner really carries, which changes the net income.", "requested": "2026-09-28", "received": "2026-10-06", "na": "", "naReason": "", "notes": ""}, {"id": "i-s203-4", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-09-28", "received": "2026-09-30", "na": "", "naReason": "", "notes": ""}, {"id": "i-s203-5", "name": "The leasable area of each unit, with a site plan or floor plans if you have them", "why": "Areas let us compare the rent per square foot with similar buildings.", "requested": "2026-09-28", "received": "2026-10-02", "na": "", "naReason": "", "notes": ""}, {"id": "i-s203-6", "name": "Vacant units, and any recent renewals or offers to lease", "why": "Recent leasing shows what tenants are paying now.", "requested": "2026-09-28", "received": "", "na": "2026-10-06", "naReason": "No vacancy and no renewals in the last 2 years", "notes": ""}, {"id": "i-s203-7", "name": "Capital work in the last 5 years, and any planned", "why": "Recent and planned work affects the condition, the life left in the building and what a buyer would pay.", "requested": "2026-09-28", "received": "2026-10-06", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-10-01", "how": "email", "items": ["i-s203-1", "i-s203-2", "i-s203-3", "i-s203-5", "i-s203-6", "i-s203-7"]}]},
+{"id": "f-sample204", "fileNo": "SAMPLE-204", "address": "9 Fernbrake Court, Gullwhistle", "recipient": "lender", "firstName": "Casey", "propertyType": "residential", "due": "2026-10-14", "created": "2026-10-07", "sent": "", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "", "notes": "FICTIONAL. Condo unit; purchase closes at the end of the month.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s204-1", "name": "Agreement of purchase and sale, with every amendment and schedule", "why": "The price and terms of the sale go in the report, and the lender asks us to review them.", "requested": "", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s204-2", "name": "Condo: the condo fee, the status certificate and any special assessment", "why": "Condo fees and special assessments affect a unit's value, and lenders ask about them.", "requested": "", "received": "", "na": "", "naReason": "", "notes": ""}], "chases": []},
+{"id": "f-sample205", "fileNo": "SAMPLE-205", "address": "Otterbeck Mills farm, 1120 Mill Creek Road, Otterbeck Mills", "recipient": "owner", "firstName": "Jordan", "propertyType": "farm", "due": "2026-09-30", "created": "2026-09-17", "sent": "2026-09-17", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "", "notes": "FICTIONAL. Quota statement comes from the marketing board; owner has asked for it.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s205-1", "name": "Acreage by use: cropland, pasture, woodland, wetland", "why": "Each kind of land sells at a different price per acre.", "requested": "2026-09-17", "received": "2026-09-22", "na": "", "naReason": "", "notes": ""}, {"id": "i-s205-2", "name": "Quotas and licences (milk, poultry, eggs), with the amounts", "why": "Quota is valued apart from the land and buildings, and can be a large part of the total.", "requested": "2026-09-17", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s205-3", "name": "A list of the buildings: use, size and year built (barns, storage, houses)", "why": "Each building is described and valued for its use on the farm.", "requested": "2026-09-17", "received": "2026-09-29", "na": "", "naReason": "", "notes": ""}, {"id": "i-s205-4", "name": "Survey or plan of the property", "why": "The survey confirms the boundaries and the total area.", "requested": "2026-09-17", "received": "", "na": "2026-09-24", "naReason": "No survey on file; the deed description only", "notes": ""}, {"id": "i-s205-5", "name": "Land rented in or out, and the rent", "why": "Rent paid for farmland is evidence of what the land earns.", "requested": "2026-09-17", "received": "", "na": "", "naReason": "", "notes": ""}, {"id": "i-s205-6", "name": "Drainage, irrigation and wells (tile drainage, irrigation ponds)", "why": "Tile drainage and irrigation add value to cropland.", "requested": "2026-09-17", "received": "2026-09-29", "na": "", "naReason": "", "notes": ""}, {"id": "i-s205-7", "name": "Latest property tax bill", "why": "The bill confirms the assessment and the yearly cost of holding the land.", "requested": "2026-09-17", "received": "2026-09-22", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-09-20", "how": "email", "items": ["i-s205-1", "i-s205-2", "i-s205-3", "i-s205-4", "i-s205-5", "i-s205-6", "i-s205-7"]}, {"date": "2026-09-24", "how": "email", "items": ["i-s205-2", "i-s205-3", "i-s205-5", "i-s205-6"]}, {"date": "2026-09-27", "how": "email", "items": ["i-s205-2", "i-s205-3", "i-s205-5", "i-s205-6"]}, {"date": "2026-09-30", "how": "email", "items": ["i-s205-2", "i-s205-5"]}, {"date": "2026-10-04", "how": "call", "items": ["i-s205-2", "i-s205-5"]}]},
+{"id": "f-sample171", "fileNo": "SAMPLE-171", "address": "Tern Cove Cottages, 31 Shore Lane, Wrenwick Cove", "recipient": "owner", "firstName": "Taylor", "propertyType": "hotel", "due": "2026-06-12", "created": "2026-06-02", "sent": "2026-06-02", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-06-21", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s171-1", "name": "Revenue and profit-and-loss statements for the last 3 years", "why": "The income approach starts from what the business actually earned. Three years shows the trend and evens out one unusual season.", "requested": "2026-06-02", "received": "2026-06-20", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-2", "name": "Room rates by season (peak, shoulder and off-season)", "why": "Rates change through the year. We need them to see what a typical night earns across the whole season, not only in summer.", "requested": "2026-06-02", "received": "2026-06-11", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-3", "name": "Occupancy by month or season for the last 3 years", "why": "Occupancy and rates together show the room income, which we check against the statements.", "requested": "2026-06-02", "received": "2026-06-20", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-4", "name": "The dates the property is open each year", "why": "A seasonal property earns in fewer months. The open dates let us compare it fairly with places that run all year.", "requested": "2026-06-02", "received": "2026-06-06", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-5", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-06-02", "received": "2026-06-06", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-6", "name": "Insurance: the current yearly premium", "why": "Insurance is an operating cost in the income approach.", "requested": "2026-06-02", "received": "2026-06-11", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-7", "name": "Staffing: the positions, seasonal staff and total wages for the last year", "why": "Staff is usually the largest cost for a hotel or inn, so it changes the net income the most.", "requested": "2026-06-02", "received": "2026-06-16", "na": "", "naReason": "", "notes": ""}, {"id": "i-s171-8", "name": "Capital work in the last 5 years, and any planned (roof, room renovations, equipment)", "why": "Recent and planned work affects the condition, the life left in the buildings and what a buyer would pay.", "requested": "2026-06-02", "received": "2026-06-11", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-06-05", "how": "email", "items": ["i-s171-1", "i-s171-2", "i-s171-3", "i-s171-4", "i-s171-5", "i-s171-6", "i-s171-7", "i-s171-8"]}, {"date": "2026-06-09", "how": "email", "items": ["i-s171-1", "i-s171-2", "i-s171-3", "i-s171-6", "i-s171-7", "i-s171-8"]}, {"date": "2026-06-12", "how": "email", "items": ["i-s171-1", "i-s171-3", "i-s171-7"]}, {"date": "2026-06-15", "how": "email", "items": ["i-s171-1", "i-s171-3", "i-s171-7"]}]},
+{"id": "f-sample176", "fileNo": "SAMPLE-176", "address": "Lot 7, Heron Ridge Road, Kettlemarsh", "recipient": "owner", "firstName": "Riley", "propertyType": "land", "due": "2026-06-25", "created": "2026-06-15", "sent": "2026-06-15", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-06-25", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s176-1", "name": "Survey or registered plan", "why": "The survey confirms the boundaries, the area and any easements.", "requested": "2026-06-15", "received": "2026-06-20", "na": "", "naReason": "", "notes": ""}, {"id": "i-s176-2", "name": "Zoning and permitted uses (a letter from the municipality, or the by-law section)", "why": "What the land may be used for is the biggest single factor in its value.", "requested": "2026-06-15", "received": "2026-06-24", "na": "", "naReason": "", "notes": ""}, {"id": "i-s176-3", "name": "Access and services: road access, and whether water, sewer and power reach the lot", "why": "Year-round access and services are a large part of a lot's value.", "requested": "2026-06-15", "received": "2026-06-20", "na": "", "naReason": "", "notes": ""}, {"id": "i-s176-4", "name": "Latest property tax bill", "why": "The bill confirms the assessment and the yearly cost of holding the land.", "requested": "2026-06-15", "received": "2026-06-17", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-06-18", "how": "email", "items": ["i-s176-1", "i-s176-2", "i-s176-3"]}, {"date": "2026-06-22", "how": "email", "items": ["i-s176-2"]}]},
+{"id": "f-sample180", "fileNo": "SAMPLE-180", "address": "Saltmarrow farm, 88 Upper Saltmarrow Road", "recipient": "owner", "firstName": "Quinn", "propertyType": "farm", "due": "2026-07-16", "created": "2026-07-06", "sent": "2026-07-06", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-08-01", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s180-1", "name": "Acreage by use: cropland, pasture, woodland, wetland", "why": "Each kind of land sells at a different price per acre.", "requested": "2026-07-06", "received": "2026-07-12", "na": "", "naReason": "", "notes": ""}, {"id": "i-s180-2", "name": "Quotas and licences (milk, poultry, eggs), with the amounts", "why": "Quota is valued apart from the land and buildings, and can be a large part of the total.", "requested": "2026-07-06", "received": "2026-07-31", "na": "", "naReason": "", "notes": ""}, {"id": "i-s180-3", "name": "A list of the buildings: use, size and year built (barns, storage, houses)", "why": "Each building is described and valued for its use on the farm.", "requested": "2026-07-06", "received": "2026-07-18", "na": "", "naReason": "", "notes": ""}, {"id": "i-s180-4", "name": "Survey or plan of the property", "why": "The survey confirms the boundaries and the total area.", "requested": "2026-07-06", "received": "", "na": "2026-07-12", "naReason": "No survey; the deed description only", "notes": ""}, {"id": "i-s180-5", "name": "Land rented in or out, and the rent", "why": "Rent paid for farmland is evidence of what the land earns.", "requested": "2026-07-06", "received": "2026-07-25", "na": "", "naReason": "", "notes": ""}, {"id": "i-s180-6", "name": "Latest property tax bill", "why": "The bill confirms the assessment and the yearly cost of holding the land.", "requested": "2026-07-06", "received": "2026-07-12", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-07-09", "how": "email", "items": ["i-s180-1", "i-s180-2", "i-s180-3", "i-s180-4", "i-s180-5", "i-s180-6"]}, {"date": "2026-07-13", "how": "email", "items": ["i-s180-2", "i-s180-3", "i-s180-5"]}, {"date": "2026-07-16", "how": "email", "items": ["i-s180-2", "i-s180-3", "i-s180-5"]}, {"date": "2026-07-19", "how": "email", "items": ["i-s180-2", "i-s180-5"]}, {"date": "2026-07-22", "how": "email", "items": ["i-s180-2", "i-s180-5"]}, {"date": "2026-07-25", "how": "email", "items": ["i-s180-2"]}]},
+{"id": "f-sample185", "fileNo": "SAMPLE-185", "address": "2 Harbour Row, Port Wyncott", "recipient": "owner", "firstName": "Harper", "propertyType": "mixed", "due": "2026-08-14", "created": "2026-08-04", "sent": "2026-08-04", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-08-17", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s185-1", "name": "Rent roll for every unit, commercial and residential", "why": "The rent roll is what the property earns today, the starting point of the income approach.", "requested": "2026-08-04", "received": "2026-08-09", "na": "", "naReason": "", "notes": ""}, {"id": "i-s185-2", "name": "Commercial leases and any amendments", "why": "Leases show the rent increases, renewal options and which costs each tenant pays back.", "requested": "2026-08-04", "received": "2026-08-16", "na": "", "naReason": "", "notes": ""}, {"id": "i-s185-3", "name": "Operating expenses for the last 2 to 3 years", "why": "Expenses turn the rent into net income, and the net income drives the value.", "requested": "2026-08-04", "received": "2026-08-12", "na": "", "naReason": "", "notes": ""}, {"id": "i-s185-4", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-08-04", "received": "2026-08-07", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-08-07", "how": "email", "items": ["i-s185-1", "i-s185-2", "i-s185-3"]}, {"date": "2026-08-11", "how": "email", "items": ["i-s185-2", "i-s185-3"]}, {"date": "2026-08-14", "how": "email", "items": ["i-s185-2"]}]},
+{"id": "f-sample172", "fileNo": "SAMPLE-172", "address": "14 Marram Lane, Ellery Harbour", "recipient": "lender", "firstName": "Jamie", "propertyType": "residential", "due": "2026-06-18", "created": "2026-06-08", "sent": "2026-06-08", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-06-23", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s172-1", "name": "Agreement of purchase and sale, with every amendment and schedule", "why": "The price and terms of the sale go in the report, and the lender asks us to review them.", "requested": "2026-06-08", "received": "2026-06-22", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-06-11", "how": "email", "items": ["i-s172-1"]}, {"date": "2026-06-15", "how": "email", "items": ["i-s172-1"]}, {"date": "2026-06-18", "how": "email", "items": ["i-s172-1"]}]},
+{"id": "f-sample178", "fileNo": "SAMPLE-178", "address": "3 Sorrel Hollow Road, Gullwhistle", "recipient": "lender", "firstName": "Drew", "propertyType": "residential", "due": "2026-07-12", "created": "2026-07-02", "sent": "2026-07-02", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-07-14", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s178-1", "name": "Agreement of purchase and sale, with every amendment and schedule", "why": "The price and terms of the sale go in the report, and the lender asks us to review them.", "requested": "2026-07-02", "received": "2026-07-13", "na": "", "naReason": "", "notes": ""}, {"id": "i-s178-2", "name": "Condo: the condo fee, the status certificate and any special assessment", "why": "Condo fees and special assessments affect a unit's value, and lenders ask about them.", "requested": "2026-07-02", "received": "2026-07-08", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-07-05", "how": "email", "items": ["i-s178-1", "i-s178-2"]}, {"date": "2026-07-09", "how": "email", "items": ["i-s178-1"]}]},
+{"id": "f-sample183", "fileNo": "SAMPLE-183", "address": "40 Beachpea Drive, Tamsin Bay", "recipient": "lender", "firstName": "Alex", "propertyType": "residential", "due": "2026-08-06", "created": "2026-07-27", "sent": "2026-07-27", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-08-14", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s183-1", "name": "Agreement of purchase and sale, with every amendment and schedule", "why": "The price and terms of the sale go in the report, and the lender asks us to review them.", "requested": "2026-07-27", "received": "2026-08-13", "na": "", "naReason": "", "notes": ""}, {"id": "i-s183-2", "name": "New build: the plans and specifications (the finishes list)", "why": "For a home not yet built, the plans and specifications are what we appraise.", "requested": "2026-07-27", "received": "2026-08-13", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-07-30", "how": "email", "items": ["i-s183-1", "i-s183-2"]}, {"date": "2026-08-03", "how": "email", "items": ["i-s183-1", "i-s183-2"]}, {"date": "2026-08-06", "how": "email", "items": ["i-s183-1", "i-s183-2"]}, {"date": "2026-08-09", "how": "email", "items": ["i-s183-1", "i-s183-2"]}]},
+{"id": "f-sample174", "fileNo": "SAMPLE-174", "address": "6 Cordgrass Court, Ellery Harbour", "recipient": "manager", "firstName": "Sasha", "propertyType": "apartment", "due": "2026-06-20", "created": "2026-06-10", "sent": "2026-06-10", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-06-17", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s174-1", "name": "Current rent roll: each unit, its rent, lease dates and any vacant units", "why": "The rent roll is what the building earns today, the starting point of the income approach.", "requested": "2026-06-10", "received": "2026-06-12", "na": "", "naReason": "", "notes": ""}, {"id": "i-s174-2", "name": "Operating expenses for the last 2 to 3 years (heat, power, water, repairs, management, snow removal)", "why": "Expenses turn the rent into net income, and the net income drives the value.", "requested": "2026-06-10", "received": "2026-06-16", "na": "", "naReason": "", "notes": ""}, {"id": "i-s174-3", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-06-10", "received": "2026-06-12", "na": "", "naReason": "", "notes": ""}, {"id": "i-s174-4", "name": "Vacancy over the last 2 to 3 years: which units sat empty, and for how long", "why": "Vacancy shows how much rent is lost in a normal year.", "requested": "2026-06-10", "received": "2026-06-16", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-06-13", "how": "email", "items": ["i-s174-2", "i-s174-4"]}]},
+{"id": "f-sample181", "fileNo": "SAMPLE-181", "address": "11 Ferry Street, Port Wyncott", "recipient": "lawyer", "firstName": "Kendall", "propertyType": "commercial", "due": "2026-07-24", "created": "2026-07-14", "sent": "2026-07-14", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-07-22", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s181-1", "name": "Rent roll: each tenant, the area they lease, their rent and lease dates", "why": "The rent roll is what the property earns today, the starting point of the income approach.", "requested": "2026-07-14", "received": "2026-07-18", "na": "", "naReason": "", "notes": ""}, {"id": "i-s181-2", "name": "Leases and any amendments, for every tenant", "why": "Leases show the rent increases, renewal options and which costs each tenant pays back.", "requested": "2026-07-14", "received": "2026-07-21", "na": "", "naReason": "", "notes": ""}, {"id": "i-s181-3", "name": "Operating costs and recoveries for the last 2 to 3 years (what tenants pay back for taxes, insurance and common areas)", "why": "Recoveries decide how much of the cost the owner really carries, which changes the net income.", "requested": "2026-07-14", "received": "", "na": "2026-07-21", "naReason": "Owner keeps no separate recovery statement; all leases are gross", "notes": ""}, {"id": "i-s181-4", "name": "Latest property tax bill", "why": "Property tax is an operating cost, and the bill confirms the assessment.", "requested": "2026-07-14", "received": "2026-07-18", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-07-17", "how": "email", "items": ["i-s181-1", "i-s181-2", "i-s181-3", "i-s181-4"]}]},
+{"id": "f-sample188", "fileNo": "SAMPLE-188", "address": "22 Dulse Road, Wrenwick Cove", "recipient": "borrower", "firstName": "Rowan", "propertyType": "residential", "due": "2026-08-28", "created": "2026-08-18", "sent": "2026-08-18", "schedule": {"first": 3, "second": 7, "every": 3, "afterDue": "keep"}, "holdUntil": "", "closed": "2026-08-27", "notes": "FICTIONAL.", "sample": true, "updatedAt": "2026-10-07T12:00:00Z", "items": [{"id": "i-s188-1", "name": "Agreement of purchase and sale, with every amendment and schedule", "why": "The price and terms of the sale go in the report, and the lender asks us to review them.", "requested": "2026-08-18", "received": "2026-08-26", "na": "", "naReason": "", "notes": ""}, {"id": "i-s188-2", "name": "2 to 4 units: the lease or current rent for each unit", "why": "The rent from each unit is part of the value of a 2 to 4 unit property.", "requested": "2026-08-18", "received": "2026-08-21", "na": "", "naReason": "", "notes": ""}], "chases": [{"date": "2026-08-21", "how": "email", "items": ["i-s188-1"]}, {"date": "2026-08-25", "how": "email", "items": ["i-s188-1"]}]}
+]}
+</script>
+
+<script>
+(function () {
+'use strict';
+
+/* ============================================================ storage (conveniences)
+   localStorage holds per-viewer conveniences only: the theme and the last view.
+   The files being chased live in IndexedDB (below), never in localStorage. Every
+   access is wrapped, so the page works when storage is blocked. */
+const store = {
+  get(k) { try { const v = localStorage.getItem('docchase.' + k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem('docchase.' + k, JSON.stringify(v)); } catch (e) { /* ignore */ } },
+};
+
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+// Own-property lookup: a table indexed by a string from a file never answers with Object.prototype's members.
+const own = (o, k) => (o && Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const icon = (n, cls) => '<svg class="ico ' + (cls || '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
+const p2 = (n) => String(n).padStart(2, '0');
+const nowIso = () => new Date().toISOString();
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : (many || one + 's'));
+const andList = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
+function uid(p) { const a = new Uint8Array(6); crypto.getRandomValues(a); return p + Array.from(a, (b) => b.toString(16).padStart(2, '0')).join(''); }
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+/* ============================================================ dates
+   Every date is a whole day written YYYY-MM-DD. Days between two dates are worked
+   out in UTC, so a daylight-saving change never makes a day 23 or 25 hours long.
+   "Today" is this computer's local date, unless a test sets another through
+   DocChase.setToday(), which the page then says in a banner at the top. */
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MON = MONTHS.map((m) => m.slice(0, 3));
+const WDAY = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function localToday() { const d = new Date(); return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()); }
+let TODAY_OVERRIDE = '';
+const today = () => TODAY_OVERRIDE || localToday();
+function isoOk(v) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v)); if (!m) return false;
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  return +m[1] >= 1900 && +m[1] <= 2100 && d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3];
+}
+const dnum = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso)); return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) / 864e5 : NaN; };
+const diso = (n) => new Date(n * 864e5).toISOString().slice(0, 10);
+const addDays = (iso, k) => diso(dnum(iso) + k);
+const between = (a, b) => dnum(b) - dnum(a); // whole days from a to b
+const maxIso = (a, b) => (a > b ? a : b);
+const ud = (iso) => new Date(dnum(iso) * 864e5);
+// A date the page picks (a default due date, a follow-up) that falls on a Saturday or Sunday moves to the
+// Monday. A date the appraiser types (a due date, "don't follow up before") stays as typed.
+const workday = (iso) => { const w = ud(iso).getUTCDay(); return w === 6 ? addDays(iso, 2) : w === 0 ? addDays(iso, 1) : iso; };
+const yearTail = (iso) => (String(iso).slice(0, 4) !== today().slice(0, 4) ? ', ' + String(iso).slice(0, 4) : '');
+function shortDate(iso) { if (!isoOk(iso)) return ''; const d = ud(iso); return MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + yearTail(iso); }
+function longDate(iso) { if (!isoOk(iso)) return ''; const d = ud(iso); return WDAY[d.getUTCDay()] + ', ' + MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + yearTail(iso); }
+function fullDate(iso) { if (!isoOk(iso)) return ''; const d = ud(iso); return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear(); }
+// "was due 3 days ago", "due today", "in 2 days": when a follow-up falls, read against today.
+function dueWhen(iso) { const d = between(today(), iso); return d < 0 ? 'was due ' + relDay(iso) : d === 0 ? 'due today' : relDay(iso); }
+function relDay(iso) { const d = between(today(), iso); return d === 0 ? 'today' : d === 1 ? 'tomorrow' : d === -1 ? 'yesterday' : d > 0 ? 'in ' + d + ' days' : -d + ' days ago'; }
+const days = (n) => plural(n, 'day');
+
+/* ============================================================ the checklists (templates.json, embedded by sync.py) */
+function embedded(id, fb) { try { const el = $('#' + id); const t = el ? el.textContent.trim() : ''; return t ? JSON.parse(t) : fb; } catch (e) { return fb; } }
+const TPL = embedded('templates', { recipients: [], types: [] });
+const RCP = Object.fromEntries(TPL.recipients.map((r) => [r.id, r]));
+const TYPES = Object.fromEntries(TPL.types.map((t) => [t.id, t]));
+const rcpLabel = (id) => (own(RCP, id) || {}).label || 'Other';
+const typeShort = (id) => (own(TYPES, id) || {}).short || '';
+const who = (f) => (f.firstName ? f.firstName + ' (' + rcpLabel(f.recipient).toLowerCase() + ')' : 'the ' + rcpLabel(f.recipient).toLowerCase());
+
+/* ============================================================ settings
+   The appraiser's own signature (name, firm, phone, email), whether requests say
+   why each document is needed, and the defaults for a new request. */
+const DEF_SCHED = { first: 3, second: 7, every: 3, afterDue: 'keep' };
+function defaultSettings() { return { name: '', firm: '', phone: '', email: '', why: true, dueDays: 10, schedule: Object.assign({}, DEF_SCHED) }; }
+
+/* ============================================================ reading a file, strictly
+   Used for an imported file, for the embedded sample and for every record read back
+   from this browser's storage. A key named __proto__, constructor or prototype at any
+   depth refuses the whole file; every known field is type-, length- and range-checked;
+   unknown keys are dropped (the page builds new objects, never keeps the parsed ones).
+   One bad file or item refuses the whole import, naming the first three problems,
+   because importing the rest would quietly lose it. */
+const FORMAT = 'field-office-doc-chase', VERSION = 1;
+const MAX_FILE = 5 * 1024 * 1024, MAX_FILES = 2000, MAX_ITEMS = 60, MAX_CHASES = 200;
+// The most files this page keeps on the device. MAX_FILE and MAX_FILES bound one export file, not the page:
+// an export bigger than that is cut into parts that each pass this reader (exportParts).
+const MAX_HELD = 10000;
+const KEEPS = "file numbers, addresses, the recipient's first name, document names and reasons, dates, your notes, and your own signature (name, firm, phone, email). Never a document, and never the recipient's email address.";
+const BAD_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+const CTRL = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/; // notes may hold tabs and line breaks
+const CTRL_LINE = /[\u0000-\u001F\u007F]/;                     // one-line text may not
+const CTRL_ALL = new RegExp(CTRL.source, 'g');
+const FID_RX = /^f-[a-z0-9-]{3,40}$/, IID_RX = /^i-[a-z0-9-]{1,40}$/;
+const DT_RX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?(Z|[+-]\d{2}:\d{2})?$/;
+const EMAIL_RX = /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,180}\.[A-Za-z]{2,24}$/;
+const LIM = { fileNo: 60, address: 200, firstName: 60, name: 160, why: 400, naReason: 200, itemNotes: 1000, notes: 2000 };
+const isObj = (o) => !!o && typeof o === 'object' && !Array.isArray(o);
+const str = (v, max, multi) => typeof v === 'string' && v.length <= max && !(multi ? CTRL : CTRL_LINE).test(v);
+
+function readSchedule(v, bad, w) {
+  const o = Object.assign({}, DEF_SCHED);
+  if (!isObj(v)) { bad(w + ': the follow-up schedule is missing'); return o; }
+  for (const k of ['first', 'second', 'every']) {
+    const n = own(v, k);
+    if (!Number.isInteger(n) || n < 1 || n > 60) bad(w + ': schedule "' + k + '" is not a whole number of days from 1 to 60'); else o[k] = n;
+  }
+  if (o.second <= o.first) bad(w + ': the second follow-up must come after the first');
+  const a = own(v, 'afterDue');
+  if (a !== 'keep' && a !== 'stop') bad(w + ': schedule "afterDue" is not "keep" or "stop"'); else o.afterDue = a;
+  return o;
+}
+function readItem(x, bad, w) {
+  if (!isObj(x)) { bad(w + ' is not an object'); return null; }
+  const it = {};
+  const id = own(x, 'id'); if (!(typeof id === 'string' && IID_RX.test(id))) bad(w + ': id is missing or malformed'); it.id = String(id);
+  const s = (k, max, req, multi) => { const v = own(x, k); if (v == null || v === '') { if (req) bad(w + ': ' + k + ' is missing'); return ''; } if (!str(v, max, multi)) { bad(w + ': ' + k + ' is not ' + (multi ? 'text' : 'one line of text') + ' (' + max + ' characters at most)'); return ''; } return v; };
+  const d = (k) => { const v = own(x, k); if (v == null || v === '') return ''; if (!isoOk(v)) { bad(w + ': ' + k + ' is not a date written YYYY-MM-DD'); return ''; } return v; };
+  it.name = s('name', LIM.name, true); it.why = s('why', LIM.why);
+  it.requested = d('requested'); it.received = d('received'); it.na = d('na');
+  it.naReason = s('naReason', LIM.naReason); it.notes = s('notes', LIM.itemNotes, false, true);
+  if (it.received && it.na) bad(w + ': it is both received and not available');
+  return it;
+}
+function readFile(x, bad, w) {
+  if (!isObj(x)) { bad(w + ' is not an object'); return null; }
+  const f = {};
+  const s = (k, max, req, multi) => { const v = own(x, k); if (v == null || v === '') { if (req) bad(w + ': ' + k + ' is missing'); return ''; } if (!str(v, max, multi)) { bad(w + ': ' + k + ' is not ' + (multi ? 'text' : 'one line of text') + ' (' + max + ' characters at most)'); return ''; } return v; };
+  const d = (k, req) => { const v = own(x, k); if (v == null || v === '') { if (req) bad(w + ': ' + k + ' date is missing'); return ''; } if (!isoOk(v)) { bad(w + ': ' + k + ' is not a date written YYYY-MM-DD'); return ''; } return v; };
+  const id = own(x, 'id'); if (!(typeof id === 'string' && FID_RX.test(id))) bad(w + ': id is missing or malformed'); f.id = String(id);
+  f.fileNo = s('fileNo', LIM.fileNo, true); f.address = s('address', LIM.address, true);
+  const r = own(x, 'recipient'); if (!own(RCP, r)) bad(w + ': recipient is not one of: ' + Object.keys(RCP).join(', ')); f.recipient = own(RCP, r) ? r : 'other';
+  f.firstName = s('firstName', LIM.firstName);
+  const t = own(x, 'propertyType'); if (!own(TYPES, t)) bad(w + ': propertyType is not one of: ' + Object.keys(TYPES).join(', ')); f.propertyType = own(TYPES, t) ? t : '';
+  f.due = d('due', true); f.created = d('created', true); f.sent = d('sent'); f.holdUntil = d('holdUntil'); f.closed = d('closed');
+  f.schedule = readSchedule(own(x, 'schedule'), bad, w);
+  f.notes = s('notes', LIM.notes, false, true);
+  const smp = own(x, 'sample'); if (smp != null && typeof smp !== 'boolean') bad(w + ': sample is not true or false'); f.sample = smp === true;
+  const up = own(x, 'updatedAt'); if (up != null && up !== '' && !(typeof up === 'string' && DT_RX.test(up))) bad(w + ': updatedAt is not a date and time'); f.updatedAt = typeof up === 'string' ? up : '';
+  const items = own(x, 'items');
+  f.items = [];
+  if (!Array.isArray(items) || items.length > MAX_ITEMS) bad(w + ': items is not a list of at most ' + MAX_ITEMS);
+  else {
+    const seen = new Set();
+    items.forEach((it, i) => { const c = readItem(it, bad, w + ', item ' + (i + 1)); if (!c) return; if (seen.has(c.id)) bad(w + ', item ' + (i + 1) + ': its id repeats another item\'s'); seen.add(c.id); f.items.push(c); });
+  }
+  const chases = own(x, 'chases');
+  f.chases = [];
+  if (!Array.isArray(chases) || chases.length > MAX_CHASES) bad(w + ': chases is not a list of at most ' + MAX_CHASES);
+  else chases.forEach((c, i) => {
+    const cw = w + ', follow-up ' + (i + 1);
+    if (!isObj(c)) { bad(cw + ' is not an object'); return; }
+    const date = own(c, 'date'), how = own(c, 'how'), ids = own(c, 'items');
+    if (!isoOk(date)) bad(cw + ': date is not a date written YYYY-MM-DD');
+    if (how !== 'email' && how !== 'call') bad(cw + ': how is not "email" or "call"');
+    if (!Array.isArray(ids) || ids.length > MAX_ITEMS || !ids.every((v) => typeof v === 'string' && IID_RX.test(v))) bad(cw + ': items is not a list of item ids');
+    f.chases.push({ date: String(date), how: how === 'call' ? 'call' : 'email', items: Array.isArray(ids) ? ids.map(String) : [] });
+  });
+  f.chases.sort((a, b) => cmp(a.date, b.date));
+  return f;
+}
+function readSettings(x, bad) {
+  const o = defaultSettings();
+  if (x == null) return null;
+  if (!isObj(x)) { bad('settings is not an object'); return null; }
+  for (const [k, max] of [['name', 80], ['firm', 120], ['phone', 40], ['email', 120]]) {
+    const v = own(x, k); if (v == null || v === '') continue;
+    if (!str(v, max)) bad('settings: ' + k + ' is not one line of text (' + max + ' characters at most)'); else o[k] = v;
+  }
+  const why = own(x, 'why'); if (why != null && typeof why !== 'boolean') bad('settings: why is not true or false'); else if (why != null) o.why = why;
+  const dd = own(x, 'dueDays'); if (dd != null && !(Number.isInteger(dd) && dd >= 1 && dd <= 90)) bad('settings: dueDays is not a whole number from 1 to 90'); else if (dd != null) o.dueDays = dd;
+  if (own(x, 'schedule') != null) o.schedule = readSchedule(own(x, 'schedule'), bad, 'settings');
+  return o;
+}
+function validateDoc(doc) {
+  const errs = []; const bad = (m) => { if (errs.length < 50) errs.push(m); };
+  if (!isObj(doc) || own(doc, 'format') !== FORMAT) {
+    const fm = isObj(doc) ? own(doc, 'format') : null;
+    if (fm === 'field-office-comp-library') return { errs: ['It is an office comp library. Open it in the comp grid.'] };
+    if (fm === 'field-office-inspection') return { errs: ['It is an inspection export. Open it in Inspection capture.'] };
+    if (fm === 'field-office-doc-chase-templates') return { errs: ['It is the checklist templates file, not a copy of your files.'] };
+    return { errs: ['It is not a Document Chase file: its "format" is missing or different.'] };
+  }
+  const ver = own(doc, 'version');
+  if (ver !== VERSION) return { errs: [typeof ver === 'number' && ver > VERSION ? 'It was made by a newer version of this page (version ' + ver + '); this page reads version 1.' : 'Its "version" is not 1.'] };
+  const sample = own(doc, 'sample'); if (sample != null && !str(sample, 300)) bad('"sample" is not a short text');
+  const note = own(doc, 'note'); if (note != null && !str(note, 300)) bad('"note" is not a short text');
+  const anchor = own(doc, 'anchor'); if (anchor != null && !isoOk(anchor)) bad('"anchor" is not a date written YYYY-MM-DD');
+  const ex = own(doc, 'exportedAt'); if (ex != null && ex !== '' && !(typeof ex === 'string' && DT_RX.test(ex))) bad('"exportedAt" is not a date and time');
+  const settings = readSettings(own(doc, 'settings'), bad);
+  const list = own(doc, 'files');
+  if (!Array.isArray(list)) return { errs: ['Its "files" list is missing.'] };
+  if (list.length > MAX_FILES) return { errs: ['It has ' + list.length + ' files; this page reads at most ' + MAX_FILES + '.'] };
+  const files = [], seen = new Set();
+  list.forEach((x, i) => { const f = readFile(x, bad, 'file ' + (i + 1)); if (!f) return; if (seen.has(f.id)) bad('file ' + (i + 1) + ': its id repeats another file\'s'); seen.add(f.id); files.push(f); });
+  if (errs.length) return { errs };
+  return { files, settings, sample: typeof sample === 'string' ? sample : '', anchor: typeof anchor === 'string' ? anchor : '' };
+}
+function parseText(text) {
+  if (text.length > MAX_FILE) return { errs: ['It is larger than 5 MB, the most this page opens.'] };
+  let doc, badKey = null;
+  try { doc = JSON.parse(text, (k, v) => { if (BAD_KEYS.has(k)) { badKey = k; throw new Error('bad key'); } return v; }); }
+  catch (e) { return { errs: [badKey ? 'It contains a key named "' + badKey + '", which a Document Chase file never has.' : 'It is not valid JSON, so it is not a Document Chase file.'] }; }
+  return validateDoc(doc);
+}
+function errSummary(errs) {
+  const t = errs.length === 1 ? errs[0] : errs.length + ' problems, so nothing was imported: ' + errs.slice(0, 3).join('; ') + (errs.length > 3 ? '; and ' + (errs.length - 3) + ' more' : '');
+  return t.replace(/\.?$/, '.');
+}
+
+/* ============================================================ the arithmetic of chasing
+   Outstanding: requested, and neither received nor marked not available.
+   The schedule counts from the day the request was sent: the first follow-up after
+   `first` days, the second after `second` days, then one every `every` days. A
+   follow-up sent late moves the rest: the second is never sooner than (second - first)
+   days after the first one actually went, and each later one counts from the last
+   one sent. A follow-up that would fall on a Saturday or Sunday moves to the Monday.
+   "Don't follow up before" pushes the next one to that day. Past the due date, the
+   same cadence continues (worded as past the date) unless the file is set to stop;
+   then the file is listed apart, never silently dropped. "Stopped" means the next
+   follow-up would fall after the due date: before that date the page says no more
+   follow-ups are coming, and only once today is past it does it say "past the due date". */
+const isIn = (it) => !!(it.received || it.na);
+const outstanding = (f) => f.items.filter((it) => it.requested && !isIn(it));
+const lastChase = (f) => f.chases.reduce((m, c) => maxIso(m, c.date), '');
+function status(f) {
+  if (f.closed) return 'closed';
+  if (!f.sent) return 'draft';
+  return outstanding(f).length ? 'waiting' : 'in';
+}
+function nextChase(f) {
+  if (f.closed || !f.sent || !outstanding(f).length) return null;
+  const sc = f.schedule, n = f.chases.length, last = lastChase(f);
+  let d = workday(n === 0 ? addDays(f.sent, sc.first)
+    : n === 1 ? maxIso(addDays(f.sent, sc.second), addDays(last, sc.second - sc.first))
+    : addDays(last, sc.every));
+  let held = false;
+  if (f.holdUntil && f.holdUntil > d) { d = f.holdUntil; held = true; }
+  const pastDue = !!f.due && d > f.due;
+  return { date: d, n: n + 1, held, pastDue, stopped: pastDue && sc.afterDue === 'stop' };
+}
+const pastDueNow = (f) => !!f.due && today() > f.due;
+/* Days a file has waited: from the request to the last document in (or marked not
+   available); for a file closed with documents still out, to the day it was closed;
+   for an open one, to today. */
+function fileWait(f) {
+  if (!f.sent) return null;
+  const req = f.items.filter((it) => it.requested);
+  const allIn = req.length > 0 && req.every(isIn);
+  let end;
+  if (allIn) end = req.reduce((m, it) => maxIso(m, it.received || it.na), f.sent);
+  else end = f.closed || today();
+  return { days: Math.max(0, between(f.sent, end)), end, done: allIn, outAtClose: f.closed && !allIn ? req.filter((it) => !isIn(it)).length : 0 };
+}
+function itemWait(it) {
+  if (!it.requested) return null;
+  return { days: Math.max(0, between(it.requested, it.received || it.na || today())), done: isIn(it) };
+}
+function dueState(f) {
+  if (!f.due) return null;
+  const d = between(today(), f.due);
+  return { d, late: d < 0, text: d < 0 ? days(-d) + ' past the due date' : d === 0 ? 'due today' : 'due ' + relDay(f.due) + ' (' + shortDate(f.due) + ')' };
+}
+/* What "Chase today" lists. */
+function todayGroups() {
+  const t = today(), G = { due: [], soon: [], drafts: [], ready: [], stopped: [] };
+  for (const f of S.files.values()) {
+    const st = status(f);
+    if (st === 'closed') continue;
+    if (st === 'draft') { G.drafts.push(f); continue; }
+    if (st === 'in') { G.ready.push(f); continue; }
+    const nx = nextChase(f); if (!nx) continue;
+    if (nx.stopped) { if (pastDueNow(f)) G.stopped.push({ f, nx }); else if (between(t, f.due) <= 7) G.soon.push({ f, nx, at: f.due }); }
+    else if (nx.date <= t) G.due.push({ f, nx });
+    else if (between(t, nx.date) <= 7) G.soon.push({ f, nx });
+  }
+  const at = (x) => x.at || x.nx.date;
+  const byNx = (a, b) => cmp(at(a), at(b)) || cmp(a.f.fileNo, b.f.fileNo);
+  G.due.sort(byNx); G.soon.sort(byNx); G.stopped.sort(byNx);
+  G.drafts.sort((a, b) => cmp(a.created, b.created) || cmp(a.fileNo, b.fileNo));
+  G.ready.sort((a, b) => cmp(a.fileNo, b.fileNo));
+  return G;
+}
+
+/* ============================================================ the emails
+   Plain text, polite and short. The page never sends anything: the appraiser copies
+   the text into their own mail program, or opens it there with a mailto: link, and
+   it goes from their own address. A follow-up lists only what is still outstanding. */
+function sigLines() {
+  const s = S.settings;
+  return [s.name || '[your name: add it in Settings]', s.firm, s.phone, s.email].filter(Boolean);
+}
+const greet = (f) => (f.firstName ? 'Hi ' + f.firstName + ',' : 'Hello,');
+const subjectOf = (f) => 'Documents for the appraisal of ' + f.address + ' (our file ' + f.fileNo + ')';
+/* The request lists every document asked for: on a file not sent yet, the ones not
+   already in; once sent, the ones that were outstanding on the day it went. */
+function requestItems(f) {
+  if (!f.sent) return f.items.filter((it) => !isIn(it));
+  return f.items.filter((it) => !isIn(it) || (it.received || it.na) >= f.sent);
+}
+function requestText(f) {
+  const items = requestItems(f), why = S.settings.why;
+  const L = [greet(f), '', "We're preparing an appraisal of " + f.address + ' and need the documents below to complete it. Could you send them by ' + longDate(f.due) + '?', ''];
+  items.forEach((it, i) => {
+    L.push((i + 1) + '. ' + it.name);
+    if (why && it.why) L.push('   Why we need it: ' + it.why, '');
+  });
+  if (L[L.length - 1] !== '') L.push('');
+  const r = own(RCP, f.recipient);
+  if (r && r.line) L.push(r.line);
+  L.push("If something doesn't exist, or will take longer, just tell me which and we'll work around it. We use these documents only for this appraisal.");
+  L.push('', 'Thank you,');
+  return { subject: subjectOf(f), body: L.concat(sigLines()).join('\n') };
+}
+/* A follow-up lists what is still outstanding. What they were asked for before (in the request, or in an
+   earlier follow-up) is what "we're still waiting on"; a document added since is asked for here for the
+   first time, so it goes under "We also need", with its reason, and stays out of "We had asked for these by".
+   A document added on the day the request went counts as part of the request: the page keeps dates, not times. */
+function askedBefore(f) {
+  const ids = new Set(); for (const c of f.chases) for (const id of c.items) ids.add(id);
+  return (it) => (!!it.requested && it.requested <= f.sent) || ids.has(it.id);
+}
+function followupText(f) {
+  const out = outstanding(f), got = f.items.filter((it) => it.received).length;
+  const nx = nextChase(f), n = nx ? nx.n : f.chases.length + 1, one = out.length === 1;
+  const t = today(), was = askedBefore(f);
+  const old = out.filter(was), added = out.filter((it) => !was(it));
+  const L = [greet(f), ''];
+  if (n === 1 && !got && old.length) L.push('Just checking that my note of ' + fullDate(f.sent) + ' about the documents for the appraisal of ' + f.address + ' reached you.');
+  else if (got) L.push('Following up on the documents for the appraisal of ' + f.address + '. Thank you for the ' + (got === 1 ? 'one' : 'ones') + " you've sent so far.");
+  else L.push('Following up on my note of ' + fullDate(f.sent) + ' about the documents for the appraisal of ' + f.address + '.');
+  L.push('');
+  if (old.length) {
+    L.push(old.length === 1 ? "We're still waiting on this one:" : "We're still waiting on these " + old.length + ':');
+    old.forEach((it, i) => L.push((i + 1) + '. ' + it.name));
+    L.push('');
+  }
+  if (added.length) {
+    L.push(added.length === 1 ? (old.length ? 'We also need one more document:' : 'We also need this document:') : (old.length ? 'We also need these ' + added.length + ' more:' : 'We also need these ' + added.length + ' documents:'));
+    added.forEach((it, i) => { L.push((old.length + i + 1) + '. ' + it.name); if (S.settings.why && it.why) L.push('   Why we need it: ' + it.why, ''); });
+    if (L[L.length - 1] !== '') L.push('');
+  }
+  // "We had asked for these by ..." names only what was asked before.
+  const these = !added.length ? (old.length === 1 ? 'it' : 'these') : old.length === 1 ? 'the first one' : 'the first ' + old.length;
+  if (f.due && t > f.due) L.push((old.length ? 'We had asked for ' + these + ' by ' + longDate(f.due) + '. ' : '') + 'Anything you can send this week will keep the appraisal moving.');
+  else if (f.due === t) L.push(old.length ? 'We had asked for ' + these + ' by today. If that is not possible, a quick note on when would help us plan.' : 'Could you send ' + (one ? 'it' : 'them') + ' as soon as you can?');
+  else if (f.due) L.push('Could you send ' + (one ? 'it' : 'them') + ' by ' + longDate(f.due) + '?');
+  L.push(one ? "If it doesn't exist or will take longer, a quick reply saying so is all we need." : "If any of these doesn't exist or will take longer, a quick reply saying which is all we need.");
+  if (n >= 3 && S.settings.phone) L.push("If it's easier to talk it through, you can reach me at " + S.settings.phone + '.');
+  L.push('', 'Thank you,');
+  return { subject: 'Re: ' + subjectOf(f), body: L.concat(sigLines()).join('\n') };
+}
+/* The text shown for a file's request ('req') or follow-up ('fu'): generated, unless
+   the appraiser edited it in this tab (edits live in memory only, never saved). */
+function mailFor(f, kind) {
+  const key = f.id + ':' + kind, m = own(S.mail, key);
+  const gen = kind === 'req' ? requestText(f) : followupText(f);
+  if (m && m.edited) return { key, subject: m.subject, body: m.body, to: m.to || '', edited: true };
+  return { key, subject: gen.subject, body: gen.body, to: (m && m.to) || '', edited: false };
+}
+/* Some mail programs cut a mailto: link past about 2,000 characters, quietly dropping the end of the list
+   and the signature. The link is measured as it is sent (encoded: a space is %20, a line break %0D%0A),
+   and past that length "Open in your mail app" is turned off in favour of Copy email. */
+const LONG_LINK = 2000;
+function mailtoHref(M) {
+  const to = EMAIL_RX.test(M.to || '') ? M.to : '';
+  return 'mailto:' + to + '?subject=' + encodeURIComponent(M.subject) + '&body=' + encodeURIComponent(M.body.replace(/\r?\n/g, '\r\n'));
+}
+const linkTooLong = (M) => mailtoHref(M).length > LONG_LINK;
+function setMailLink(a, M) {
+  if (linkTooLong(M)) { a.removeAttribute('href'); a.setAttribute('role', 'link'); a.setAttribute('aria-disabled', 'true'); }
+  else { a.setAttribute('href', mailtoHref(M)); a.removeAttribute('role'); a.removeAttribute('aria-disabled'); }
+}
+function mailHint(M) {
+  return 'Nothing is sent from this page: the email goes from your own mail program and your own address. Edits here are kept only until you leave this page.' +
+    (linkTooLong(M) ? ' This email is too long for a mail link (some mail programs cut a link this long short, dropping the end of the list and your signature), so Open in your mail app is off: use Copy email and paste it into a new message.' : '') +
+    (M.to && !EMAIL_RX.test(M.to) ? ' The address does not look like an email address, so the mail link leaves it out.' : '');
+}
+
+/* ============================================================ copy guard (the comp grid's)
+   Text pasted into a spreadsheet that starts with = + - @ (or a tab or return) would
+   run as a formula, and a formula can fetch a URL. Such a line gets a leading
+   apostrophe on the spreadsheet paths (the summary table, the received list). Plain
+   numbers are left alone. The emails are not guarded: they go into a mail program. */
+const UNSAFE = /^[=+\-@\t\r]/, PLAIN = /^-?\d+(\.\d+)?$/;
+function guardLine(s) {
+  const t = String(s == null ? '' : s).replace(/[\t\r\n]+/g, ' ').trim();
+  return !t || !UNSAFE.test(t) || PLAIN.test(t) ? t : "'" + t;
+}
+const guardText = (s) => String(s == null ? '' : s).split('\n').map(guardLine).join('\n');
+
+/* ============================================================ the summary: days waiting by who was asked
+   Closed files only (an open file has not finished waiting). Sample files are left
+   out as soon as there is one real closed file, and the page says so. */
+function median(a) { const s = a.slice().sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+const fmt1 = (x) => (Number.isInteger(x) ? String(x) : x.toFixed(1));
+function summaryRows(groupBy) {
+  const closed = Array.from(S.files.values()).filter((f) => f.closed && f.sent);
+  const real = closed.filter((f) => !f.sample), smp = closed.filter((f) => f.sample);
+  const use = real.length ? real : smp;
+  const keyOf = (f) => (groupBy === 'type' ? f.propertyType : f.recipient);
+  const order = groupBy === 'type' ? TPL.types : TPL.recipients;
+  const row = (label, list) => {
+    const d = list.map((f) => fileWait(f).days);
+    const items = list.reduce((s, f) => s + f.items.filter((it) => it.requested).length, 0);
+    return { label, n: list.length, avg: d.reduce((s, x) => s + x, 0) / list.length, median: median(d), max: Math.max.apply(null, d),
+      chases: list.reduce((s, f) => s + f.chases.length, 0) / list.length, items,
+      na: list.reduce((s, f) => s + f.items.filter((it) => it.na).length, 0),
+      left: list.reduce((s, f) => s + fileWait(f).outAtClose, 0) };
+  };
+  const rows = [];
+  for (const g of order) { const list = use.filter((f) => keyOf(f) === g.id); if (list.length) rows.push(row(groupBy === 'type' ? g.short : g.plural, list)); }
+  return { rows, all: use.length ? row('All', use) : null, sampleOnly: !real.length && smp.length > 0, leftOut: real.length ? smp.length : 0 };
+}
+/* Files still open: how long each kind of recipient has kept the office waiting so far. */
+function openRows(groupBy) {
+  const open = Array.from(S.files.values()).filter((f) => !f.closed && f.sent && status(f) === 'waiting');
+  const real = open.filter((f) => !f.sample), use = real.length ? real : open;
+  const note = real.length && real.length < open.length ? plural(open.length - real.length, 'open sample file') + ' left out.' : !real.length && open.length ? 'These are the fictional sample files.' : '';
+  const keyOf = (f) => (groupBy === 'type' ? f.propertyType : f.recipient);
+  const order = groupBy === 'type' ? TPL.types : TPL.recipients;
+  const out = [];
+  for (const g of order) {
+    const list = use.filter((f) => keyOf(f) === g.id); if (!list.length) continue;
+    const d = list.map((f) => fileWait(f).days);
+    out.push({ label: groupBy === 'type' ? g.short : g.plural, n: list.length, avg: d.reduce((s, x) => s + x, 0) / d.length, max: Math.max.apply(null, d),
+      late: list.filter((f) => f.due && today() > f.due).length, outItems: list.reduce((s, f) => s + outstanding(f).length, 0) });
+  }
+  out.note = note;
+  return out;
+}
+const SUM_HEAD = ['Closed files', 'Average days', 'Median days', 'Longest', 'Follow-ups per file', 'Documents asked', 'Not available'];
+function summaryTsv(groupBy) {
+  const R = summaryRows(groupBy); if (!R.all) return '';
+  const cells = (r) => [r.label, r.n, fmt1(r.avg), fmt1(r.median), r.max, fmt1(r.chases), r.items, r.na];
+  return (R.sampleOnly ? 'FICTIONAL SAMPLE DATA: invented files, not real turnaround times\n' : '') +
+    [[groupBy === 'type' ? 'Property type' : 'Who was asked'].concat(SUM_HEAD)].concat(R.rows.map(cells), [cells(R.all)])
+    .map((r) => r.map(guardLine).join('\t')).join('\n');
+}
+function summarySentences(groupBy) {
+  const R = summaryRows(groupBy); if (!R.all) return '';
+  const line = (r) => r.label + ': ' + plural(r.n, 'file') + ', ' + fmt1(r.avg) + ' days on average (median ' + fmt1(r.median) + ', longest ' + r.max + '); ' + fmt1(r.chases) + (r.chases === 1 ? ' follow-up' : ' follow-ups') + ' per file.';
+  return ['Days from our document request to the last document in, closed files' + (R.sampleOnly ? ' (FICTIONAL SAMPLE)' : '') + ':']
+    .concat(R.rows.map((r) => '- ' + guardLine(line(r))), ['- ' + line(R.all)]).join('\n');
+}
+
+/* ============================================================ this device's storage (IndexedDB)
+   One record per file in "files", the signature and defaults in "settings". Only
+   this browser on this device can read it. Each change is saved within a third of
+   a second, and at once when the tab is hidden. A record read back is checked with
+   the same strict reader as an imported file. */
+const DBN = 'field-office-docchase';
+const DB = { p: null };
+function idbOpen() {
+  if (DB.p) return DB.p;
+  DB.p = new Promise((resolve) => {
+    let rq;
+    try { rq = indexedDB.open(DBN, 1); } catch (e) { resolve(null); return; }
+    rq.onupgradeneeded = () => {
+      const db = rq.result;
+      if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'id' });
+      if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'k' });
+    };
+    // Another tab deleting everything asks this one to let go of the database.
+    rq.onsuccess = () => { const db = rq.result; db.onversionchange = () => { db.close(); DB.p = null; }; resolve(db); };
+    rq.onerror = () => resolve(null);
+    rq.onblocked = () => resolve(null);
+  });
+  return DB.p;
+}
+async function idbTx(names, mode, fn) {
+  const db = await idbOpen(); if (!db) throw new Error('storage unavailable');
+  return new Promise((resolve, reject) => {
+    let out;
+    const tx = db.transaction(names, mode);
+    tx.oncomplete = () => resolve(out && 'v' in out ? out.v : undefined);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error || new Error('aborted'));
+    out = fn(tx);
+  });
+}
+const dbPutFile = (f) => idbTx(['files'], 'readwrite', (tx) => { tx.objectStore('files').put(f); });
+const dbDelFiles = (ids) => idbTx(['files'], 'readwrite', (tx) => { for (const id of ids) tx.objectStore('files').delete(id); });
+const dbPutSettings = (s) => idbTx(['settings'], 'readwrite', (tx) => { tx.objectStore('settings').put(Object.assign({ k: 'me' }, s)); });
+const dbLoad = () => idbTx(['files', 'settings'], 'readonly', (tx) => {
+  const h = { v: { files: [], settings: null } };
+  const a = tx.objectStore('files').getAll(); a.onsuccess = () => { h.v.files = a.result || []; };
+  const b = tx.objectStore('settings').get('me'); b.onsuccess = () => { h.v.settings = b.result || null; };
+  return h;
+});
+async function dbWipe() {
+  const db = await idbOpen(); if (db) db.close(); DB.p = null;
+  await new Promise((resolve, reject) => {
+    let rq; try { rq = indexedDB.deleteDatabase(DBN); } catch (e) { reject(e); return; }
+    rq.onsuccess = () => resolve(); rq.onerror = () => reject(rq.error || new Error('delete'));
+    rq.onblocked = () => toast('Close this page in your other tabs to finish deleting.', true);
+  });
+}
+
+/* ============================================================ state */
+const VIEWS = ['today', 'files', 'new', 'summary', 'settings'];
+const S = {
+  files: new Map(), settings: defaultSettings(), view: 'today', fileId: null, loaded: false, storage: 'ok', saveState: '',
+  mail: {}, mailOpen: {}, itemOpen: {}, add: {}, arm: '', draft: null, search: '', filter: 'open', groupBy: 'recipient', importMsg: null, exportParts: null,
+};
+const PENDING = new Map(); // file id -> save timer
+let settingsT = 0;
+function setSave(st) {
+  S.saveState = st; const el = $('#save-st');
+  if (S.storage === 'blocked') { el.className = 'save-st err'; el.textContent = 'Not saved: this browser blocks storage. Export before you close.'; return; }
+  el.className = 'save-st' + (st === 'err' ? ' err' : '');
+  el.textContent = st === 'saving' ? 'Saving…' : st === 'err' ? 'Not saved: storage failed. Export now.' : st === 'saved' ? 'Saved on this device' : '';
+}
+/* Every change to a file goes through here: stamped, kept in memory, saved shortly. */
+function touch(f) { f.updatedAt = nowIso(); S.files.set(f.id, f); queueSave(f.id); }
+function queueSave(id) {
+  clearTimeout(PENDING.get(id)); PENDING.set(id, setTimeout(() => flush(id), 300)); setSave('saving');
+}
+async function flush(id) {
+  clearTimeout(PENDING.get(id)); PENDING.delete(id);
+  const f = S.files.get(id); if (!f) return; // deleted meanwhile: nothing is written back
+  if (S.storage === 'blocked') { setSave('err'); return; }
+  try { await dbPutFile(f); if (!PENDING.size) setSave('saved'); post(); }
+  catch (e) { setSave('err'); }
+}
+function saveSettings() {
+  clearTimeout(settingsT);
+  settingsT = setTimeout(async () => { settingsT = 0; if (S.storage === 'blocked') return; try { await dbPutSettings(S.settings); setSave('saved'); post(); } catch (e) { setSave('err'); } }, 300);
+}
+function flushAll() {
+  for (const id of Array.from(PENDING.keys())) flush(id);
+  if (settingsT) { clearTimeout(settingsT); settingsT = 0; dbPutSettings(S.settings).catch(() => {}); }
+}
+async function loadAll() {
+  let r = null;
+  try { r = await dbLoad(); } catch (e) { S.storage = 'blocked'; }
+  S.files = new Map(); let skipped = 0;
+  if (r) {
+    for (const raw of r.files) {
+      const errs = []; const f = readFile(raw, (m) => errs.push(m), 'saved file');
+      if (f && !errs.length) S.files.set(f.id, f); else skipped++;
+    }
+    if (r.settings) { const errs = []; const s = readSettings(r.settings, (m) => errs.push(m)); if (s && !errs.length) S.settings = s; }
+  }
+  S.loaded = true; setSave(S.storage === 'blocked' ? 'err' : '');
+  if (skipped) toast(plural(skipped, 'saved file') + ' could not be read back and ' + (skipped === 1 ? 'is' : 'are') + ' not shown.', true, { ms: 9000 });
+}
+/* Another tab of this page saved something: say so, and reload on request. */
+let BC = null;
+function fromOtherTab(m) {
+  if (m && m.wiped) {
+    for (const id of PENDING.keys()) clearTimeout(PENDING.get(id));
+    PENDING.clear(); S.files = new Map(); S.settings = defaultSettings(); S.mail = {}; S.draft = null; S.arm = ''; S.exportParts = null;
+    render(); toast('Everything was deleted in another tab of this page.', true); return;
+  }
+  if (m && Array.isArray(m.deleted)) {
+    for (const id of m.deleted) { clearTimeout(PENDING.get(id)); PENDING.delete(id); S.files.delete(id); }
+    render(); return;
+  }
+  $('#tab-banner').hidden = false;
+}
+try { BC = new BroadcastChannel('field-office-docchase'); BC.onmessage = (e) => fromOtherTab(e.data); } catch (e) { BC = null; }
+const post = (m) => { try { if (BC) BC.postMessage(m || 'changed'); } catch (e) { /* ignore */ } };
+
+/* ============================================================ toast, clipboard (the comp grid's) */
+let toastT = 0, toastAct = null;
+function toast(msg, err, o) {
+  const t = $('#toast'); o = o || {};
+  toastAct = o.action ? o.action.fn : null;
+  t.className = 'toast show' + (err ? ' err' : '') + (o.action ? ' act' : '');
+  t.innerHTML = (err ? '' : icon('check', 'ico-sm')) + '<span>' + esc(msg) + '</span>' + (o.action ? '<button type="button" data-toast-act>' + esc(o.action.label) + '</button>' : '');
+  clearTimeout(toastT); toastT = setTimeout(hideToast, o.ms || (err ? 6000 : 3600));
+}
+function hideToast() {
+  const t = $('#toast'); t.className = t.className.replace(/\b(show|act)\b/g, '').trim();
+  toastAct = null; const b = $('[data-toast-act]', t); if (b) b.remove();
+}
+$('#toast').addEventListener('click', (e) => { if (!e.target.closest('[data-toast-act]') || !toastAct) return; const fn = toastAct; clearTimeout(toastT); hideToast(); fn(); });
+async function copyText(text, what) {
+  let ok = false;
+  try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); ok = true; } } catch (e) { ok = false; }
+  if (!ok) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+  }
+  if (ok) toast(what);
+  else {
+    const dlg = $('#manual'); const ta = $('#manual-text');
+    ta.value = text;
+    try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); }
+    ta.focus(); ta.select();
+  }
+  return ok;
+}
+$('#manual-close').addEventListener('click', () => $('#manual').close());
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = name; a.hidden = true;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+/* ============================================================ theme (the comp grid's) */
+const root = document.documentElement;
+const sysDark = () => window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+const effTheme = () => root.getAttribute('data-theme') || (sysDark() ? 'dark' : 'light');
+function updateThemeBtn() {
+  const dark = effTheme() === 'dark'; const b = $('#theme-toggle');
+  b.innerHTML = icon(dark ? 'sun' : 'moon');
+  b.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  b.title = dark ? 'Light mode' : 'Dark mode';
+}
+(function initTheme() {
+  const t = store.get('theme');
+  if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t);
+  updateThemeBtn();
+  if (window.matchMedia) { const mq = matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', updateThemeBtn); }
+})();
+$('#theme-toggle').addEventListener('click', () => {
+  const next = effTheme() === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next); store.set('theme', next); updateThemeBtn();
+});
+
+/* ============================================================ rendering
+   One view at a time, re-rendered from S after each change. Focus is put back on
+   the same control (by id or data-fk), so a keyboard user keeps their place. */
+const chip = (cls, text, ico) => '<span class="chip ' + cls + '">' + (ico ? icon(ico, 'ico-sm') : '') + esc(text) + '</span>';
+const sampleChip = (f) => (f.sample ? chip('chip-soon', 'SAMPLE') : '');
+function statusChip(f) {
+  const st = status(f), ds = dueState(f);
+  if (st === 'closed') return chip('', 'Closed ' + shortDate(f.closed));
+  if (st === 'draft') return chip('chip-unknown', 'Request not sent yet');
+  if (st === 'in') return chip('chip-ok', 'Everything in', 'check');
+  return ds && ds.late ? chip('chip-late', 'Waiting, ' + ds.text) : chip('chip-soon', 'Waiting');
+}
+function render() {
+  const a = document.activeElement;
+  const fk = a && a !== document.body && a.closest && a.closest('#view') ? (a.id ? '#' + CSS.escape(a.id) : a.dataset && a.dataset.fk ? '[data-fk="' + CSS.escape(a.dataset.fk) + '"]' : '') : '';
+  renderTabs(); renderBanner();
+  if (!S.loaded) { $('#view').innerHTML = '<div class="empty">Opening what this page saved on this device…</div>'; return; }
+  const v = S.view === 'file' && !S.files.has(S.fileId) ? 'files' : S.view;
+  S.view = v;
+  $('#view').innerHTML = v === 'today' ? viewToday() : v === 'files' ? viewFiles() : v === 'file' ? viewFile() : v === 'new' ? viewNew() : v === 'summary' ? viewSummary() : viewSettings();
+  if (fk) { const el = $(fk, $('#view')); if (el) { try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } } }
+}
+let renderT = 0;
+// After a change event, render once the browser has moved focus (a Tab out of a field lands where it should).
+const renderSoon = () => { clearTimeout(renderT); renderT = setTimeout(render, 0); };
+function renderTabs() {
+  const G = S.loaded ? todayGroups() : { due: [] };
+  const nOpen = Array.from(S.files.values()).filter((f) => !f.closed).length;
+  $('#n-today').textContent = G.due.length ? String(G.due.length) : '';
+  $('#n-today').className = 'n' + (G.due.length ? ' due' : '');
+  $('#n-today').hidden = !G.due.length;
+  $('#n-files').textContent = String(nOpen); $('#n-files').hidden = !nOpen;
+  const tv = S.view === 'file' ? 'files' : S.view;
+  $$('#tabs [data-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === tv)));
+}
+function renderBanner() {
+  const b = $('#test-banner');
+  if (!TODAY_OVERRIDE) { b.hidden = true; b.innerHTML = ''; return; }
+  b.hidden = false;
+  b.innerHTML = icon('alert', 'ico-sm') + '<span class="grow">Test date: the page is treating ' + esc(longDate(TODAY_OVERRIDE)) + ' as today (this computer says ' + esc(fullDate(localToday())) + '). Follow-ups you log now are dated ' + esc(shortDate(TODAY_OVERRIDE)) + '.</span><button type="button" class="btn btn-sm" id="test-off">Back to today\'s date</button>';
+}
+function setView(v, id) {
+  S.view = v; if (id) S.fileId = id;
+  if (VIEWS.includes(v)) store.set('view', v);
+  S.arm = '';
+  render(); window.scrollTo(0, 0);
+}
+/* Two taps for anything that deletes: the first shows a confirm line naming what goes, with Cancel. It stays
+   until answered, or until another delete is asked for or the view changes. */
+function arm(key) { S.arm = key; render(); }
+const armed = (key) => S.arm === key;
+const confirmLine = (text, yesAct, yesLabel, data) => '<div class="confirm" role="alert"><span>' + text + '</span><button type="button" class="btn btn-sm btn-danger" data-act="' + yesAct + '"' + (data || '') + ' data-fk="yes-' + yesAct + '">' + icon('trash', 'ico-sm') + esc(yesLabel) + '</button><button type="button" class="btn btn-sm btn-ghost" data-act="disarm">Cancel</button></div>';
+
+/* ---------------------------------------------------------------- Chase today */
+function viewToday() {
+  const t = today(), G = todayGroups();
+  let h = '<div class="intro"><h1>What to chase today</h1><p>' + esc(longDate(t)) + (G.due.length ? ' · ' + plural(G.due.length, 'follow-up') + ' due' : '') + '. Each follow-up lists only the documents still outstanding.</p></div>';
+  if (!S.files.size) {
+    return h + '<div class="empty">No files yet. Start with <button type="button" class="linkish" data-act="go" data-view="new">a new request</button>, or <button type="button" class="linkish" data-act="sample">try the sample</button> (fictional files).</div>';
+  }
+  h += '<div class="sec-h"><h2>Follow-ups due</h2><span class="cnt">' + (G.due.length ? 'oldest first' : '') + '</span></div>';
+  const next = G.soon.find((x) => !x.nx.stopped);
+  h += G.due.length ? '<div class="cards">' + G.due.map(chaseCard).join('') + '</div>'
+    : '<div class="empty">Nothing to chase today.' + (next ? ' The next follow-up is ' + esc(relDay(next.nx.date)) + ' (' + esc(next.f.fileNo) + ').' : '') + '</div>';
+  if (G.stopped.length) {
+    h += '<div class="sec-h"><h2>Past the due date, not being followed up</h2><span class="cnt">these files are set to stop after the due date</span></div><ul class="mini">' +
+      G.stopped.map((x) => miniRow(x.f, plural(outstanding(x.f).length, 'document') + ' outstanding · ' + dueState(x.f).text)).join('') + '</ul>';
+  }
+  if (G.drafts.length) h += '<div class="sec-h"><h2>Requests not sent yet</h2></div><ul class="mini">' + G.drafts.map((f) => miniRow(f, plural(f.items.length, 'document') + ' · created ' + shortDate(f.created) + ' · due ' + shortDate(f.due), 'Send the request')).join('') + '</ul>';
+  if (G.ready.length) {
+    h += '<div class="sec-h"><h2>Everything in: ready to close</h2><span class="cnt">closing a file adds it to Days waiting</span></div><ul class="mini">' +
+      G.ready.map((f) => { const w = fileWait(f); return miniRow(f, 'all ' + plural(f.items.length, 'document') + ' in after ' + days(w.days), '', '<button type="button" class="btn btn-sm" data-act="close-file" data-id="' + esc(f.id) + '">Close the file</button>'); }).join('') + '</ul>';
+  }
+  if (G.soon.length) {
+    h += '<div class="sec-h"><h2>Coming up in the next 7 days</h2></div><ul class="mini">' +
+      G.soon.map((x) => miniRow(x.f, (x.nx.stopped ? 'no more follow-ups before the due date (' + shortDate(x.f.due) + '); the file is set to stop then'
+        : 'follow-up ' + x.nx.n + ' ' + relDay(x.nx.date) + ', ' + shortDate(x.nx.date) + (x.nx.held ? ' (held until then)' : '')) + ' · ' + plural(outstanding(x.f).length, 'document') + ' outstanding')).join('') + '</ul>';
+  }
+  return h;
+}
+function miniRow(f, sub, openLabel, extra) {
+  return '<li><div class="w"><strong>' + esc(f.fileNo) + '</strong> ' + sampleChip(f) + ' ' + esc(f.address) + '<br><span>' + esc('To ' + who(f) + ' · ' + sub) + '</span></div>' +
+    (extra || '') + '<button type="button" class="btn btn-sm btn-ghost" data-act="open-file" data-id="' + esc(f.id) + '">' + esc(openLabel || 'Open') + '</button></li>';
+}
+function chaseCard(x) {
+  const f = x.f, nx = x.nx, t = today(), out = outstanding(f), key = f.id + ':fu', open = !!own(S.mailOpen, key), was = askedBefore(f);
+  const late = nx.date < t, w = fileWait(f), ds = dueState(f);
+  return '<article class="card ' + (late ? 'late' : 'today') + '">' +
+    '<div class="c-top"><div class="t"><strong>' + esc(f.fileNo) + '</strong> ' + sampleChip(f) + '<span class="addr">' + esc(f.address) + '</span></div>' +
+    chip(late ? 'chip-late' : 'chip-soon', 'Follow-up ' + nx.n + (late ? ' was due ' + relDay(nx.date) : ' due today')) + '</div>' +
+    '<div class="c-meta"><span>To ' + esc(who(f)) + '</span><span>' + esc(typeShort(f.propertyType)) + '</span><span>asked ' + esc(shortDate(f.sent)) + ', waiting ' + days(w.days) + '</span>' +
+    (ds ? '<span' + (ds.late ? ' style="color:var(--late);font-weight:600"' : '') + '>' + esc(ds.text) + '</span>' : '') + '</div>' +
+    '<ul class="out-list">' + out.map((it) => '<li>' + esc(it.name) + ' <span class="muted">· ' + (was(it) ? 'waiting ' + days(itemWait(it).days) : 'added since: asked for in this follow-up') + '</span></li>').join('') + '</ul>' +
+    (nx.pastDue ? '<p class="hint">Past the date you asked for: a phone call may work better than another email.</p>' : '') +
+    '<div class="c-btns"><button type="button" class="btn btn-sm' + (open ? '' : ' btn-primary') + '" data-act="toggle-mail" data-key="' + esc(key) + '" aria-expanded="' + open + '" data-fk="tm-' + esc(key) + '">' + icon('mail', 'ico-sm') + (open ? 'Hide the email' : 'Show the follow-up email') + '</button>' +
+    '<button type="button" class="btn btn-sm btn-ghost" data-act="open-file" data-id="' + esc(f.id) + '">Open the file</button></div>' +
+    (open ? mailHtml(f, 'fu') + logHtml(f, nx) : '') + '</article>';
+}
+function mailHtml(f, kind) {
+  const M = mailFor(f, kind), k = esc(M.key);
+  return '<div class="mail">' +
+    '<div class="field"><label for="ms-' + k + '">Subject</label><input class="input" id="ms-' + k + '" data-in="mail-subject" data-key="' + k + '" maxlength="300" value="' + esc(M.subject) + '"></div>' +
+    '<div class="field"><label for="mb-' + k + '">Email</label><textarea class="textarea" id="mb-' + k + '" data-in="mail-body" data-key="' + k + '" rows="16" maxlength="20000">' + esc(M.body) + '</textarea></div>' +
+    '<div class="row"><button type="button" class="btn btn-sm btn-primary" data-act="copy-body" data-key="' + k + '" data-fk="cb-' + k + '">' + icon('copy', 'ico-sm') + 'Copy email</button>' +
+    '<button type="button" class="btn btn-sm" data-act="copy-subject" data-key="' + k + '">' + icon('copy', 'ico-sm') + 'Copy subject</button>' +
+    '<a class="btn btn-sm" data-mailto="' + k + '"' + (linkTooLong(M) ? ' role="link" aria-disabled="true"' : ' href="' + esc(mailtoHref(M)) + '"') + '>' + icon('mail', 'ico-sm') + 'Open in your mail app</a>' +
+    (M.edited ? '<button type="button" class="btn btn-sm btn-ghost" data-act="reset-mail" data-key="' + k + '">Undo my edits</button>' : '') + '</div>' +
+    '<div class="field"><label for="mt-' + k + '">Their email address <span class="muted">(optional, only for the mail app link; never saved)</span></label><input class="input" type="email" id="mt-' + k + '" data-in="mail-to" data-key="' + k + '" maxlength="200" autocomplete="off" value="' + esc(M.to) + '"></div>' +
+    '<p class="hint" data-mail-hint="' + k + '">' + esc(mailHint(M)) + '</p></div>';
+}
+function logHtml(f, nx) {
+  const id = esc(f.id);
+  return '<div class="logrow"><span class="lbl">Sent it?</span>' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="log" data-how="email" data-id="' + id + '" data-fk="log-' + id + '">' + icon('check', 'ico-sm') + 'Log follow-up ' + nx.n + ': emailed ' + (TODAY_OVERRIDE ? shortDate(today()) : 'today') + '</button>' +
+    '<button type="button" class="btn btn-sm" data-act="log" data-how="call" data-id="' + id + '">' + icon('phone', 'ico-sm') + 'Called instead</button>' +
+    '<label class="inline-date">Don\'t follow up before <input class="input" type="date" id="hold-' + id + '" data-in="file-field" data-field="holdUntil" data-id="' + id + '" min="' + addDays(today(), 1) + '" value="' + esc(f.holdUntil) + '"></label></div>';
+}
+
+/* ---------------------------------------------------------------- Files */
+function fileSort(a, b) {
+  const sa = status(a), sb = status(b), rank = { waiting: 0, draft: 1, in: 2, closed: 3 };
+  if (sa !== sb) return rank[sa] - rank[sb];
+  if (sa === 'closed') return cmp(b.closed, a.closed) || cmp(a.fileNo, b.fileNo);
+  return cmp(a.due, b.due) || cmp(a.fileNo, b.fileNo);
+}
+function filteredFiles() {
+  const q = S.search.trim().toLowerCase();
+  return Array.from(S.files.values()).filter((f) => (S.filter === 'all' || (S.filter === 'closed') === !!f.closed) &&
+    (!q || (f.fileNo + ' ' + f.address + ' ' + f.firstName + ' ' + rcpLabel(f.recipient) + ' ' + typeShort(f.propertyType)).toLowerCase().includes(q))).sort(fileSort);
+}
+function viewFiles() {
+  const nOpen = Array.from(S.files.values()).filter((f) => !f.closed).length, nClosed = S.files.size - nOpen;
+  let h = '<div class="intro"><h1>Files</h1><p>' + plural(nOpen, 'open file') + ', ' + plural(nClosed, 'closed file') + '. Open a file to tick documents as they arrive.</p></div>';
+  h += '<div class="filters"><input class="input" type="search" id="f-search" data-in="search" placeholder="Search file number, address, first name or type" aria-label="Search files" value="' + esc(S.search) + '" autocomplete="off">' +
+    '<div class="seg" role="group" aria-label="Show">' + [['open', 'Open'], ['closed', 'Closed'], ['all', 'All']].map((x) => '<button type="button" data-act="filter" data-filter="' + x[0] + '" aria-pressed="' + (S.filter === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' +
+    '<button type="button" class="btn btn-primary" data-act="go" data-view="new">' + icon('plus', 'ico-sm') + 'New request</button></div>';
+  return h + '<div id="flist">' + fileListHtml() + '</div>';
+}
+function fileListHtml() {
+  const list = filteredFiles();
+  if (!list.length) return '<div class="empty">' + (S.files.size ? 'No ' + (S.filter === 'all' ? '' : S.filter + ' ') + 'file matches.' : 'No files yet.') + '</div>';
+  return '<ul class="flist">' + list.map((f) => {
+    const w = fileWait(f), nx = nextChase(f), nIn = f.items.filter(isIn).length;
+    const sub = ['To ' + who(f), typeShort(f.propertyType), nIn + ' of ' + f.items.length + ' in'];
+    if (w) sub.push((w.done || f.closed ? 'waited ' : 'waiting ') + days(w.days));
+    let next = '';
+    if (nx) next = nx.stopped ? chip('chip-unknown', pastDueNow(f) ? 'Not following up: past the due date' : 'No more follow-ups before the due date') : chip(nx.date <= today() ? (nx.date < today() ? 'chip-late' : 'chip-soon') : '', 'Follow-up ' + nx.n + ' ' + dueWhen(nx.date), 'clock');
+    return '<li><button type="button" class="frow" data-act="open-file" data-id="' + esc(f.id) + '"><span class="m"><strong>' + esc(f.fileNo) + '</strong> · ' + esc(f.address) + '</span>' +
+      '<span class="s">' + esc(sub.join(' · ')) + '</span><span class="ch">' + statusChip(f) + (f.closed ? '' : chip('', 'Due ' + shortDate(f.due))) + next + sampleChip(f) + '</span></button></li>';
+  }).join('') + '</ul>';
+}
+
+/* ---------------------------------------------------------------- one file */
+const panelOpen = (id, title, ico, extra, sub) => '<section class="panel" id="' + id + '" aria-labelledby="' + id + '-h"><div class="panel-head"><h2 id="' + id + '-h"><span class="step">' + icon(ico) + '</span>' + esc(title) + '</h2>' + (extra || '') + '</div>' +
+  (sub ? '<div class="panel-sub">' + sub + '</div>' : '') + '<div class="panel-body">';
+const kpi = (k, v, s, late) => '<div class="kpi"><div class="k">' + esc(k) + '</div><div class="v' + (late ? ' late' : '') + '">' + esc(v) + '</div>' + (s ? '<div class="s">' + esc(s) + '</div>' : '') + '</div>';
+function viewFile() {
+  const f = S.files.get(S.fileId), st = status(f), w = fileWait(f), nx = nextChase(f), ds = dueState(f);
+  const nIn = f.items.filter(isIn).length, nNa = f.items.filter((it) => it.na).length;
+  let h = '<button type="button" class="btn btn-ghost btn-sm back" data-act="go" data-view="files">' + icon('back', 'ico-sm') + 'All files</button>';
+  h += '<div class="f-head"><h1>' + esc(f.fileNo) + '</h1><div class="addr">' + esc(f.address) + '</div><div class="chips">' + statusChip(f) + chip('', typeShort(f.propertyType)) + chip('', 'To ' + who(f)) + sampleChip(f) + '</div></div>';
+  h += '<div class="kpis">' +
+    kpi('Waiting', w ? days(w.days) : 'not sent', w ? (w.done ? 'request to the last document, ' + shortDate(w.end) : f.closed ? 'to the day it was closed' : 'since ' + shortDate(f.sent)) : 'the request is not sent yet', !!(w && !w.done && !f.closed && ds && ds.late)) +
+    kpi('Documents in', nIn + ' of ' + f.items.length, nNa ? nNa + ' of them not available' : '') +
+    kpi('Due', shortDate(f.due), f.closed || st === 'in' ? '' : ds ? ds.text : '', !!(ds && ds.late && st === 'waiting')) +
+    kpi('Follow-ups sent', String(f.chases.length), nx ? (nx.stopped ? (pastDueNow(f) ? 'stopped: past the due date' : 'none before the due date; set to stop then') : 'next one ' + dueWhen(nx.date) + ', ' + shortDate(nx.date)) : '') + '</div>';
+  if (st === 'draft') h += requestPanel(f);
+  h += itemsPanel(f);
+  if (st !== 'draft') h += followPanel(f, nx) + requestPanel(f);
+  return h + detailsPanel(f) + closePanel(f);
+}
+function requestPanel(f) {
+  const key = f.id + ':req', id = esc(f.id);
+  if (!f.sent) {
+    return panelOpen('p-req', 'Send the request', 'mail', '', 'Copy it into an email to ' + esc(who(f)) + ', or open it in your mail app, and send it from your own address. Then mark it sent, so the follow-ups start.') +
+      mailHtml(f, 'req') +
+      '<div class="logrow"><span class="lbl">Sent it?</span><button type="button" class="btn btn-sm btn-primary" data-act="mark-sent" data-id="' + id + '" data-fk="ms-' + id + '">' + icon('check', 'ico-sm') + 'Mark the request sent</button>' +
+      '<label class="inline-date">on <input class="input" type="date" id="sent-on-' + id + '" max="' + today() + '" value="' + today() + '"></label></div></div></section>';
+  }
+  const open = !!own(S.mailOpen, key);
+  return panelOpen('p-req', 'The request', 'mail', '<span class="cnt">sent ' + esc(shortDate(f.sent)) + '</span>') +
+    '<button type="button" class="btn btn-sm" data-act="toggle-mail" data-key="' + esc(key) + '" aria-expanded="' + open + '" data-fk="tm-' + esc(key) + '">' + (open ? 'Hide the request email' : 'Show the request email') + '</button>' +
+    (open ? mailHtml(f, 'req') : '') + '</div></section>';
+}
+function itemsPanel(f) {
+  const nIn = f.items.filter(isIn).length, nGot = f.items.filter((it) => it.received).length;
+  return panelOpen('p-items', 'Documents', 'file', '<span class="cnt">' + nIn + ' of ' + f.items.length + ' in</span><span class="grow"></span>' +
+      (nGot ? '<button type="button" class="btn btn-sm btn-ghost" data-act="copy-received" data-id="' + esc(f.id) + '">' + icon('copy', 'ico-sm') + 'Copy the received list</button>' : ''),
+    'Tick each document as it comes in (today\'s date is filled in; change it under Dates and notes). If they don\'t have it, mark it not available.') +
+    (f.items.length ? '<ol class="items">' + f.items.map((it) => itemHtml(f, it)).join('') + '</ol>' : '<div class="empty">No documents on this file yet.</div>') +
+    addItemHtml(f) + '</div></section>';
+}
+function itemHtml(f, it) {
+  const k = f.id + ':' + it.id, open = !!own(S.itemOpen, k), w = itemWait(it), ds = dueState(f);
+  let c;
+  if (it.received) c = chip('chip-ok', w ? 'In after ' + days(w.days) : 'In', 'check');
+  else if (it.na) c = chip('chip-unknown', 'Not available');
+  else if (w) c = chip(ds && ds.late ? 'chip-late' : 'chip-soon', 'Waiting ' + days(w.days));
+  else c = chip('', 'Not requested yet');
+  const line = [];
+  if (it.requested) line.push(esc('Requested ' + shortDate(it.requested)));
+  if (it.received) line.push(esc('received ' + shortDate(it.received)));
+  if (it.na) line.push(esc('not available since ' + shortDate(it.na)) + (it.naReason ? ': <span class="na-r">' + esc(it.naReason) + '</span>' : ''));
+  if (it.notes) line.push('<span class="na-r">Note: ' + esc(it.notes) + '</span>');
+  const a = ' data-id="' + esc(f.id) + '" data-iid="' + esc(it.id) + '"';
+  return '<li class="item' + (isIn(it) ? ' got' : '') + '" id="it-' + esc(it.id) + '">' +
+    '<div class="it-top"><label class="check"><input type="checkbox" id="rv-' + esc(k) + '" data-in="recv"' + a + (it.received ? ' checked' : '') + '><span class="it-name">' + esc(it.name) + '</span></label>' + c + '</div>' +
+    (it.why ? '<p class="it-why">' + esc(it.why) + '</p>' : '') +
+    '<div class="it-line">' + (line.length ? '<span>' + line.join(' · ') + '</span>' : '') +
+    '<button type="button" class="linkish" data-act="item-toggle"' + a + ' aria-expanded="' + open + '" data-fk="tg-' + esc(k) + '">' + (open ? 'Close' : 'Dates, notes, not available…') + '</button></div>' +
+    (open ? itemMore(f, it) : '') + '</li>';
+}
+function itemMore(f, it) {
+  const k = esc(f.id + ':' + it.id), a = ' data-id="' + esc(f.id) + '" data-iid="' + esc(it.id) + '"';
+  const del = 'del-item:' + f.id + ':' + it.id;
+  return '<div class="it-more"><div class="fgrid">' +
+    '<div class="field"><label for="rq-' + k + '">Requested</label><input class="input" type="date" id="rq-' + k + '" data-in="item-date" data-field="requested"' + a + ' value="' + esc(it.requested) + '"' + (f.sent ? '' : ' disabled') + '>' + (f.sent ? '' : '<span class="hint" style="margin:0">Set when the request is marked sent.</span>') + '</div>' +
+    '<div class="field"><label for="rc-' + k + '">Received</label><input class="input" type="date" id="rc-' + k + '" data-in="item-date" data-field="received"' + a + ' value="' + esc(it.received) + '"></div>' +
+    (it.na ? '<div class="field"><label for="na-' + k + '">Not available since</label><input class="input" type="date" id="na-' + k + '" data-in="item-date" data-field="na"' + a + ' value="' + esc(it.na) + '"></div>' +
+      '<div class="field wide"><label for="nr-' + k + '">Why not (as they put it)</label><input class="input" id="nr-' + k + '" data-in="item-text" data-field="naReason"' + a + ' maxlength="' + LIM.naReason + '" value="' + esc(it.naReason) + '" placeholder="e.g. no survey on file, only the deed"></div>' : '') +
+    '<div class="field wide"><label for="nt-' + k + '">Notes</label><input class="input" id="nt-' + k + '" data-in="item-text" data-field="notes"' + a + ' maxlength="' + LIM.itemNotes + '" value="' + esc(it.notes) + '" placeholder="e.g. the bookkeeper has it; no figures or documents here"></div>' +
+    '<div class="field wide"><label for="nm-' + k + '">Document</label><input class="input" id="nm-' + k + '" data-in="item-text" data-field="name"' + a + ' maxlength="' + LIM.name + '" value="' + esc(it.name) + '"></div>' +
+    '<div class="field wide"><label for="wy-' + k + '">Why we need it (shown in the request email)</label><input class="input" id="wy-' + k + '" data-in="item-text" data-field="why"' + a + ' maxlength="' + LIM.why + '" value="' + esc(it.why) + '"></div>' +
+    '</div><div class="del-zone">' +
+    (it.na ? '<button type="button" class="btn btn-sm" data-act="na-undo"' + a + '>It is available after all</button>'
+      : it.received ? '' : '<button type="button" class="btn btn-sm" data-act="na"' + a + ' data-fk="na-' + k + '">Not available</button>') +
+    (armed(del) ? confirmLine('Remove <strong>' + esc(it.name) + '</strong> from this file?', 'item-del', 'Yes, remove it', a)
+      : '<button type="button" class="btn btn-sm btn-ghost" data-act="arm" data-arm="' + esc(del) + '">' + icon('trash', 'ico-sm') + 'Remove from this file</button>') +
+    '</div></div>';
+}
+function addItemHtml(f) {
+  const a = own(S.add, f.id) || { name: '', why: '' }, have = new Set(f.items.map((it) => it.name));
+  const t = own(TYPES, f.propertyType), left = t ? t.items.filter((x) => !have.has(x.name)) : [];
+  const id = esc(f.id);
+  return '<div class="add-item"><div class="fgrid">' +
+    (left.length ? '<div class="field wide"><label for="ap-' + id + '">Add a document from the ' + esc(t.short) + ' list</label><select class="select" id="ap-' + id + '" data-in="add-pick" data-id="' + id + '"><option value="">Choose…</option>' +
+      left.map((x) => '<option value="' + esc(x.name) + '">' + esc(x.name) + '</option>').join('') + '</select></div>' : '') +
+    '<div class="field"><label for="an-' + id + '">Or type one</label><input class="input" id="an-' + id + '" data-in="add-text" data-field="name" data-id="' + id + '" maxlength="' + LIM.name + '" value="' + esc(a.name) + '" placeholder="e.g. Fire inspection report"></div>' +
+    '<div class="field"><label for="aw-' + id + '">Why we need it <span class="muted">(optional)</span></label><input class="input" id="aw-' + id + '" data-in="add-text" data-field="why" data-id="' + id + '" maxlength="' + LIM.why + '" value="' + esc(a.why) + '"></div>' +
+    '</div><div class="row" style="margin-top:10px"><button type="button" class="btn btn-sm" data-act="add-item" data-id="' + id + '" data-fk="add-' + id + '">' + icon('plus', 'ico-sm') + 'Add to this file</button>' +
+    '<span class="hint" style="margin:0">' + (f.sent ? 'It is dated as requested today, and goes in the next follow-up.' : 'It goes in the request email.') + '</span></div></div>';
+}
+function followPanel(f, nx) {
+  const id = esc(f.id), sc = f.schedule, key = f.id + ':fu', open = !!own(S.mailOpen, key), out = outstanding(f);
+  let lead;
+  if (f.closed) lead = 'The file is closed: no follow-ups.';
+  else if (!out.length) lead = 'Everything asked for is in, or marked not available: no follow-up needed.';
+  else if (nx.stopped) lead = (pastDueNow(f) ? 'Past the due date, and this file is set to stop following up then. ' : 'No more follow-ups before the due date (' + shortDate(f.due) + '); the file is set to stop then. ') +
+    plural(out.length, 'document') + ' still outstanding: call, or change the schedule below.';
+  else lead = 'Next: follow-up ' + nx.n + ', ' + dueWhen(nx.date) + ' (' + longDate(nx.date) + ')' + (nx.held ? ', held until then' : '') + ', listing ' + plural(out.length, 'outstanding document') + '.';
+  const n = (k) => '<input class="input" type="number" min="1" max="60" step="1" inputmode="numeric" id="sc-' + k + '-' + id + '" data-in="sched" data-field="' + k + '" data-id="' + id + '" value="' + sc[k] + '" aria-label="' + k + ' follow-up, days">';
+  let h = panelOpen('p-follow', 'Follow-ups', 'clock', '<span class="cnt">' + f.chases.length + ' sent</span>') + '<p class="lead">' + esc(lead) + '</p>';
+  if (out.length && !f.closed) {
+    h += '<div class="c-btns"><button type="button" class="btn btn-sm' + (open ? '' : ' btn-primary') + '" data-act="toggle-mail" data-key="' + esc(key) + '" aria-expanded="' + open + '" data-fk="tm-' + esc(key) + '">' + icon('mail', 'ico-sm') + (open ? 'Hide the follow-up email' : 'Show the follow-up email') + '</button></div>' +
+      (open ? mailHtml(f, 'fu') + logHtml(f, nx || { n: f.chases.length + 1 }) : '');
+  }
+  h += '<div class="sec-h" style="margin-top:20px"><h2 style="font-size:14px">Schedule</h2><span class="cnt">counted from the day the request was sent, ' + esc(shortDate(f.sent)) + '</span></div>' +
+    '<div class="sched"><span>First after ' + n('first') + ' days,</span><span>second after ' + n('second') + ' days,</span><span>then every ' + n('every') + ' days.</span>' +
+    '<label>After the due date: <select class="select" id="sc-ad-' + id + '" data-in="sched" data-field="afterDue" data-id="' + id + '"><option value="keep"' + (sc.afterDue === 'keep' ? ' selected' : '') + '>keep following up</option><option value="stop"' + (sc.afterDue === 'stop' ? ' selected' : '') + '>stop</option></select></label></div>' +
+    '<p class="hint">If a follow-up goes out late, the next one counts from the day it actually went. One that would fall on a Saturday or Sunday moves to the Monday.</p>' +
+    '<div class="row" style="margin-top:10px"><label class="inline-date">Don\'t follow up before <input class="input" type="date" id="hold2-' + id + '" data-in="file-field" data-field="holdUntil" data-id="' + id + '" value="' + esc(f.holdUntil) + '"></label>' +
+    (f.holdUntil ? '<button type="button" class="btn btn-sm btn-ghost" data-act="hold-clear" data-id="' + id + '">Clear</button>' : '') + '</div>';
+  h += '<div class="sec-h" style="margin-top:20px"><h2 style="font-size:14px">Sent so far</h2></div><ul class="log"><li><span class="w">Request · ' + esc(fullDate(f.sent)) + ' · ' + plural(requestItems(f).length, 'document') + '</span></li>' +
+    f.chases.map((c, i) => {
+      const dk = 'del-chase:' + f.id + ':' + i;
+      return '<li><span class="w">Follow-up ' + (i + 1) + ' · ' + esc(fullDate(c.date)) + ' · ' + (c.how === 'call' ? 'called' : 'emailed') + ' · ' + plural(c.items.length, 'document') + ' outstanding</span>' +
+        (armed(dk) ? confirmLine('Remove this follow-up from the log?', 'chase-del', 'Yes, remove', ' data-id="' + id + '" data-idx="' + i + '"')
+          : '<button type="button" class="btn btn-xs btn-ghost" data-act="arm" data-arm="' + esc(dk) + '" aria-label="Remove follow-up ' + (i + 1) + ' from the log">' + icon('x', 'ico-sm') + 'Remove</button>') + '</li>';
+    }).join('') + '</ul>';
+  return h + '</div></section>';
+}
+function detailsPanel(f) {
+  const id = esc(f.id), a = ' data-in="file-field" data-id="' + id + '"';
+  return panelOpen('p-details', 'Details', 'gear') + '<div class="fgrid">' +
+    '<div class="field"><label for="d-no-' + id + '">File number</label><input class="input" id="d-no-' + id + '"' + a + ' data-field="fileNo" maxlength="' + LIM.fileNo + '" value="' + esc(f.fileNo) + '"></div>' +
+    '<div class="field wide"><label for="d-ad-' + id + '">Property address</label><input class="input" id="d-ad-' + id + '"' + a + ' data-field="address" maxlength="' + LIM.address + '" value="' + esc(f.address) + '"></div>' +
+    '<div class="field"><label for="d-rc-' + id + '">Who it goes to</label><select class="select" id="d-rc-' + id + '"' + a + ' data-field="recipient">' + TPL.recipients.map((r) => '<option value="' + esc(r.id) + '"' + (r.id === f.recipient ? ' selected' : '') + '>' + esc(r.label) + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label for="d-fn-' + id + '">Their first name</label><input class="input" id="d-fn-' + id + '"' + a + ' data-field="firstName" maxlength="' + LIM.firstName + '" value="' + esc(f.firstName) + '" autocomplete="off"></div>' +
+    '<div class="field"><label for="d-pt-' + id + '">Property type</label><select class="select" id="d-pt-' + id + '"' + a + ' data-field="propertyType">' + TPL.types.map((t) => '<option value="' + esc(t.id) + '"' + (t.id === f.propertyType ? ' selected' : '') + '>' + esc(t.label) + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label for="d-du-' + id + '">Due date</label><input class="input" type="date" id="d-du-' + id + '"' + a + ' data-field="due" value="' + esc(f.due) + '"></div>' +
+    (f.sent ? '<div class="field"><label for="d-se-' + id + '">Request sent on</label><input class="input" type="date" id="d-se-' + id + '"' + a + ' data-field="sent" max="' + today() + '" value="' + esc(f.sent) + '"></div>' : '') +
+    '<div class="field wide"><label for="d-nt-' + id + '">Notes</label><textarea class="textarea" id="d-nt-' + id + '"' + a + ' data-field="notes" maxlength="' + LIM.notes + '" rows="3" placeholder="e.g. owner away until the 10th; the bookkeeper has the statements. Keep figures and documents out of here.">' + esc(f.notes) + '</textarea></div>' +
+    '</div><p class="hint">Changing the property type does not change the documents on the file; add or remove them above.</p></div></section>';
+}
+function closePanel(f) {
+  const id = esc(f.id), out = outstanding(f), dk = 'del-file:' + f.id;
+  let h = panelOpen('p-close', f.closed ? 'Closed' : 'Close or delete', 'check');
+  if (f.closed) h += '<p class="lead">Closed ' + esc(fullDate(f.closed)) + '. It counts in Days waiting.</p><div class="del-zone"><button type="button" class="btn btn-sm" data-act="reopen-file" data-id="' + id + '">Reopen the file</button></div>';
+  else if (!f.sent) h += '<p class="lead">The request has not been sent, so there is nothing to close yet.</p>';
+  else if (!out.length) h += '<p class="lead">Everything is in. Close the file: it moves to closed files and counts in Days waiting.</p><div class="del-zone"><button type="button" class="btn btn-sm btn-primary" data-act="close-file" data-id="' + id + '">' + icon('check', 'ico-sm') + 'Close the file</button></div>';
+  else h += '<p class="lead">' + plural(out.length, 'document') + ' still outstanding. You can close the file anyway: its days waiting stop on the day you close it, and Days waiting says it closed with documents out.</p><div class="del-zone"><button type="button" class="btn btn-sm" data-act="close-file" data-id="' + id + '">Close with ' + plural(out.length, 'document') + ' outstanding</button></div>';
+  h += '<div class="del-zone" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">' + (armed(dk)
+    ? confirmLine('Delete <strong>' + esc(f.fileNo) + '</strong> and everything recorded for it from this device? This cannot be undone; export first if you want a copy.', 'file-del', 'Yes, delete the file', ' data-id="' + id + '"')
+    : '<button type="button" class="btn btn-sm btn-ghost" data-act="arm" data-arm="' + esc(dk) + '">' + icon('trash', 'ico-sm') + 'Delete this file from this device</button>') + '</div>';
+  return h + '</div></section>';
+}
+
+/* ---------------------------------------------------------------- New request */
+function draftItems(tid, keep) {
+  const t = own(TYPES, tid);
+  const items = t ? t.items.map((x, i) => ({ key: 't' + i, name: x.name, why: x.why || '', on: !x.opt, custom: false })) : [];
+  return items.concat((keep || []).filter((x) => x.custom));
+}
+function newDraft() {
+  return { fileNo: '', address: '', recipient: 'owner', firstName: '', propertyType: '', due: workday(addDays(today(), S.settings.dueDays)), items: [], add: { name: '', why: '' }, msg: '' };
+}
+function viewNew() {
+  const d = S.draft || (S.draft = newDraft());
+  const a = ' data-in="draft"';
+  let h = '<div class="intro"><h1>New document request</h1><p>Pick the property type for its checklist, untick what you don\'t need, and change any wording. The page writes a polite email; you send it from your own mail program.</p></div>';
+  h += panelOpen('p-new', 'The file', 'file') + '<div class="fgrid">' +
+    '<div class="field"><label for="n-no">File number</label><input class="input" id="n-no"' + a + ' data-field="fileNo" maxlength="' + LIM.fileNo + '" value="' + esc(d.fileNo) + '" placeholder="e.g. 26-118" autocomplete="off"></div>' +
+    '<div class="field wide"><label for="n-ad">Property address</label><input class="input" id="n-ad"' + a + ' data-field="address" maxlength="' + LIM.address + '" value="' + esc(d.address) + '" placeholder="Street, town" autocomplete="off"></div>' +
+    '<div class="field"><label for="n-pt">Property type</label><select class="select" id="n-pt"' + a + ' data-field="propertyType"><option value="">Choose…</option>' + TPL.types.map((t) => '<option value="' + esc(t.id) + '"' + (t.id === d.propertyType ? ' selected' : '') + '>' + esc(t.label) + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label for="n-rc">Who it goes to</label><select class="select" id="n-rc"' + a + ' data-field="recipient">' + TPL.recipients.map((r) => '<option value="' + esc(r.id) + '"' + (r.id === d.recipient ? ' selected' : '') + '>' + esc(r.label) + '</option>').join('') + '</select></div>' +
+    '<div class="field"><label for="n-fn">Their first name</label><input class="input" id="n-fn"' + a + ' data-field="firstName" maxlength="' + LIM.firstName + '" value="' + esc(d.firstName) + '" autocomplete="off"></div>' +
+    '<div class="field"><label for="n-du">Due date</label><input class="input" type="date" id="n-du"' + a + ' data-field="due" min="' + today() + '" value="' + esc(d.due) + '"></div>' +
+    '</div><p class="hint">Only the first name is kept, for the greeting. Their email address is never stored: your mail program fills it in.</p></div></section>';
+  h += panelOpen('p-tpl', 'Documents to ask for', 'list', d.items.length ? '<span class="cnt">' + d.items.filter((x) => x.on).length + ' of ' + d.items.length + ' ticked</span>' : '');
+  if (!d.propertyType) h += '<div class="empty">Choose the property type above for its checklist.</div>';
+  else {
+    h += '<ul class="tpl">' + d.items.map((x) => '<li class="' + (x.on ? '' : 'off') + '"><div class="tp-top"><input type="checkbox" id="n-on-' + x.key + '" data-in="draft-on" data-key="' + x.key + '"' + (x.on ? ' checked' : '') + ' aria-label="Ask for this document">' +
+      '<input class="input" id="n-nm-' + x.key + '" data-in="draft-item" data-field="name" data-key="' + x.key + '" maxlength="' + LIM.name + '" value="' + esc(x.name) + '" aria-label="Document">' +
+      (x.custom ? '<button type="button" class="icon-btn" data-act="draft-del" data-key="' + x.key + '" aria-label="Remove this document">' + icon('trash') + '</button>' : '') + '</div>' +
+      '<div class="tp-why"><input class="input" id="n-wy-' + x.key + '" data-in="draft-item" data-field="why" data-key="' + x.key + '" maxlength="' + LIM.why + '" value="' + esc(x.why) + '" placeholder="Why we need it (optional)" aria-label="Why we need it"></div></li>').join('') + '</ul>';
+    h += '<div class="add-item"><div class="fgrid"><div class="field"><label for="n-add-nm">Another document</label><input class="input" id="n-add-nm" data-in="draft-add" data-field="name" maxlength="' + LIM.name + '" value="' + esc(d.add.name) + '" placeholder="e.g. Fire inspection report"></div>' +
+      '<div class="field"><label for="n-add-wy">Why we need it <span class="muted">(optional)</span></label><input class="input" id="n-add-wy" data-in="draft-add" data-field="why" maxlength="' + LIM.why + '" value="' + esc(d.add.why) + '"></div></div>' +
+      '<div class="row" style="margin-top:10px"><button type="button" class="btn btn-sm" data-act="draft-add" data-fk="draft-add">' + icon('plus', 'ico-sm') + 'Add to the list</button></div></div>';
+  }
+  h += '<div class="row" style="margin-top:16px"><button type="button" class="btn btn-primary" data-act="create" data-fk="create">' + icon('mail', 'ico-sm') + 'Create the request</button>' +
+    '<button type="button" class="btn btn-ghost" data-act="draft-reset">Start over</button><span class="msg' + (d.msg ? ' err' : '') + '" role="status">' + esc(d.msg) + '</span></div></div></section>';
+  return h;
+}
+function createFromDraft() {
+  const d = S.draft, miss = [];
+  const clean = (s) => String(s || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim();
+  if (!clean(d.fileNo)) miss.push('the file number');
+  if (!clean(d.address)) miss.push('the property address');
+  if (!own(TYPES, d.propertyType)) miss.push('the property type');
+  if (!isoOk(d.due)) miss.push('a due date');
+  const on = d.items.filter((x) => x.on && clean(x.name));
+  if (own(TYPES, d.propertyType) && !on.length) miss.push('at least one document');
+  if (miss.length) { d.msg = 'Add ' + andList(miss) + ' first.'; render(); return; }
+  if (S.files.size >= MAX_HELD) { d.msg = 'Not created. ' + capMsg(); render(); return; }
+  const f = { id: uid('f-'), fileNo: clean(d.fileNo).slice(0, LIM.fileNo), address: clean(d.address).slice(0, LIM.address), recipient: own(RCP, d.recipient) ? d.recipient : 'other',
+    firstName: clean(d.firstName).slice(0, LIM.firstName), propertyType: d.propertyType, due: d.due, created: today(), sent: '',
+    schedule: Object.assign({}, S.settings.schedule), holdUntil: '', closed: '', notes: '', sample: false, updatedAt: '',
+    items: on.map((x) => ({ id: uid('i-'), name: clean(x.name).slice(0, LIM.name), why: clean(x.why).slice(0, LIM.why), requested: '', received: '', na: '', naReason: '', notes: '' })), chases: [] };
+  touch(f); S.draft = null;
+  const dup = Array.from(S.files.values()).some((g) => g !== f && !g.closed && g.fileNo === f.fileNo);
+  setView('file', f.id);
+  toast('Created ' + f.fileNo + '. Copy the request email below and send it from your mail program.' + (dup ? ' Another open file has the same number.' : ''), false, { ms: 6000 });
+}
+
+/* ---------------------------------------------------------------- Days waiting (the summary) */
+function viewSummary() {
+  const g = S.groupBy, R = summaryRows(g), O = openRows(g);
+  const head = g === 'type' ? 'Property type' : 'Who was asked';
+  let h = '<div class="intro"><h1>How long documents take</h1><p>Days from the request to the last document in (or marked not available), for closed files. This is the evidence to show a client why a report waits on documents.</p></div>';
+  h += '<div class="filters"><div class="seg" role="group" aria-label="Group by"><button type="button" data-act="groupby" data-g="recipient" aria-pressed="' + (g === 'recipient') + '">By who was asked</button><button type="button" data-act="groupby" data-g="type" aria-pressed="' + (g === 'type') + '">By property type</button></div></div>';
+  if (!R.all) h += '<div class="empty">No closed files yet. Close a file once its documents are in, and it is counted here.</div>';
+  else {
+    if (R.sampleOnly) h += '<div class="status warn" style="margin:0 0 12px">' + icon('alert') + '<div>These are the <strong>fictional sample</strong> files. Your own closed files replace them here as soon as there is one.</div></div>';
+    if (R.leftOut) h += '<p class="hint" style="margin:0 0 10px">' + plural(R.leftOut, 'closed sample file') + ' left out: the summary counts your own files only.</p>';
+    const tr = (r, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + esc(r.label) + '</td><td>' + r.n + '</td><td>' + fmt1(r.avg) + '</td><td>' + fmt1(r.median) + '</td><td>' + r.max + '</td><td>' + fmt1(r.chases) + '</td><td>' + r.items + '</td><td>' + r.na + '</td></tr>';
+    h += '<div class="table-wrap"><table class="sum-t"><thead><tr><th scope="col">' + head + '</th>' + SUM_HEAD.map((x) => '<th scope="col">' + esc(x) + '</th>').join('') + '</tr></thead><tbody>' +
+      R.rows.map((r) => tr(r)).join('') + tr(R.all, 'all') + '</tbody></table></div>';
+    const left = R.rows.reduce((s, r) => s + r.left, 0);
+    h += '<p class="hint">Averages and medians to one decimal. A file closed with documents still out counts to the day it was closed' + (left ? ' (' + plural(left, 'document') + ' were still out when their files closed)' : '') + '. Follow-ups include calls.</p>';
+    h += '<div class="row" style="margin-top:12px"><button type="button" class="btn btn-sm btn-primary" data-act="copy-sum-text">' + icon('copy', 'ico-sm') + 'Copy as sentences</button><button type="button" class="btn btn-sm" data-act="copy-sum-tsv">' + icon('copy', 'ico-sm') + 'Copy the table (for a spreadsheet)</button></div>';
+  }
+  h += '<div class="sec-h" style="margin-top:28px"><h2>Waiting right now</h2><span class="cnt">open files with documents outstanding</span></div>';
+  h += O.length ? '<div class="table-wrap"><table class="sum-t"><thead><tr><th scope="col">' + head + '</th><th scope="col">Open files</th><th scope="col">Average days so far</th><th scope="col">Longest so far</th><th scope="col">Past the due date</th><th scope="col">Documents outstanding</th></tr></thead><tbody>' +
+    O.map((r) => '<tr><td>' + esc(r.label) + '</td><td>' + r.n + '</td><td>' + fmt1(r.avg) + '</td><td>' + r.max + '</td><td>' + r.late + '</td><td>' + r.outItems + '</td></tr>').join('') + '</tbody></table></div>'
+    : '<div class="empty">No open file is waiting on documents.</div>';
+  if (O.note) h += '<p class="hint">' + esc(O.note) + '</p>';
+  return h;
+}
+
+/* ---------------------------------------------------------------- Settings and data */
+function viewSettings() {
+  const s = S.settings, a = ' data-in="set"', sc = s.schedule;
+  const nSample = Array.from(S.files.values()).filter((f) => f.sample).length;
+  let h = '<div class="intro"><h1>Settings and data</h1><p>Your signature for the emails, the defaults for new requests, and the files this page keeps on this device.</p></div>';
+  h += panelOpen('p-me', 'Your signature', 'mail', '', 'Goes at the end of every email the page writes. Kept on this device only.') + '<div class="fgrid">' +
+    '<div class="field"><label for="s-nm">Your name</label><input class="input" id="s-nm"' + a + ' data-field="name" maxlength="80" value="' + esc(s.name) + '" autocomplete="name"></div>' +
+    '<div class="field"><label for="s-fm">Firm</label><input class="input" id="s-fm"' + a + ' data-field="firm" maxlength="120" value="' + esc(s.firm) + '" autocomplete="organization"></div>' +
+    '<div class="field"><label for="s-ph">Phone</label><input class="input" id="s-ph"' + a + ' data-field="phone" maxlength="40" value="' + esc(s.phone) + '" autocomplete="tel"></div>' +
+    '<div class="field"><label for="s-em">Email</label><input class="input" id="s-em"' + a + ' data-field="email" maxlength="120" value="' + esc(s.email) + '" autocomplete="email"></div>' +
+    '</div><label class="check" style="margin-top:14px"><input type="checkbox" id="s-why" data-in="set" data-field="why"' + (s.why ? ' checked' : '') + '> Say why each document is needed in the request email</label></div></section>';
+  h += panelOpen('p-def', 'Defaults for a new request', 'clock') +
+    '<div class="sched"><span>Due in <input class="input" type="number" min="1" max="90" id="s-dd"' + a + ' data-field="dueDays" value="' + s.dueDays + '" aria-label="Days until due"> days.</span>' +
+    '<span>First follow-up after <input class="input" type="number" min="1" max="60" id="s-f1"' + a + ' data-field="first" value="' + sc.first + '" aria-label="First follow-up, days"> days,</span>' +
+    '<span>second after <input class="input" type="number" min="1" max="60" id="s-f2"' + a + ' data-field="second" value="' + sc.second + '" aria-label="Second follow-up, days"> days,</span>' +
+    '<span>then every <input class="input" type="number" min="1" max="60" id="s-f3"' + a + ' data-field="every" value="' + sc.every + '" aria-label="Then every, days"> days.</span>' +
+    '<label>After the due date: <select class="select" id="s-ad"' + a + ' data-field="afterDue"><option value="keep"' + (sc.afterDue === 'keep' ? ' selected' : '') + '>keep following up</option><option value="stop"' + (sc.afterDue === 'stop' ? ' selected' : '') + '>stop</option></select></label></div>' +
+    '<p class="hint">Each file keeps the schedule it was created with; change one file\'s on the file itself. A default due date or a follow-up that would fall on a Saturday or Sunday moves to the Monday; a due date you type stays as typed.</p></div></section>';
+  const im = S.importMsg;
+  h += panelOpen('p-data', 'Back up, or move to another computer', 'save', '', 'The page keeps your files in this browser on this device. The browser can clear that (a cleared history, a new computer), so export now and then and keep the file on your office\'s own drive. It holds ' + esc(KEEPS)) +
+    '<div class="row"><button type="button" class="btn btn-primary" data-act="export" data-fk="export"' + (S.files.size ? '' : ' disabled') + '>' + icon('save', 'ico-sm') + 'Export all files (' + S.files.size + ')</button></div>' + exportPartsHtml() +
+    '<label class="drop" id="imp-drop" for="imp-file" style="margin-top:14px"><svg class="ico"><use href="#i-upload"/></svg><strong>Import an export file: drop it here, or choose it</strong>' +
+    '<span class="muted">docchase-….json. It is read on this computer. Files already here are kept; a file in both keeps whichever copy was changed last.</span><input type="file" id="imp-file" class="sr-only" accept=".json,application/json"></label>' +
+    (im ? '<div class="status ' + im.kind + '" role="status">' + icon(im.kind === 'err' ? 'alert' : 'check') + '<div>' + im.html + '</div></div>' : '') + '</div></section>';
+  h += panelOpen('p-sample', 'The sample', 'info') + '<p class="lead">Fifteen fictional files: five open ones across property types, some late, and ten closed ones so Days waiting has something to show. Their dates are moved so they are current today.</p><div class="del-zone">' +
+    '<button type="button" class="btn btn-sm" data-act="sample">' + (nSample ? 'Load the sample again' : 'Try the sample') + '</button>' +
+    (nSample ? (armed('del-sample') ? confirmLine('Remove the ' + plural(nSample, 'sample file') + '? Your own files stay.', 'sample-remove', 'Yes, remove the sample') : '<button type="button" class="btn btn-sm btn-ghost" data-act="arm" data-arm="del-sample">' + icon('trash', 'ico-sm') + 'Remove the sample (' + nSample + ')</button>') : '') + '</div></div></section>';
+  h += panelOpen('p-wipe', 'Delete everything', 'trash') + '<p class="lead">Deletes every file and your signature from this page\'s storage on this device. An export file you saved is not touched: delete it yourself if you need to.</p><div class="del-zone">' +
+    (armed('wipe') ? confirmLine('Delete <strong>all ' + plural(S.files.size, 'file') + '</strong> and your settings from this device? This cannot be undone.', 'wipe', 'Yes, delete everything')
+      : '<button type="button" class="btn btn-sm btn-danger" data-act="arm" data-arm="wipe">' + icon('trash', 'ico-sm') + 'Delete everything this page saved on this device</button>') + '</div></div></section>';
+  return h;
+}
+
+/* ============================================================ actions */
+const fileOf = (el) => S.files.get(el.dataset.id);
+const itemOf = (f, el) => (f ? f.items.find((it) => it.id === el.dataset.iid) : null);
+function markSent(f, date) {
+  const d = isoOk(date) && date <= today() ? date : today();
+  f.sent = d;
+  for (const it of f.items) if (!it.requested) it.requested = d;
+  delete S.mail[f.id + ':req']; S.mailOpen[f.id + ':req'] = false;
+  touch(f); render();
+  const nx = nextChase(f);
+  toast('Marked the request sent ' + (d === today() ? 'today' : shortDate(d)) + '. ' + (nx ? 'First follow-up ' + relDay(nx.date) + ', ' + shortDate(nx.date) + '.' : ''), false,
+    { ms: 7000, action: { label: 'Undo', fn: () => { if (!S.files.has(f.id) || f.chases.length) return; f.sent = ''; for (const it of f.items) if (it.requested === d) it.requested = ''; touch(f); render(); } } });
+}
+function logChase(f, how) {
+  const out = outstanding(f);
+  if (!out.length) { toast('Nothing is outstanding on ' + f.fileNo + ', so there is nothing to follow up.', true); return; }
+  if (f.chases.length >= MAX_CHASES) { toast('A file logs at most ' + MAX_CHASES + ' follow-ups.', true); return; }
+  const c = { date: today(), how, items: out.map((it) => it.id) };
+  const hold = f.holdUntil;
+  f.chases.push(c); f.chases.sort((a, b) => cmp(a.date, b.date));
+  if (f.holdUntil && f.holdUntil <= today()) f.holdUntil = ''; // a hold that has arrived is spent
+  delete S.mail[f.id + ':fu']; S.mailOpen[f.id + ':fu'] = false;
+  touch(f); render();
+  const nx = nextChase(f), n = f.chases.indexOf(c) + 1;
+  toast('Logged follow-up ' + n + ' on ' + f.fileNo + ' (' + (how === 'call' ? 'a call' : 'an email') + ', ' + plural(c.items.length, 'document') + '). ' +
+    (nx ? (nx.stopped ? (pastDueNow(f) ? 'No more follow-ups: it is past the due date.' : 'No more follow-ups: the next would fall after the due date, and the file is set to stop then.') : 'Next one ' + relDay(nx.date) + ', ' + shortDate(nx.date) + '.') : ''), false,
+    { ms: 7000, action: { label: 'Undo', fn: () => { const i = f.chases.indexOf(c); if (i < 0 || !S.files.has(f.id)) return; f.chases.splice(i, 1); f.holdUntil = hold; touch(f); render(); } } });
+}
+function setReceived(f, it, on, date) {
+  if (on) { it.received = isoOk(date) ? date : today(); it.na = ''; it.naReason = ''; } else it.received = '';
+  touch(f);
+  const left = outstanding(f).length;
+  if (on && f.sent && !left && !f.closed) toast('Everything on ' + f.fileNo + ' is in. Close the file when you are ready.');
+}
+function closeFile(f) {
+  f.closed = today();
+  touch(f); render();
+  toast('Closed ' + f.fileNo + ' after ' + days(fileWait(f).days) + '. It now counts in Days waiting.', false, { action: { label: 'Undo', fn: () => { f.closed = ''; touch(f); render(); } } });
+}
+async function deleteFiles(ids, what) {
+  for (const id of ids) { clearTimeout(PENDING.get(id)); PENDING.delete(id); S.files.delete(id); delete S.add[id]; }
+  S.arm = '';
+  try { if (S.storage !== 'blocked') await dbDelFiles(ids); post({ deleted: ids }); toast(what); }
+  catch (e) { toast('Could not delete from this browser\'s storage. Reload and try again.', true); }
+  render();
+}
+const exportOrder = () => Array.from(S.files.values()).sort((a, b) => cmp(a.created, b.created) || cmp(a.fileNo, b.fileNo));
+/* One export file: every file given (all of them by default), the signature and defaults. `part` is
+   {i, n, total} when the export is cut into parts; the note says which part it is. */
+function exportText(files, part) {
+  files = files || exportOrder();
+  const doc = { format: FORMAT, version: VERSION, exportedAt: nowIso(),
+    note: (part ? 'Part ' + part.i + ' of ' + part.n + ' (' + part.total + ' files in all). ' : '') + 'Document Chase files: ' + KEEPS,
+    settings: S.settings, files };
+  if (files.length && files.every((f) => f.sample)) doc.sample = 'FICTIONAL SAMPLE DATA, exported from the sample';
+  return '{' + Object.keys(doc).filter((k) => k !== 'files').map((k) => JSON.stringify(k) + ': ' + JSON.stringify(doc[k])).join(',\n') +
+    ',\n"files": [\n' + files.map((f) => JSON.stringify(f)).join(',\n') + '\n]}\n';
+}
+/* The export as files this page's own reader opens: each at most MAX_FILE bytes (UTF-8) and MAX_FILES
+   files. Most offices get one; past that, it is cut into parts, each importable on its own (import merges,
+   so the parts can come in any order). A single file is far below MAX_FILE at the reader's own limits
+   (sync.py --check works out the largest one), so every file fits in a part. Each part is measured again
+   before it is offered; one that would not pass the reader is never written. */
+const utf8 = new TextEncoder();
+function exportParts() {
+  const files = exportOrder();
+  const head = utf8.encode(exportText([], { i: MAX_HELD, n: MAX_HELD, total: MAX_HELD })).length + 512; // the part with the longest header, plus room
+  const groups = []; let cur = [], bytes = 0;
+  for (const f of files) {
+    const b = utf8.encode(JSON.stringify(f)).length + 2;
+    if (cur.length && (head + bytes + b > MAX_FILE || cur.length >= MAX_FILES)) { groups.push(cur); cur = []; bytes = 0; }
+    cur.push(f); bytes += b;
+  }
+  if (cur.length || !groups.length) groups.push(cur);
+  const n = groups.length;
+  return groups.map((g, i) => {
+    const text = exportText(g, n > 1 ? { i: i + 1, n, total: files.length } : null), size = utf8.encode(text).length;
+    return { text, size, files: g.length, ok: size <= MAX_FILE && g.length <= MAX_FILES };
+  });
+}
+function doExport() {
+  const all = Array.from(S.files.values()), base = 'docchase-' + (all.length && all.every((f) => f.sample) ? 'SAMPLE-' : '') + today();
+  const parts = exportParts();
+  if (parts.some((p) => !p.ok)) { S.exportParts = null; toast('The export could not be cut into files this page can read back, so nothing was saved. Please report this.', true, { ms: 9000 }); render(); return; }
+  if (parts.length === 1) {
+    S.exportParts = null;
+    downloadBlob(new Blob([parts[0].text], { type: 'application/json' }), base + '.json');
+    toast('Exported ' + plural(all.length, 'file') + ' to ' + base + '.json. Keep it on your office\'s own drive.', false, { ms: 6000 });
+    render(); return;
+  }
+  // More than one file the reader opens: one button per part (a click each, so the browser never blocks a second download).
+  const d = new Date();
+  S.exportParts = { at: p2(d.getHours()) + ':' + p2(d.getMinutes()), total: all.length,
+    parts: parts.map((p, i) => ({ text: p.text, files: p.files, size: p.size, name: base + '-part' + (i + 1) + '-of-' + parts.length + '.json', saved: false })) };
+  render();
+  const el = $('#exp-parts'); if (el) { el.scrollIntoView({ block: 'nearest' }); const b = $('[data-act="export-part"]', el); if (b) b.focus(); }
+}
+function exportPartsHtml() {
+  const X = S.exportParts; if (!X) return '';
+  const files = (n) => n.toLocaleString('en-CA') + (n === 1 ? ' file' : ' files');
+  return '<div class="status warn" id="exp-parts" role="status">' + icon('alert') + '<div><p><strong>' + files(X.total) + ' make more than one export file.</strong> This page reads an export file of at most 5 MB and ' + MAX_FILES.toLocaleString('en-CA') +
+    ' files, so the export (taken at ' + esc(X.at) + ') is cut into ' + X.parts.length + ' parts. Save every part: each one imports on its own, in any order. Export again for anything changed since.</p>' +
+    '<div class="row" style="margin-top:8px">' + X.parts.map((p, i) => '<button type="button" class="btn btn-sm' + (p.saved ? '' : ' btn-primary') + '" data-act="export-part" data-i="' + i + '" data-fk="exp-part-' + i + '">' + (p.saved ? icon('check', 'ico-sm') : icon('save', 'ico-sm')) +
+      'Part ' + (i + 1) + ' of ' + X.parts.length + ' (' + files(p.files) + ', ' + (p.size / 1048576).toFixed(1) + ' MB)' + '</button>').join('') + '</div></div></div>';
+}
+function savePart(i) {
+  const X = S.exportParts, p = X && X.parts[i]; if (!p) return;
+  downloadBlob(new Blob([p.text], { type: 'application/json' }), p.name); p.saved = true;
+  const left = X.parts.filter((q) => !q.saved).length;
+  toast('Saved ' + p.name + '.' + (left ? ' ' + plural(left, 'part') + ' to go.' : ' All ' + X.parts.length + ' parts saved: keep them together on your office\'s own drive.'), false, { ms: 6000 });
+  render();
+}
+const capMsg = (n) => 'This page keeps at most ' + MAX_HELD.toLocaleString('en-CA') + ' files' + (n != null ? ', and that would make ' + n.toLocaleString('en-CA') : '') + '. Export, then delete files you no longer need.';
+/* Import merges: a file not here is added; a file in both keeps whichever copy was changed last. */
+function importText(text, name) {
+  const p = parseText(String(text || '').replace(/^﻿/, ''));
+  if (p.errs) { S.importMsg = { kind: 'err', html: '<strong>' + esc(name) + '</strong> was not imported. ' + esc(errSummary(p.errs)) + ' Nothing here was changed.' }; render(); return false; }
+  const after = S.files.size + p.files.filter((f) => !S.files.has(f.id)).length;
+  if (after > MAX_HELD) { S.importMsg = { kind: 'err', html: '<strong>' + esc(name) + '</strong> was not imported. ' + esc(capMsg(after)) + ' Nothing here was changed.' }; render(); return false; }
+  let added = 0, updated = 0, same = 0;
+  for (const f of p.files) {
+    const cur = S.files.get(f.id);
+    if (!cur) { S.files.set(f.id, f); queueSave(f.id); added++; }
+    else if ((f.updatedAt || '') > (cur.updatedAt || '')) { S.files.set(f.id, f); queueSave(f.id); updated++; }
+    else same++;
+  }
+  const s = S.settings, empty = !s.name && !s.firm && !s.phone && !s.email;
+  let set = '';
+  if (p.settings && empty) { S.settings = p.settings; saveSettings(); set = ' Your signature and defaults came from the file, since none were set here.'; }
+  S.importMsg = { kind: 'ok', html: 'Imported <strong>' + esc(name) + '</strong>: ' + plural(added, 'file') + ' added, ' + updated + ' updated, ' + same + ' already here (the copy here was the same or newer).' + esc(set) };
+  render(); return true;
+}
+function readImportFile(file) {
+  if (!file) return;
+  if (file.size > MAX_FILE) { S.importMsg = { kind: 'err', html: '<strong>' + esc(file.name) + '</strong> was not imported. It is ' + (file.size / 1048576).toFixed(1) + ' MB; an export file is at most 5 MB. Nothing here was changed.' }; render(); return; }
+  const fr = new FileReader();
+  fr.onerror = () => { S.importMsg = { kind: 'err', html: 'Could not read <strong>' + esc(file.name) + '</strong>.' }; render(); };
+  fr.onload = () => {
+    let text;
+    try { text = new TextDecoder('utf-8', { fatal: true }).decode(new Uint8Array(fr.result)); }
+    catch (e) { S.importMsg = { kind: 'err', html: '<strong>' + esc(file.name) + '</strong> was not imported. It is not UTF-8 text, so it is not an export from this page.' }; render(); return; }
+    importText(text, file.name);
+  };
+  fr.readAsArrayBuffer(file);
+}
+/* The sample's dates are moved so its anchor day is today: some files late, follow-ups due now. */
+function shiftFile(f, k) {
+  for (const key of ['due', 'created', 'sent', 'holdUntil', 'closed']) if (f[key]) f[key] = addDays(f[key], k);
+  for (const it of f.items) for (const key of ['requested', 'received', 'na']) if (it[key]) it[key] = addDays(it[key], k);
+  for (const c of f.chases) c.date = addDays(c.date, k);
+}
+function loadSample() {
+  const el = $('#sample-files'), p = parseText(el ? el.textContent : '');
+  if (p.errs) { toast('The sample could not be read: ' + errSummary(p.errs), true); return; }
+  const after = S.files.size + p.files.filter((f) => !S.files.has(f.id)).length;
+  if (after > MAX_HELD) { toast('The sample was not loaded. ' + capMsg(after), true, { ms: 9000 }); return; }
+  const k = p.anchor ? between(p.anchor, today()) : 0;
+  for (const f of p.files) { shiftFile(f, k); f.sample = true; f.updatedAt = nowIso(); S.files.set(f.id, f); queueSave(f.id); }
+  const open = p.files.filter((f) => !f.closed).length;
+  toast('Loaded the sample: ' + plural(p.files.length, 'fictional file') + ' (' + open + ' open, ' + (p.files.length - open) + ' closed).', false, { ms: 5000 });
+  setView('today');
+}
+async function wipeAll() {
+  for (const id of PENDING.keys()) clearTimeout(PENDING.get(id));
+  PENDING.clear(); clearTimeout(settingsT); settingsT = 0;
+  S.files = new Map(); S.settings = defaultSettings(); S.mail = {}; S.mailOpen = {}; S.itemOpen = {}; S.add = {}; S.draft = null; S.arm = ''; S.importMsg = null; S.exportParts = null;
+  try { await dbWipe(); post({ wiped: true }); toast('Deleted everything this page saved on this device. An export file you saved is not touched.', false, { ms: 7000 }); }
+  catch (e) { toast('Could not delete this browser\'s storage. Close the page in other tabs and try again.', true); }
+  setSave(''); render();
+}
+
+/* ============================================================ events (one delegate per kind) */
+const view = $('#view');
+$('#tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-view]'); if (b) setView(b.dataset.view); });
+view.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const act = b.dataset.act, f = b.dataset.id ? fileOf(b) : null;
+  switch (act) {
+    case 'go': setView(b.dataset.view); break;
+    case 'open-file': if (f) setView('file', f.id); break;
+    case 'toggle-mail': S.mailOpen[b.dataset.key] = !own(S.mailOpen, b.dataset.key); render(); break;
+    case 'copy-body': case 'copy-subject': {
+      const key = b.dataset.key, fid = key.split(':')[0], g = S.files.get(fid); if (!g) break;
+      const M = mailFor(g, key.split(':')[1]);
+      if (act === 'copy-body') copyText(M.body, 'Copied the email (' + M.body.split('\n').length + ' lines). Paste it into your mail program; nothing was sent.');
+      else copyText(M.subject, 'Copied the subject.');
+      break;
+    }
+    case 'reset-mail': delete S.mail[b.dataset.key]; render(); break;
+    case 'log': if (f) logChase(f, b.dataset.how === 'call' ? 'call' : 'email'); break;
+    case 'mark-sent': if (f) markSent(f, ($('#sent-on-' + CSS.escape(f.id)) || {}).value); break;
+    case 'hold-clear': if (f) { f.holdUntil = ''; touch(f); render(); } break;
+    case 'item-toggle': { const k = b.dataset.id + ':' + b.dataset.iid; S.itemOpen[k] = !own(S.itemOpen, k); render(); break; }
+    case 'na': { const it = itemOf(f, b); if (!it) break; it.na = today(); it.received = ''; S.itemOpen[f.id + ':' + it.id] = true; touch(f); render(); const r = $('#nr-' + CSS.escape(f.id + ':' + it.id)); if (r) r.focus(); break; }
+    case 'na-undo': { const it = itemOf(f, b); if (!it) break; it.na = ''; it.naReason = ''; touch(f); render(); break; }
+    case 'arm': arm(b.dataset.arm); break;
+    case 'disarm': S.arm = ''; render(); break;
+    case 'item-del': { const it = itemOf(f, b); if (!it) break; f.items = f.items.filter((x) => x !== it); S.arm = ''; touch(f); render(); toast('Removed ' + it.name + ' from ' + f.fileNo + '.', false, { action: { label: 'Undo', fn: () => { if (!S.files.has(f.id)) return; f.items.push(it); touch(f); render(); } } }); break; }
+    case 'chase-del': { const i = +b.dataset.idx; if (!f || !f.chases[i]) break; const c = f.chases.splice(i, 1)[0]; S.arm = ''; touch(f); render(); toast('Removed the follow-up of ' + shortDate(c.date) + ' from the log.', false, { action: { label: 'Undo', fn: () => { if (!S.files.has(f.id)) return; f.chases.push(c); f.chases.sort((x, y) => cmp(x.date, y.date)); touch(f); render(); } } }); break; }
+    case 'add-item': {
+      if (!f) break;
+      const a = own(S.add, f.id) || { name: '', why: '' };
+      const name = String(a.name || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, LIM.name);
+      if (!name) { toast('Type the document, or choose one from the list, first.', true); break; }
+      if (f.items.length >= MAX_ITEMS) { toast('A file holds at most ' + MAX_ITEMS + ' documents.', true); break; }
+      f.items.push({ id: uid('i-'), name, why: String(a.why || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, LIM.why), requested: f.sent ? today() : '', received: '', na: '', naReason: '', notes: '' });
+      delete S.add[f.id]; touch(f); render(); toast('Added ' + name + (f.sent ? '. It goes in the next follow-up.' : '.'));
+      break;
+    }
+    case 'close-file': if (f) closeFile(f); break;
+    case 'reopen-file': if (f) { f.closed = ''; touch(f); render(); toast('Reopened ' + f.fileNo + '.'); } break;
+    case 'file-del': if (f) { const no = f.fileNo; deleteFiles([f.id], 'Deleted ' + no + ' from this device.'); setView('files'); } break;
+    case 'copy-received': if (f) { const t = f.items.filter((it) => it.received).map((it) => guardLine(it.name) + ' (received ' + fullDate(it.received) + ')').join('\n'); copyText(t, 'Copied the ' + plural(t.split('\n').length, 'received document') + ', one per line.'); } break;
+    case 'filter': S.filter = b.dataset.filter; render(); break;
+    case 'groupby': S.groupBy = b.dataset.g === 'type' ? 'type' : 'recipient'; render(); break;
+    case 'copy-sum-tsv': copyText(summaryTsv(S.groupBy), 'Copied the table, tab-separated, for a spreadsheet' + (summaryRows(S.groupBy).sampleOnly ? ', marked FICTIONAL SAMPLE DATA.' : '.')); break;
+    case 'copy-sum-text': copyText(summarySentences(S.groupBy), 'Copied the summary as sentences' + (summaryRows(S.groupBy).sampleOnly ? ', marked FICTIONAL SAMPLE.' : '.')); break;
+    case 'create': createFromDraft(); break;
+    case 'draft-reset': S.draft = null; render(); break;
+    case 'draft-add': {
+      const d = S.draft, name = String(d.add.name || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, LIM.name);
+      if (!name) { toast('Type the document first.', true); break; }
+      if (d.items.length >= MAX_ITEMS) { toast('A file holds at most ' + MAX_ITEMS + ' documents.', true); break; }
+      d.items.push({ key: 'c' + uid(''), name, why: String(d.add.why || '').replace(/[\u0000-\u001F\u007F]/g, ' ').trim().slice(0, LIM.why), on: true, custom: true });
+      d.add = { name: '', why: '' }; render(); break;
+    }
+    case 'draft-del': S.draft.items = S.draft.items.filter((x) => x.key !== b.dataset.key); render(); break;
+    case 'export': doExport(); break;
+    case 'export-part': savePart(+b.dataset.i); break;
+    case 'sample': loadSample(); break;
+    case 'sample-remove': deleteFiles(Array.from(S.files.values()).filter((x) => x.sample).map((x) => x.id), 'Removed the sample files. Your own files stay.'); break;
+    case 'wipe': wipeAll(); break;
+  }
+});
+/* Typing: the model is updated as you type, without re-rendering (focus and caret stay put). */
+view.addEventListener('input', (e) => {
+  const el = e.target, k = el.dataset.in; if (!k) return;
+  const one = (v) => String(v).replace(/[\u0000-\u001F\u007F]/g, ' ');
+  if (k === 'mail-subject' || k === 'mail-body' || k === 'mail-to') {
+    const key = el.dataset.key, fid = key.split(':')[0], g = S.files.get(fid); if (!g) return;
+    const M = mailFor(g, key.split(':')[1]);
+    const m = { subject: M.subject, body: M.body, to: M.to, edited: M.edited };
+    if (k === 'mail-subject') { m.subject = one(el.value); m.edited = true; }
+    if (k === 'mail-body') { m.body = el.value; m.edited = true; }
+    if (k === 'mail-to') m.to = el.value.trim();
+    S.mail[key] = m;
+    const a = view.querySelector('[data-mailto="' + CSS.escape(key) + '"]'); if (a) setMailLink(a, m);
+    const hint = view.querySelector('[data-mail-hint="' + CSS.escape(key) + '"]'); if (hint) hint.textContent = mailHint(m);
+    return;
+  }
+  if (k === 'search') { S.search = el.value; $('#flist').innerHTML = fileListHtml(); return; }
+  if (k === 'draft') { const fld = el.dataset.field; if (['fileNo', 'address', 'firstName'].includes(fld)) S.draft[fld] = one(el.value); return; }
+  if (k === 'draft-item') { const x = S.draft.items.find((y) => y.key === el.dataset.key); if (x) x[el.dataset.field === 'why' ? 'why' : 'name'] = one(el.value); return; }
+  if (k === 'draft-add') { S.draft.add[el.dataset.field === 'why' ? 'why' : 'name'] = one(el.value); return; }
+  if (k === 'add-text') { const a = own(S.add, el.dataset.id) || (S.add[el.dataset.id] = { name: '', why: '' }); a[el.dataset.field === 'why' ? 'why' : 'name'] = one(el.value); return; }
+  if (k === 'set') {
+    const fld = el.dataset.field;
+    if (['name', 'firm', 'phone', 'email'].includes(fld)) { S.settings[fld] = one(el.value).trim(); saveSettings(); }
+    return;
+  }
+  const f = el.dataset.id ? fileOf(el) : null; if (!f) return;
+  if (k === 'item-text') {
+    const it = itemOf(f, el); if (!it) return; const fld = el.dataset.field;
+    const max = { name: LIM.name, why: LIM.why, naReason: LIM.naReason, notes: LIM.itemNotes }[fld]; if (!max) return;
+    const v = one(el.value).slice(0, max);
+    if (fld === 'name' && !v.trim()) { el.setAttribute('aria-invalid', 'true'); return; }
+    el.removeAttribute('aria-invalid'); it[fld] = fld === 'name' ? v.trim() : v; touch(f); return;
+  }
+  if (k === 'file-field') {
+    const fld = el.dataset.field;
+    if (fld === 'fileNo' || fld === 'address' || fld === 'firstName') {
+      const v = one(el.value).trim().slice(0, LIM[fld]);
+      if (fld !== 'firstName' && !v) { el.setAttribute('aria-invalid', 'true'); return; }
+      el.removeAttribute('aria-invalid'); f[fld] = v; touch(f);
+    } else if (fld === 'notes') { f.notes = el.value.replace(CTRL_ALL, '').slice(0, LIM.notes); touch(f); }
+  }
+});
+/* A finished change (a tick, a date, a choice, leaving a field): update, then re-render once focus has moved. */
+view.addEventListener('change', (e) => {
+  const el = e.target, k = el.dataset.in; if (!k) return;
+  if (k === 'mail-subject' || k === 'mail-body' || k === 'mail-to' || k === 'search' || k === 'draft-item' || k === 'draft-add' || k === 'add-text') return;
+  if (k === 'draft') {
+    const d = S.draft, fld = el.dataset.field;
+    if (fld === 'propertyType') { d.propertyType = own(TYPES, el.value) ? el.value : ''; d.items = draftItems(d.propertyType, d.items); }
+    else if (fld === 'recipient') d.recipient = own(RCP, el.value) ? el.value : 'other';
+    else if (fld === 'due') d.due = isoOk(el.value) ? el.value : '';
+    d.msg = ''; renderSoon(); return;
+  }
+  if (k === 'draft-on') { const x = S.draft.items.find((y) => y.key === el.dataset.key); if (x) x.on = el.checked; renderSoon(); return; }
+  if (k === 'set') {
+    const s = S.settings, fld = el.dataset.field;
+    if (fld === 'why') s.why = el.checked;
+    else if (fld === 'dueDays') { const n = +el.value; if (Number.isInteger(n) && n >= 1 && n <= 90) s.dueDays = n; }
+    else if (['first', 'second', 'every'].includes(fld)) { const n = +el.value; if (Number.isInteger(n) && n >= 1 && n <= 60) { const t = Object.assign({}, s.schedule, { [fld]: n }); if (t.second > t.first) s.schedule = t; else toast('The second follow-up must come after the first.', true); } }
+    else if (fld === 'afterDue') s.schedule = Object.assign({}, s.schedule, { afterDue: el.value === 'stop' ? 'stop' : 'keep' });
+    saveSettings(); renderSoon(); return;
+  }
+  if (k === 'add-pick') {
+    const t = own(TYPES, (fileOf(el) || {}).propertyType), x = t && t.items.find((y) => y.name === el.value);
+    S.add[el.dataset.id] = x ? { name: x.name, why: x.why || '' } : { name: '', why: '' }; renderSoon(); return;
+  }
+  const f = el.dataset.id ? fileOf(el) : null; if (!f) return;
+  if (k === 'recv') { const it = itemOf(f, el); if (it) setReceived(f, it, el.checked); renderSoon(); return; }
+  if (k === 'item-date') {
+    const it = itemOf(f, el), fld = el.dataset.field; if (!it) return;
+    const v = el.value;
+    if (fld === 'received') { if (!v) it.received = ''; else if (isoOk(v)) { it.received = v; it.na = ''; it.naReason = ''; } }
+    else if (fld === 'na') { if (isoOk(v)) it.na = v; }
+    else if (fld === 'requested') { if (isoOk(v)) it.requested = v; else toast('A requested date stays set once the request is sent.', true); }
+    touch(f); renderSoon(); return;
+  }
+  if (k === 'item-text') { renderSoon(); return; }
+  if (k === 'sched') {
+    const fld = el.dataset.field, sc = Object.assign({}, f.schedule);
+    if (fld === 'afterDue') sc.afterDue = el.value === 'stop' ? 'stop' : 'keep';
+    else { const n = +el.value; if (!(Number.isInteger(n) && n >= 1 && n <= 60)) { toast('A whole number of days from 1 to 60.', true); renderSoon(); return; } sc[fld] = n; }
+    if (sc.second <= sc.first) { toast('The second follow-up must come after the first.', true); renderSoon(); return; }
+    f.schedule = sc; touch(f); renderSoon(); return;
+  }
+  if (k === 'file-field') {
+    const fld = el.dataset.field, v = el.value;
+    if (fld === 'recipient') f.recipient = own(RCP, v) ? v : f.recipient;
+    else if (fld === 'propertyType') f.propertyType = own(TYPES, v) ? v : f.propertyType;
+    else if (fld === 'due') { if (isoOk(v)) f.due = v; else toast('The due date stays: a file always has one.', true); }
+    else if (fld === 'sent') { if (isoOk(v) && v <= today()) { for (const it of f.items) if (it.requested === f.sent) it.requested = v; f.sent = v; } else toast('The sent date must be a date, today or earlier.', true); }
+    else if (fld === 'holdUntil') f.holdUntil = isoOk(v) ? v : '';
+    touch(f); renderSoon();
+  }
+});
+view.addEventListener('change', (e) => { if (e.target.id === 'imp-file') { readImportFile(e.target.files[0]); e.target.value = ''; } });
+view.addEventListener('dragover', (e) => { const d = e.target.closest('#imp-drop'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+view.addEventListener('dragleave', (e) => { const d = e.target.closest('#imp-drop'); if (d) d.classList.remove('over'); });
+// A file dropped anywhere must not make the browser navigate to it; on Settings it imports.
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('drop', (e) => {
+  e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files[0]; if (!f) return;
+  if (S.view !== 'settings') { setView('settings'); }
+  readImportFile(f);
+});
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#test-off')) { TODAY_OVERRIDE = ''; render(); }
+  if (e.target.closest('#tab-reload')) { flushAll(); setTimeout(async () => { await loadAll(); $('#tab-banner').hidden = true; render(); }, 350); }
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAll(); });
+window.addEventListener('pagehide', flushAll);
+window.addEventListener('beforeunload', (e) => { if (S.storage === 'blocked' && S.files.size) { e.preventDefault(); e.returnValue = ''; } });
+
+/* ============================================================ start */
+const v0 = store.get('view');
+S.view = VIEWS.includes(v0) ? v0 : 'today';
+render();
+loadAll().then(render);
+
+/* For testing from the console or a harness. setToday moves the page's "today" (a banner says so). No network. */
+window.DocChase = {
+  setToday(iso) { if (iso && !isoOk(iso)) throw new Error('setToday takes YYYY-MM-DD, or nothing to go back'); TODAY_OVERRIDE = iso || ''; render(); return today(); },
+  today, parseText, validateDoc, nextChase, fileWait, itemWait, outstanding, summaryRows, summaryTsv, summarySentences,
+  requestText, followupText, exportText, exportParts, guardText, importText, mailtoHref, state: S, limits: { MAX_FILE, MAX_FILES, MAX_HELD, LONG_LINK },
+};
+})();
+</script>
+<noscript><p style="padding:16px">This tool needs JavaScript. It still makes no network requests.</p></noscript>
+</body>
+</html>
